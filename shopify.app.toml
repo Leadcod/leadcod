@@ -1,0 +1,22 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "af620696e3a620f77e307087f6e3d5a2"
+name = "Leadcod"
+application_url = "https://ddba1410e9ba.ngrok-free.app"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+include_config_on_deploy = true
+
+[webhooks]
+api_version = "2026-04"
+
+[access_scopes]
+scopes = "read_products"
+
+[access.admin]
+direct_api_mode = "online"
+
+[auth]
+redirect_urls = [ "https://ddba1410e9ba.ngrok-free.app/api/auth" ]
