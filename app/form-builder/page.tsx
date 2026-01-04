@@ -1,28 +1,21 @@
 import { getTranslations } from "next-intl/server";
+import FormBuilderClient from "../components/FormBuilder/FormBuilderClient";
+import { getForm } from "../actions/form";
 
-export default async function FormBuilder() {
+export default async function FormBuilderPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ shop: string }>;
+}) {
   const t = await getTranslations("formBuilder");
+
+  const { shop } = await searchParams;
+  const existingForm = await getForm(shop);
+
   return (
-    <s-page heading="Form Builder">
-
-        { /* Form Builder */ }
-        <s-box slot="content">
-            <s-section>
-                <s-stack gap='base large-500' direction="inline">
-                    <s-paragraph>lotfi</s-paragraph>
-                    <s-paragraph>lotfi</s-paragraph>
-                    <s-paragraph>lotfi</s-paragraph>
-                </s-stack>
-            </s-section>
-        </s-box>
-
-
-        { /* Form Preview*/ }
-        <s-box slot="aside">
-            <s-section>
-                {t("title")}
-            </s-section>
-        </s-box>
-    </s-page>
+    <>
+      <s-page heading="Form Builder" />
+      <FormBuilderClient shopUrl={shop} existingForm={existingForm} />
+    </>
   );
 }

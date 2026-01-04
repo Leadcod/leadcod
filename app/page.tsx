@@ -4,19 +4,14 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const shopify = useAppBridge();
-  const [token, setToken] = useState("");
-  useEffect(() => {
-    if (shopify) {
-      setToken(shopify.config.shop || 'ss')
-    }
-  }, [shopify]);
 
   return (
-    <s-page>
-      <s-section>
-      {token}ss
-      </s-section>
+    <s-page heading="Home">
+      <s-box slot="content">
+        <s-section>
+          <h1>Hello World</h1>
+        </s-section>
+      </s-box>
     </s-page>
   );
 }
