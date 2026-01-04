@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <s-page>
       <s-section>
-      {token}
+      {token}ss
       </s-section>
     </s-page>
   );

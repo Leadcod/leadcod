@@ -16,7 +16,7 @@ api_version = "2026-04"
 scopes = "read_products"
 
 [access.admin]
-direct_api_mode = "online"
+embedded_app_direct_api_access=true
 
 [auth]
 redirect_urls = [ "https://ddba1410e9ba.ngrok-free.app/api/auth" ]

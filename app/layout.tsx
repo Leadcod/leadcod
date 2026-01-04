@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { NextIntlClientProvider } from "next-intl";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,23 +18,31 @@ export const metadata: Metadata = {
   description: "Leadcod is a platform for creating and managing forms",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html>
+      <head>
+        <meta
+          name="shopify-api-key"
+          content={process.env.NEXT_PUBLIC_SHOPIFY_API_KEY}
+        />
+        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js" />
+        <script src="https://cdn.shopify.com/shopifycloud/polaris.js" />
+      </head>
+      <NextIntlClientProvider>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <head>
-          <meta name="shopify-api-key" content={process.env.NEXT_PUBLIC_SHOPIFY_API_KEY} />
-          <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
-          <script src="https://cdn.shopify.com/shopifycloud/polaris.js"></script>
-        </head>
+        <s-app-nav>
+          <s-link href="/form-builder">Form Builder</s-link>
+        </s-app-nav>
         {children}
       </body>
+      </NextIntlClientProvider> 
     </html>
   );
 }
