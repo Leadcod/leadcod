@@ -24,6 +24,7 @@ export interface FormField {
   category: 'client' | 'product' | 'order';
   inputTextColor: string;
   inputBackgroundColor: string;
+  fontFamily: 'cairo' | 'nunito' | 'poppins' | 'montserrat';
 }
 
 export interface FormSettings {
@@ -31,6 +32,23 @@ export interface FormSettings {
 }
 
 export const DEFAULT_FORM_FIELDS: FormField[] = [
+  // Product Information
+  {
+    id: 'variants',
+    type: 'variants',
+    label: 'Variants',
+    showLabel: true,
+    placeholder: 'Select variant',
+    showPlaceholder: true,
+    icon: 'Package',
+    required: false,
+    visible: false,
+    order: 0,
+    category: 'product',
+    inputTextColor: '#000000',
+    inputBackgroundColor: '#ffffff',
+    fontFamily: 'nunito'
+  },
   // Client Information
   {
     id: 'name',
@@ -42,10 +60,11 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     icon: 'User',
     required: true, // Always required
     visible: true,
-    order: 0,
+    order: 1,
     category: 'client',
     inputTextColor: '#000000',
-    inputBackgroundColor: '#ffffff'
+    inputBackgroundColor: '#ffffff',
+    fontFamily: 'nunito'
   },
   {
     id: 'phone',
@@ -57,10 +76,11 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     icon: 'Phone',
     required: true, // Always required
     visible: true,
-    order: 1,
+    order: 2,
     category: 'client',
     inputTextColor: '#000000',
-    inputBackgroundColor: '#ffffff'
+    inputBackgroundColor: '#ffffff',
+    fontFamily: 'nunito'
   },
   {
     id: 'province',
@@ -72,10 +92,11 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     icon: 'MapPin',
     required: true, // Always required
     visible: true,
-    order: 2,
+    order: 3,
     category: 'client',
     inputTextColor: '#000000',
-    inputBackgroundColor: '#ffffff'
+    inputBackgroundColor: '#ffffff',
+    fontFamily: 'nunito'
   },
   {
     id: 'city',
@@ -87,10 +108,27 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     icon: 'Building',
     required: true, // Always required
     visible: true,
-    order: 3,
+    order: 4,
     category: 'client',
     inputTextColor: '#000000',
-    inputBackgroundColor: '#ffffff'
+    inputBackgroundColor: '#ffffff',
+    fontFamily: 'nunito'
+  },
+  {
+    id: 'quantity',
+    type: 'quantity',
+    label: 'Quantity',
+    showLabel: true,
+    placeholder: '1',
+    showPlaceholder: true,
+    icon: 'Hash',
+    required: false,
+    visible: false,
+    order: 5,
+    category: 'order',
+    inputTextColor: '#000000',
+    inputBackgroundColor: '#ffffff',
+    fontFamily: 'nunito'
   },
   {
     id: 'email',
@@ -101,43 +139,12 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     showPlaceholder: true,
     icon: 'Mail',
     required: false,
-    visible: true,
-    order: 4,
+    visible: false,
+    order: 6,
     category: 'client',
     inputTextColor: '#000000',
-    inputBackgroundColor: '#ffffff'
-  },
-  // Product Information
-  {
-    id: 'variants',
-    type: 'variants',
-    label: 'Variants',
-    showLabel: true,
-    placeholder: 'Select variant',
-    showPlaceholder: true,
-    icon: 'Package',
-    required: false,
-    visible: true,
-    order: 5,
-    category: 'product',
-    inputTextColor: '#000000',
-    inputBackgroundColor: '#ffffff'
-  },
-  // Order Information
-  {
-    id: 'quantity',
-    type: 'quantity',
-    label: 'Quantity',
-    showLabel: true,
-    placeholder: '1',
-    showPlaceholder: true,
-    icon: 'Hash',
-    required: false,
-    visible: true,
-    order: 6,
-    category: 'order',
-    inputTextColor: '#000000',
-    inputBackgroundColor: '#ffffff'
+    inputBackgroundColor: '#ffffff',
+    fontFamily: 'nunito'
   },
   {
     id: 'coupon',
@@ -148,11 +155,12 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     showPlaceholder: true,
     icon: 'Ticket',
     required: false,
-    visible: true,
+    visible: false,
     order: 7,
     category: 'order',
     inputTextColor: '#000000',
-    inputBackgroundColor: '#ffffff'
+    inputBackgroundColor: '#ffffff',
+    fontFamily: 'nunito'
   },
   {
     id: 'summary',
@@ -167,7 +175,8 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     order: 8,
     category: 'order',
     inputTextColor: '#000000',
-    inputBackgroundColor: '#ffffff'
+    inputBackgroundColor: '#ffffff',
+    fontFamily: 'nunito'
   },
   {
     id: 'buyButton',
@@ -182,7 +191,8 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     order: 9,
     category: 'order',
     inputTextColor: '#ffffff',
-    inputBackgroundColor: '#000000'
+    inputBackgroundColor: '#000000',
+    fontFamily: 'nunito'
   }
 ];
 

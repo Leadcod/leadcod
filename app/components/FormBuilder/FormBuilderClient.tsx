@@ -20,19 +20,25 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
     : DEFAULT_FORM_FIELDS;
     
   const [fields, setFields] = useState<FormField[]>(initialFields);
+  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
   return (
     <s-stack background='strong' direction="inline" paddingBlock="large" paddingInline="large" justifyContent="space-between" gap="small">
-      <s-box inlineSize="59%">
+      <s-box inlineSize="65%">
           <FormBuilder 
             shopUrl={shopUrl}
             initialFields={fields}
             onFieldsChange={setFields}
+            selectedFieldId={selectedFieldId}
+            onFieldSelect={setSelectedFieldId}
           />
       </s-box>
 
-      <s-box inlineSize="40%">
-          <FormPreview fields={fields} />
+      <s-box inlineSize="34%">
+          <FormPreview 
+            fields={fields} 
+            onFieldClick={setSelectedFieldId}
+          />
       </s-box>
     </s-stack>
   );

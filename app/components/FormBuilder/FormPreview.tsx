@@ -10,24 +10,47 @@ import { Label } from '@/components/ui/label';
 
 interface FormPreviewProps {
   fields: FormField[];
+  onFieldClick?: (fieldId: string) => void;
 }
 
-export default function FormPreview({ fields }: FormPreviewProps) {
+export default function FormPreview({ fields, onFieldClick }: FormPreviewProps) {
   // Filter only visible fields and sort by order
   const visibleFields = fields
     .filter((field) => field.visible)
     .sort((a, b) => a.order - b.order);
 
+  const getFontFamily = (fontFamily: string) => {
+    const fontMap: Record<string, string> = {
+      cairo: 'var(--font-cairo)',
+      nunito: 'var(--font-nunito)',
+      poppins: 'var(--font-poppins)',
+      montserrat: 'var(--font-montserrat)',
+    };
+    return fontMap[fontFamily] || 'var(--font-poppins)';
+  };
+
   const renderField = (field: FormField) => {
-    const IconComponent = (Icons as any)[field.icon] || Icons.Circle;
+    const IconComponent = field.icon === 'none' ? null : ((Icons as any)[field.icon] || Icons.Circle);
 
     const inputStyle = {
       color: field.inputTextColor,
       backgroundColor: field.inputBackgroundColor,
+      fontFamily: getFontFamily(field.fontFamily),
+      cursor: onFieldClick ? 'pointer' : 'default',
     };
 
     const iconStyle = {
       color: field.inputTextColor,
+    };
+
+    const labelStyle = {
+      fontFamily: getFontFamily(field.fontFamily),
+    };
+
+    const handleFieldClick = () => {
+      if (onFieldClick) {
+        onFieldClick(field.id);
+      }
     };
 
     switch (field.type) {
@@ -37,20 +60,23 @@ export default function FormPreview({ fields }: FormPreviewProps) {
         return (
           <div key={field.id} className="space-y-2">
             {field.showLabel && (
-              <Label>
+              <Label style={labelStyle}>
                 {field.label}
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup>
-              <InputGroupAddon style={iconStyle}>
-                <IconComponent size={16} />
-              </InputGroupAddon>
+            <InputGroup onClick={handleFieldClick}>
+              {IconComponent && (
+                <InputGroupAddon style={iconStyle}>
+                  <IconComponent size={16} />
+                </InputGroupAddon>
+              )}
               <InputGroupInput
                 type={field.type === 'email' ? 'email' : 'text'}
                 placeholder={field.showPlaceholder ? field.placeholder : ''}
                 style={inputStyle}
                 required={field.required}
+                readOnly
               />
             </InputGroup>
           </div>
@@ -60,12 +86,12 @@ export default function FormPreview({ fields }: FormPreviewProps) {
         return (
           <div key={field.id} className="space-y-2">
             {field.showLabel && (
-              <Label>
+              <Label style={labelStyle}>
                 {field.label}
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup>
+            <InputGroup onClick={handleFieldClick}>
               <InputGroupAddon style={iconStyle}>
                 +213
               </InputGroupAddon>
@@ -74,10 +100,13 @@ export default function FormPreview({ fields }: FormPreviewProps) {
                 placeholder={field.showPlaceholder ? field.placeholder : ''}
                 style={inputStyle}
                 required={field.required}
+                readOnly
               />
-              <InputGroupAddon style={iconStyle}>
-                <IconComponent size={16} />
-              </InputGroupAddon>
+              {IconComponent && (
+                <InputGroupAddon style={iconStyle}>
+                  <IconComponent size={16} />
+                </InputGroupAddon>
+              )}
             </InputGroup>
           </div>
         );
@@ -86,17 +115,31 @@ export default function FormPreview({ fields }: FormPreviewProps) {
         return (
           <div key={field.id} className="space-y-2">
             {field.showLabel && (
-              <Label>
+              <Label style={labelStyle}>
                 {field.label}
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup>
-              <InputGroupAddon style={iconStyle}>
-                <IconComponent size={16} />
-              </InputGroupAddon>
+            <InputGroup onClick={handleFieldClick}>
+              {IconComponent && (
+                <InputGroupAddon style={iconStyle}>
+                  <IconComponent size={16} />
+                </InputGroupAddon>
+              )}
               <Select required={field.required}>
-                <SelectTrigger className="w-full flex-1 rounded-none rounded-r-md border-l-0" style={inputStyle}>
+                <SelectTrigger 
+                  className="w-full flex-1 rounded-none rounded-r-md border-l-0" 
+                  style={inputStyle}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleFieldClick();
+                  }}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    handleFieldClick();
+                  }}
+                >
                   <SelectValue placeholder={field.showPlaceholder ? field.placeholder : 'Select'} />
                 </SelectTrigger>
                 <SelectContent>
@@ -116,17 +159,31 @@ export default function FormPreview({ fields }: FormPreviewProps) {
         return (
           <div key={field.id} className="space-y-2">
             {field.showLabel && (
-              <Label>
+              <Label style={labelStyle}>
                 {field.label}
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup>
-              <InputGroupAddon style={iconStyle}>
-                <IconComponent size={16} />
-              </InputGroupAddon>
+            <InputGroup onClick={handleFieldClick}>
+              {IconComponent && (
+                <InputGroupAddon style={iconStyle}>
+                  <IconComponent size={16} />
+                </InputGroupAddon>
+              )}
               <Select required={field.required}>
-                <SelectTrigger className="w-full flex-1 rounded-none rounded-r-md border-l-0" style={inputStyle}>
+                <SelectTrigger 
+                  className="w-full flex-1 rounded-none rounded-r-md border-l-0" 
+                  style={inputStyle}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleFieldClick();
+                  }}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    handleFieldClick();
+                  }}
+                >
                   <SelectValue placeholder={field.showPlaceholder ? field.placeholder : 'Select'} />
                 </SelectTrigger>
                 <SelectContent>
@@ -143,15 +200,17 @@ export default function FormPreview({ fields }: FormPreviewProps) {
         return (
           <div key={field.id} className="space-y-2">
             {field.showLabel && (
-              <Label>
+              <Label style={labelStyle}>
                 {field.label}
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup>
-              <InputGroupAddon style={iconStyle}>
-                <IconComponent size={16} />
-              </InputGroupAddon>
+            <InputGroup onClick={handleFieldClick}>
+              {IconComponent && (
+                <InputGroupAddon style={iconStyle}>
+                  <IconComponent size={16} />
+                </InputGroupAddon>
+              )}
               <InputGroupInput
                 type="number"
                 min={1}
@@ -159,6 +218,7 @@ export default function FormPreview({ fields }: FormPreviewProps) {
                 placeholder={field.showPlaceholder ? field.placeholder : ''}
                 style={inputStyle}
                 required={field.required}
+                readOnly
               />
             </InputGroup>
           </div>
@@ -168,20 +228,23 @@ export default function FormPreview({ fields }: FormPreviewProps) {
         return (
           <div key={field.id} className="space-y-2">
             {field.showLabel && (
-              <Label>
+              <Label style={labelStyle}>
                 {field.label}
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
             <div className="flex items-center gap-2">
-              <InputGroup className="flex-1">
-                <InputGroupAddon style={iconStyle}>
-                  <IconComponent size={16} />
-                </InputGroupAddon>
+              <InputGroup className="flex-1" onClick={handleFieldClick}>
+                {IconComponent && (
+                  <InputGroupAddon style={iconStyle}>
+                    <IconComponent size={16} />
+                  </InputGroupAddon>
+                )}
                 <InputGroupInput
                   placeholder={field.showPlaceholder ? field.placeholder : ''}
                   style={inputStyle}
                   required={field.required}
+                  readOnly
                 />
               </InputGroup>
               <Button>
@@ -193,13 +256,13 @@ export default function FormPreview({ fields }: FormPreviewProps) {
 
       case 'summary':
         return (
-          <Card key={field.id} className="bg-muted/50 border-2">
+          <Card key={field.id} className="bg-muted/50 border-2" onClick={handleFieldClick} style={{ cursor: onFieldClick ? 'pointer' : 'default' }}>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold">
+              <CardTitle className="text-base font-semibold" style={labelStyle}>
                 {field.showLabel ? field.label : 'Summary'}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3" style={labelStyle}>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal:</span>
                 <span className="font-medium">$99.99</span>
@@ -228,12 +291,14 @@ export default function FormPreview({ fields }: FormPreviewProps) {
             <Button 
               className="w-full" 
               size="lg"
+              onClick={handleFieldClick}
               style={{
                 color: field.inputTextColor,
                 backgroundColor: field.inputBackgroundColor,
+                fontFamily: getFontFamily(field.fontFamily),
               }}
             >
-              <IconComponent size={20} />
+              {IconComponent && <IconComponent size={20} />}
               {field.label}
             </Button>
           </div>

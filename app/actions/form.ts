@@ -4,7 +4,7 @@ import { FormSettings } from '../types/form';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 
-export async function saveForm(shopUrl: string, formData: FormSettings) {
+export async function saveForm(shopUrl: string, formData: FormSettings, isRender: boolean = false) {
   try {
     // Find or create shop
     let shop = await prisma.shop.findFirst({
@@ -43,7 +43,10 @@ export async function saveForm(shopUrl: string, formData: FormSettings) {
       });
     }
 
-    revalidatePath('/form-builder');
+    // Only revalidate if not called during render
+    if (!isRender) {
+      revalidatePath('/form-builder');
+    }
     
     return { 
       success: true, 
@@ -80,4 +83,5 @@ export async function getForm(shopUrl: string) {
     return null;
   }
 }
+
 
