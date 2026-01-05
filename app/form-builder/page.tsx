@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import FormBuilderClient from "../components/FormBuilder/FormBuilderClient";
 import { getForm, saveForm } from "../actions/form";
-import { DEFAULT_FORM_FIELDS } from "../types/form";
+import { DEFAULT_FORM_FIELDS, DEFAULT_GLOBAL_SETTINGS } from "../types/form";
 
 export default async function FormBuilderPage({
   searchParams,
@@ -16,7 +16,7 @@ export default async function FormBuilderPage({
   // If no form exists and we have a shop URL, create and save default form data
   // (without revalidation since this is during render)
   if (!existingForm && shop) {
-    await saveForm(shop, { fields: DEFAULT_FORM_FIELDS }, true);
+    await saveForm(shop, { fields: DEFAULT_FORM_FIELDS, globalSettings: DEFAULT_GLOBAL_SETTINGS }, true);
     // Fetch the newly created form
     existingForm = await getForm(shop);
   }

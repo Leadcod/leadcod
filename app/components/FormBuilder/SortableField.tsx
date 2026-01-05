@@ -68,16 +68,16 @@ export default function SortableField({ field, onToggleVisibility, onOpenSetting
             <span style={{ fontWeight: 'bold' }}>{field.label}</span>
           </s-stack>
 
-          <s-stack direction="inline" gap="small" alignItems="center">
+          <s-stack direction="inline" gap="none" alignItems="center">
             <s-button
-              variant="auto"
+              variant="tertiary"
               onClick={() => onOpenSettings(field.id)}
               aria-label="Field settings"
             >
               <Settings size={18} />
             </s-button>
             <s-button
-              variant="auto"
+              variant="tertiary"
               onClick={() => onToggleVisibility(field.id)}
               aria-label={field.visible ? 'Hide field' : 'Show field'}
             >

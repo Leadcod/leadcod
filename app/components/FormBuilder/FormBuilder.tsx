@@ -3,31 +3,48 @@
 import { useState, useEffect, useRef } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { FormField, DEFAULT_FORM_FIELDS } from '@/app/types/form';
+import { FormField, DEFAULT_FORM_FIELDS, GlobalFormSettings, DEFAULT_GLOBAL_SETTINGS } from '@/app/types/form';
 import { saveForm } from '@/app/actions/form';
 import { useAppBridge } from '@shopify/app-bridge-react';
 import SortableField from './SortableField';
 import FieldSettingsPanel from './FieldSettingsPanel';
+import GlobalFormSettingsPanel from './GlobalFormSettingsPanel';
+import { Settings } from 'lucide-react';
 
 interface FormBuilderProps {
   shopUrl: string;
   initialFields?: FormField[];
+  initialGlobalSettings?: GlobalFormSettings;
   onFieldsChange?: (fields: FormField[]) => void;
+  onGlobalSettingsChange?: (settings: GlobalFormSettings) => void;
   selectedFieldId?: string | null;
   onFieldSelect?: (fieldId: string | null) => void;
 }
 
-export default function FormBuilder({ shopUrl , initialFields, onFieldsChange, selectedFieldId: externalSelectedFieldId, onFieldSelect }: FormBuilderProps) {
+export default function FormBuilder({ shopUrl , initialFields, initialGlobalSettings, onFieldsChange, onGlobalSettingsChange, selectedFieldId: externalSelectedFieldId, onFieldSelect }: FormBuilderProps) {
   const initialFieldsValue = initialFields || DEFAULT_FORM_FIELDS;
   const [fields, setFields] = useState<FormField[]>(initialFieldsValue);
+  const [globalSettings, setGlobalSettings] = useState<GlobalFormSettings>(initialGlobalSettings || DEFAULT_GLOBAL_SETTINGS);
   const [internalSelectedFieldId, setInternalSelectedFieldId] = useState<string | null>(null);
+  const [showGlobalSettings, setShowGlobalSettings] = useState(false);
   const selectedFieldId = externalSelectedFieldId !== undefined ? externalSelectedFieldId : internalSelectedFieldId;
-  const setSelectedFieldId = onFieldSelect || setInternalSelectedFieldId;
+  
+  const handleFieldSelect = (fieldId: string | null) => {
+    if (onFieldSelect) {
+      onFieldSelect(fieldId);
+    } else {
+      setInternalSelectedFieldId(fieldId);
+    }
+    setShowGlobalSettings(false);
+  };
   const shopify = useAppBridge()
   const lastSavedFieldsRef = useRef<FormField[]>(JSON.parse(JSON.stringify(initialFieldsValue)));
+  const lastSavedGlobalSettingsRef = useRef<GlobalFormSettings>(JSON.parse(JSON.stringify(initialGlobalSettings || DEFAULT_GLOBAL_SETTINGS)));
+  const prevExternalSelectedFieldIdRef = useRef<string | null | undefined>(externalSelectedFieldId);
   
   useEffect(() => {
     lastSavedFieldsRef.current = JSON.parse(JSON.stringify(initialFieldsValue));
+    lastSavedGlobalSettingsRef.current = JSON.parse(JSON.stringify(initialGlobalSettings || DEFAULT_GLOBAL_SETTINGS));
   }, []);
 
   useEffect(() => {
@@ -35,6 +52,27 @@ export default function FormBuilder({ shopUrl , initialFields, onFieldsChange, s
       onFieldsChange(fields);
     }
   }, [fields, onFieldsChange]);
+
+  useEffect(() => {
+    if (onGlobalSettingsChange) {
+      onGlobalSettingsChange(globalSettings);
+    }
+  }, [globalSettings, onGlobalSettingsChange]);
+
+  // Close global settings when a field is selected externally (e.g., from preview)
+  useEffect(() => {
+    const prevValue = prevExternalSelectedFieldIdRef.current;
+    const currentValue = externalSelectedFieldId;
+    
+    // Only close if transitioning from null/undefined to a field ID
+    if (prevValue === null || prevValue === undefined) {
+      if (currentValue !== null && currentValue !== undefined) {
+        setShowGlobalSettings(false);
+      }
+    }
+    
+    prevExternalSelectedFieldIdRef.current = currentValue;
+  }, [externalSelectedFieldId]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -79,6 +117,11 @@ export default function FormBuilder({ shopUrl , initialFields, onFieldsChange, s
     shopify.saveBar.show('form-builder-save-bar');
   };
 
+  const updateGlobalSettings = (updates: Partial<GlobalFormSettings>) => {
+    setGlobalSettings((prev) => ({ ...prev, ...updates }));
+    shopify.saveBar.show('form-builder-save-bar');
+  };
+
   const applySettingsToOtherFields = (sourceFieldId: string) => {
     const sourceField = fields.find(f => f.id === sourceFieldId);
     if (!sourceField) return;
@@ -89,12 +132,21 @@ export default function FormBuilder({ shopUrl , initialFields, onFieldsChange, s
         if (item.id === sourceFieldId || item.type === 'buyButton') {
           return item;
         }
-        // Apply color and font family settings from source field
+        // Apply color, font family, and styling settings from source field
         return {
           ...item,
           inputTextColor: sourceField.inputTextColor,
           inputBackgroundColor: sourceField.inputBackgroundColor,
           fontFamily: sourceField.fontFamily,
+          labelColor: sourceField.labelColor,
+          labelAlignment: sourceField.labelAlignment,
+          labelFontSize: sourceField.labelFontSize,
+          labelFontWeight: sourceField.labelFontWeight,
+          labelFontStyle: sourceField.labelFontStyle,
+          inputAlignment: sourceField.inputAlignment,
+          inputFontSize: sourceField.inputFontSize,
+          inputFontWeight: sourceField.inputFontWeight,
+          inputFontStyle: sourceField.inputFontStyle,
         };
       })
     );
@@ -106,10 +158,11 @@ export default function FormBuilder({ shopUrl , initialFields, onFieldsChange, s
     shopify.saveBar.hide('form-builder-save-bar')
 
     try {
-      const result = await saveForm(shopUrl, { fields });
+      const result = await saveForm(shopUrl, { fields, globalSettings });
       
       if (result.success) {
         lastSavedFieldsRef.current = JSON.parse(JSON.stringify(fields));
+        lastSavedGlobalSettingsRef.current = JSON.parse(JSON.stringify(globalSettings));
         shopify.toast.show('Form saved successfully!');
       } else {
         shopify.toast.show(result.error || 'Failed to save form',{isError:true});
@@ -123,7 +176,9 @@ export default function FormBuilder({ shopUrl , initialFields, onFieldsChange, s
     const restoredFields = JSON.parse(JSON.stringify(lastSavedFieldsRef.current));
     const sortedRestoredFields = [...restoredFields].sort((a, b) => a.order - b.order);
     setFields(sortedRestoredFields);
-    setSelectedFieldId(null);
+    setGlobalSettings(JSON.parse(JSON.stringify(lastSavedGlobalSettingsRef.current)));
+    handleFieldSelect(null);
+    setShowGlobalSettings(false);
     shopify.saveBar.hide('form-builder-save-bar');
   };
 
@@ -139,50 +194,78 @@ export default function FormBuilder({ shopUrl , initialFields, onFieldsChange, s
 
       <s-stack gap="small">
         <s-box>
-          <h2 style={{ marginBottom: '8px', fontWeight: 600 }}>Form Fields</h2>
-          <p style={{ fontSize: '14px', opacity: 0.7 }}>
-            Drag to reorder, click settings icon to configure fields
-          </p>
+          <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+            <div>
+              <h2 style={{ marginBottom: '8px', fontWeight: 600 }}>Form Fields</h2>
+              <p style={{ fontSize: '14px', opacity: 0.7 }}>
+                Drag to reorder, click settings icon to configure fields
+              </p>
+            </div>
+            <s-button
+              variant="secondary"
+              onClick={() => {
+                handleFieldSelect(null);
+                setShowGlobalSettings(true);
+              }}
+            >
+              <Settings size={18} style={{ marginRight: '8px' }} />
+              Global Settings
+            </s-button>
+          </s-stack>
         </s-box>
 
-        <div style={{ display: 'grid', gridTemplateColumns: selectedField ? '1fr 350px' : '1fr', gap: '16px' }}>
-          <div>
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
+        <div>
+          {showGlobalSettings && (
+            <div style={{ marginBottom: '16px' }}>
+              <GlobalFormSettingsPanel
+                settings={globalSettings}
+                onUpdate={updateGlobalSettings}
+                onClose={() => setShowGlobalSettings(false)}
+              />
+            </div>
+          )}
+
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={sortedFields.map((f) => f.id)}
+              strategy={verticalListSortingStrategy}
             >
-              <SortableContext
-                items={sortedFields.map((f) => f.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {sortedFields.map((field) => (
+              {sortedFields.map((field) => (
+                <div key={field.id}>
                   <SortableField
-                    key={field.id}
                     field={field}
                     onToggleVisibility={toggleVisibility}
-                    onOpenSettings={setSelectedFieldId}
+                    onOpenSettings={(id) => {
+                      handleFieldSelect(id);
+                    }}
                     isSelected={selectedFieldId === field.id}
                   />
-                ))}
-              </SortableContext>
-            </DndContext>
-          </div>
-
-          {selectedField && (
-            <FieldSettingsPanel
-              field={selectedField}
-              onUpdate={updateField}
-              onClose={() => {
-                if (onFieldSelect) {
-                  onFieldSelect(null);
-                } else {
-                  setInternalSelectedFieldId(null);
-                }
-              }}
-              onApplyToAll={applySettingsToOtherFields}
-            />
-          )}
+                  {selectedFieldId === field.id && !showGlobalSettings && (
+                    <div
+                      style={{
+                        marginTop: '8px',
+                        marginBottom: '16px',
+                        animation: 'slideDown 0.3s ease-out',
+                      }}
+                    >
+                      <FieldSettingsPanel
+                        field={selectedField!}
+                        onUpdate={updateField}
+                        onClose={() => {
+                          handleFieldSelect(null);
+                        }}
+                        onApplyToAll={applySettingsToOtherFields}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
       </s-stack>
     </form>

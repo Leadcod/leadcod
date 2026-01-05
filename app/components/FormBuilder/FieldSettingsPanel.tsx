@@ -1,10 +1,11 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { useState } from 'react';
+import { X, AlignLeft, AlignCenter, AlignRight, Bold, Italic, ChevronDown, ChevronUp } from 'lucide-react';
 import * as Icons from 'lucide-react';
-import { FormField } from '@/app/types/form';
+import { FormField, GRADIENT_PRESETS } from '@/app/types/form';
 import { AVAILABLE_ICONS } from '@/lib/constants/formBuilder';
-import ColorPicker from '@/app/components/ui/color-picker';
+import CompactColorSwatch from '@/app/components/ui/compact-color-swatch';
 
 interface FieldSettingsPanelProps {
   field: FormField;
@@ -14,6 +15,9 @@ interface FieldSettingsPanelProps {
 }
 
 export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyToAll }: FieldSettingsPanelProps) {
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [showBackgroundSettings, setShowBackgroundSettings] = useState(false);
+  
   const isAlwaysRequired = (fieldType: string) => {
     return ['name', 'phone', 'province', 'city'].includes(fieldType);
   };
@@ -24,6 +28,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
       background="base"
       border="base"
       borderRadius="base"
+      style={{ marginLeft: '0' }}
     >
       <s-stack gap="base">
         <s-stack direction="inline" justifyContent="space-between" alignItems="center">
@@ -38,43 +43,76 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
 
         <s-divider />
 
-        <div>
-          {field.type === 'buyButton' ? (
-            <>
-              <s-text>
-                Text
-              </s-text>
-              <s-text-field
-                value={field.label}
-                onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
+        {/* Label Section - Grouped together */}
+        {field.type === 'buyButton' ? (
+          <div>
+            <s-text>Text</s-text>
+            <s-text-field
+              value={field.label}
+              onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
+            />
+          </div>
+        ) : (
+          <div>
+            <s-text style={{ marginBottom: '8px', display: 'block' }}>Label</s-text>
+            <s-stack direction="inline" gap="small" alignItems="center">
+              <CompactColorSwatch
+                value={field.labelColor || '#000000'}
+                onChange={(color) => onUpdate(field.id, { labelColor: color })}
               />
-            </>
-          ) : (
-            <>
-              <s-stack direction="inline" justifyContent="space-between" alignItems="center" style={{ marginBottom: '8px' }}>
-                <s-text>
-                  Label
-                </s-text>
-                <s-switch
-                  checked={field.showLabel}
-                  onInput={(e: any) => onUpdate(field.id, { showLabel: e.target?.checked ?? e.detail?.checked ?? !field.showLabel })}
+              <div style={{ flex: 1 }}>
+                <s-text-field
+                  value={field.label}
+                  onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
+                  disabled={!field.showLabel}
                 />
-              </s-stack>
-              <s-text-field
-                value={field.label}
-                onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
-                disabled={!field.showLabel}
-              />
-            </>
-          )}
-        </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                <input
+                  type="checkbox"
+                  checked={field.showLabel}
+                  onChange={(e) => onUpdate(field.id, { showLabel: e.target.checked })}
+                  style={{
+                    width: '18px',
+                    height: '18px',
+                    cursor: 'pointer',
+                    accentColor: '#000000'
+                  }}
+                />
+                <s-text style={{ fontSize: '14px' }}>Show</s-text>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                <input
+                  type="checkbox"
+                  checked={field.required}
+                  onChange={(e) => onUpdate(field.id, { required: e.target.checked })}
+                  disabled={isAlwaysRequired(field.type)}
+                  style={{
+                    width: '18px',
+                    height: '18px',
+                    cursor: isAlwaysRequired(field.type) ? 'not-allowed' : 'pointer',
+                    accentColor: '#000000',
+                    opacity: isAlwaysRequired(field.type) ? 0.5 : 1
+                  }}
+                />
+                <s-text style={{ fontSize: '14px' }}>
+                  Required
+                  {isAlwaysRequired(field.type) && (
+                    <span style={{ fontSize: '11px', opacity: 0.6, marginLeft: '4px' }}>
+                      (Always)
+                    </span>
+                  )}
+                </s-text>
+              </div>
+            </s-stack>
+          </div>
+        )}
 
+        {/* Placeholder Section - Grouped together */}
         {field.type !== 'buyButton' && (
           <div>
             <s-stack direction="inline" justifyContent="space-between" alignItems="center" style={{ marginBottom: '8px' }}>
-              <s-text>
-                Placeholder
-              </s-text>
+              <s-text>Placeholder</s-text>
               <s-switch
                 checked={field.showPlaceholder}
                 onInput={(e: any) => onUpdate(field.id, { showPlaceholder: e.target?.checked ?? e.detail?.checked ?? !field.showPlaceholder })}
@@ -90,82 +128,433 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
 
         <s-divider />
 
-        <div>
-          <s-select
-            label="Input Prefix Icon"
-            value={field.icon}
-            onChange={(e: any) => onUpdate(field.id, { icon: e.target.value || e.detail?.value || field.icon })}
-          >
-            <s-option value="none">None</s-option>
-            {AVAILABLE_ICONS.map((iconName) => (
-              <s-option key={iconName} value={iconName}>
-                {iconName}
-              </s-option>
-            ))}
-          </s-select>
-          <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {(() => {
-              if (field.icon === 'none') {
-                return <span style={{ fontSize: '14px', opacity: 0.5 }}>No icon</span>;
-              }
-              const IconComp = (Icons as any)[field.icon];
-              return IconComp ? <IconComp size={24} /> : null;
-            })()}
-            <span style={{ fontSize: '14px', opacity: 0.7 }}>Preview</span>
-          </div>
-        </div>
-
-        {field.type !== 'buyButton' && (
-          <>
-            <s-divider />
-
-            <div>
-              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                <s-text>
-                  Required
-                  {isAlwaysRequired(field.type) && (
-                    <span style={{ fontSize: '12px', opacity: 0.6, display: 'block' }}>
-                      (Always required)
-                    </span>
-                  )}
-                </s-text>
-                <s-switch
-                  checked={field.required}
-                  onInput={(e: any) => onUpdate(field.id, { required: e.target?.checked ?? e.detail?.checked ?? !field.required })}
-                  disabled={isAlwaysRequired(field.type)}
-                />
-              </s-stack>
+        {/* Icon and Font Family - Grouped together */}
+        <s-stack direction="inline" gap="small" alignItems="flex-end">
+          <div style={{ flex: 1 }}>
+            <s-select
+              label="Input Prefix Icon"
+              value={field.icon}
+              onChange={(e: any) => onUpdate(field.id, { icon: e.target.value || e.detail?.value || field.icon })}
+            >
+              <s-option value="none">None</s-option>
+              {AVAILABLE_ICONS.map((iconName) => (
+                <s-option key={iconName} value={iconName}>
+                  {iconName}
+                </s-option>
+              ))}
+            </s-select>
+            <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {(() => {
+                if (field.icon === 'none') {
+                  return <span style={{ fontSize: '14px', opacity: 0.5 }}>No icon</span>;
+                }
+                const IconComp = (Icons as any)[field.icon];
+                return IconComp ? <IconComp size={24} /> : null;
+              })()}
+              <span style={{ fontSize: '14px', opacity: 0.7 }}>Preview</span>
             </div>
+          </div>
+          <div style={{ flex: 1 }}>
+            <s-select
+              label="Font Family"
+              value={field.fontFamily}
+              onChange={(e: any) => onUpdate(field.id, { fontFamily: e.target.value || e.detail?.value || field.fontFamily })}
+            >
+              <s-option value="cairo">Cairo</s-option>
+              <s-option value="nunito">Nunito</s-option>
+              <s-option value="poppins">Poppins</s-option>
+              <s-option value="montserrat">Montserrat</s-option>
+            </s-select>
+          </div>
+        </s-stack>
+
+        {/* Input Colors - Grouped together */}
+        {field.type === 'buyButton' ? (
+          <>
+            <s-stack direction="inline" gap="small" alignItems="flex-end">
+              <div style={{ flex: 1 }}>
+                <s-text style={{ marginBottom: '8px', display: 'block' }}>Text Color</s-text>
+                <CompactColorSwatch
+                  value={field.inputTextColor}
+                  onChange={(color) => onUpdate(field.id, { inputTextColor: color })}
+                />
+              </div>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <s-text style={{ marginBottom: '8px', display: 'block' }}>Button Background</s-text>
+                <div
+                  onClick={() => setShowBackgroundSettings(!showBackgroundSettings)}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    background: field.backgroundType === 'gradient' && field.gradientBackground
+                      ? field.gradientBackground
+                      : field.inputBackgroundColor || '#000000',
+                    border: '1px solid #e5e5e5',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    flexShrink: 0
+                  }}
+                />
+                {showBackgroundSettings && (
+                  <>
+                    <div 
+                      style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 99
+                      }}
+                      onClick={() => setShowBackgroundSettings(false)}
+                    />
+                    <div style={{ 
+                      position: 'absolute', 
+                      zIndex: 100,
+                      top: '100%',
+                      left: 0,
+                      marginTop: '8px',
+                      background: '#ffffff',
+                      border: '1px solid #e5e5e5',
+                      borderRadius: '8px',
+                      padding: '16px',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                      minWidth: '280px'
+                    }}>
+                      <div style={{ marginBottom: '12px' }}>
+                        <s-text>Background Type</s-text>
+                        <s-select
+                          value={field.backgroundType || 'solid'}
+                          onChange={(e: any) => {
+                            const bgType = e.target.value || e.detail?.value || 'solid';
+                            onUpdate(field.id, { 
+                              backgroundType: bgType,
+                              ...(bgType === 'gradient' && !field.gradientBackground ? {
+                                gradientBackground: GRADIENT_PRESETS[0].value,
+                                inputTextColor: GRADIENT_PRESETS[0].textColor || '#ffffff'
+                              } : {})
+                            });
+                          }}
+                        >
+                          <s-option value="solid">Solid</s-option>
+                          <s-option value="gradient">Gradient</s-option>
+                        </s-select>
+                      </div>
+
+                      {field.backgroundType === 'gradient' ? (
+                        <div>
+                          <s-text>Gradient Presets</s-text>
+                          <div style={{ 
+                            display: 'grid', 
+                            gridTemplateColumns: 'repeat(4, 1fr)', 
+                            gap: '8px',
+                            marginTop: '8px'
+                          }}>
+                            {GRADIENT_PRESETS.map((preset) => (
+                              <div
+                                key={preset.name}
+                                onClick={() => onUpdate(field.id, { 
+                                  gradientBackground: preset.value,
+                                  inputTextColor: preset.textColor || '#ffffff'
+                                })}
+                                style={{
+                                  width: '100%',
+                                  height: '40px',
+                                  background: preset.preview,
+                                  borderRadius: '4px',
+                                  cursor: 'pointer',
+                                  border: field.gradientBackground === preset.value 
+                                    ? '2px solid #000' 
+                                    : '1px solid #e5e5e5',
+                                  position: 'relative'
+                                }}
+                                title={preset.name}
+                              />
+                            ))}
+                          </div>
+                          <div style={{ marginTop: '8px', fontSize: '12px', opacity: 0.7 }}>
+                            Selected: {GRADIENT_PRESETS.find(p => p.value === field.gradientBackground)?.name || 'Custom'}
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <s-text style={{ marginBottom: '8px', display: 'block' }}>Solid Color</s-text>
+                          <s-color-picker 
+                            value={field.inputBackgroundColor || '#000000'} 
+                            alpha 
+                            onChange={(e: any) => {
+                              onUpdate(field.id, { 
+                                inputBackgroundColor: e.target.value || e.detail?.value || field.inputBackgroundColor 
+                              });
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+              <div style={{ flex: 1 }}>
+                <s-text style={{ marginBottom: '8px', display: 'block' }}>Animation</s-text>
+                <s-select
+                  value={field.animation || 'none'}
+                  onChange={(e: any) => {
+                    const animation = e.target.value || e.detail?.value || 'none';
+                    onUpdate(field.id, { animation });
+                  }}
+                >
+                  <s-option value="none">None</s-option>
+                  <s-option value="background-shift">Background Shift</s-option>
+                  <s-option value="shake">Shake</s-option>
+                  <s-option value="bounce">Bounce</s-option>
+                  <s-option value="pulse">Pulse</s-option>
+                  <s-option value="glow">Glow</s-option>
+                </s-select>
+              </div>
+              <div style={{ flex: 1 }}>
+                <s-text style={{ marginBottom: '8px', display: 'block' }}>Button Size</s-text>
+                <s-select
+                  value={field.buttonSize || 'base'}
+                  onChange={(e: any) => {
+                    const buttonSize = e.target.value || e.detail?.value || 'base';
+                    onUpdate(field.id, { buttonSize });
+                  }}
+                >
+                  <s-option value="small">Small</s-option>
+                  <s-option value="base">Base</s-option>
+                  <s-option value="large">Large</s-option>
+                  <s-option value="extra-large">Extra Large</s-option>
+                </s-select>
+              </div>
+            </s-stack>
           </>
+        ) : (
+          <s-stack direction="inline" gap="small" alignItems="flex-end">
+            <div style={{ flex: 1 }}>
+              <s-text style={{ marginBottom: '8px', display: 'block' }}>Input Text Color</s-text>
+              <CompactColorSwatch
+                value={field.inputTextColor}
+                onChange={(color) => onUpdate(field.id, { inputTextColor: color })}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <s-text style={{ marginBottom: '8px', display: 'block' }}>Input Background Color</s-text>
+              <CompactColorSwatch
+                value={field.inputBackgroundColor}
+                onChange={(color) => onUpdate(field.id, { inputBackgroundColor: color })}
+              />
+            </div>
+          </s-stack>
         )}
 
         <s-divider />
 
+        {/* Advanced Settings Toggle */}
         <div>
-          <s-select
-            label="Font Family"
-            value={field.fontFamily}
-            onChange={(e: any) => onUpdate(field.id, { fontFamily: e.target.value || e.detail?.value || field.fontFamily })}
+          <s-button
+            variant="secondary"
+            size="small"
+            onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+            style={{ width: '100%', justifyContent: 'space-between' }}
           >
-            <s-option value="cairo">Cairo</s-option>
-            <s-option value="nunito">Nunito</s-option>
-            <s-option value="poppins">Poppins</s-option>
-            <s-option value="montserrat">Montserrat</s-option>
-          </s-select>
+            <span>Advanced Settings</span>
+            {showAdvancedSettings ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </s-button>
         </div>
 
-        <ColorPicker
-          label={field.type === 'buyButton' ? 'Text Color' : 'Input Text Color'}
-          value={field.inputTextColor}
-          onChange={(color) => onUpdate(field.id, { inputTextColor: color })}
-        />
+        {/* Advanced Settings Content */}
+        {showAdvancedSettings && (
+          <s-stack gap="small">
+            {/* Label Styling Section */}
+            {field.type !== 'buyButton' && (
+              <>
+                <s-divider />
+                <h4 style={{ fontWeight: 600, margin: 0, fontSize: '14px' }}>Label Styling</h4>
+                
+                <s-stack direction="inline" gap="small" alignItems="flex-end">
+                  <div>
+                    <s-text style={{ marginBottom: '8px', display: 'block' }}>Color</s-text>
+                    <CompactColorSwatch
+                      value={field.labelColor || '#000000'}
+                      onChange={(color) => onUpdate(field.id, { labelColor: color })}
+                    />
+                  </div>
+                  <div>
+                    <s-text style={{ marginBottom: '8px', display: 'block' }}>Alignment</s-text>
+                    <s-stack direction="inline" gap="small">
+                      <s-button
+                        variant={(field.labelAlignment || 'left') === 'left' ? 'primary' : 'secondary'}
+                        size="small"
+                        onClick={() => onUpdate(field.id, { labelAlignment: 'left' })}
+                        aria-label="Align left"
+                      >
+                        <AlignLeft size={18} />
+                      </s-button>
+                      <s-button
+                        variant={(field.labelAlignment || 'left') === 'center' ? 'primary' : 'secondary'}
+                        size="small"
+                        onClick={() => onUpdate(field.id, { labelAlignment: 'center' })}
+                        aria-label="Align center"
+                      >
+                        <AlignCenter size={18} />
+                      </s-button>
+                      <s-button
+                        variant={(field.labelAlignment || 'left') === 'right' ? 'primary' : 'secondary'}
+                        size="small"
+                        onClick={() => onUpdate(field.id, { labelAlignment: 'right' })}
+                        aria-label="Align right"
+                      >
+                        <AlignRight size={18} />
+                      </s-button>
+                    </s-stack>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <s-text>Font Size</s-text>
+                    <input
+                      type="number"
+                      value={parseInt((field.labelFontSize || '14px').replace('px', '')) || 14}
+                      onChange={(e: any) => {
+                        const numValue = parseInt(e.target.value) || 14;
+                        onUpdate(field.id, { labelFontSize: `${numValue}px` });
+                      }}
+                      placeholder="14"
+                      min="8"
+                      max="72"
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        border: '1px solid #e5e5e5',
+                        borderRadius: '4px',
+                        fontSize: '14px'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <s-text style={{ marginBottom: '8px', display: 'block' }}>Font Style</s-text>
+                    <s-stack direction="inline" gap="small">
+                      <s-button
+                        variant={(field.labelFontWeight || 'normal') === 'bold' ? 'primary' : 'secondary'}
+                        size="small"
+                        onClick={() => {
+                          const currentWeight = field.labelFontWeight || 'normal';
+                          onUpdate(field.id, { 
+                            labelFontWeight: currentWeight === 'bold' ? 'normal' : 'bold' 
+                          });
+                        }}
+                        aria-label="Bold"
+                      >
+                        <Bold size={18} />
+                      </s-button>
+                      <s-button
+                        variant={(field.labelFontStyle || 'normal') === 'italic' ? 'primary' : 'secondary'}
+                        size="small"
+                        onClick={() => {
+                          const currentStyle = field.labelFontStyle || 'normal';
+                          onUpdate(field.id, { 
+                            labelFontStyle: currentStyle === 'italic' ? 'normal' : 'italic' 
+                          });
+                        }}
+                        aria-label="Italic"
+                      >
+                        <Italic size={18} />
+                      </s-button>
+                    </s-stack>
+                  </div>
+                </s-stack>
+              </>
+            )}
 
-        <ColorPicker
-          label={field.type === 'buyButton' ? 'Button Background' : 'Input Background Color'}
-          value={field.inputBackgroundColor}
-          onChange={(color) => onUpdate(field.id, { inputBackgroundColor: color })}
-        />
+            {/* Input Styling Section */}
+            <s-divider />
+            <h4 style={{ fontWeight: 600, margin: 0, fontSize: '14px' }}>Input Styling</h4>
 
+            <s-stack direction="inline" gap="small" alignItems="flex-end">
+              <div>
+                <s-text style={{ marginBottom: '8px', display: 'block' }}>Alignment</s-text>
+                <s-stack direction="inline" gap="small">
+                  <s-button
+                    variant={(field.inputAlignment || 'left') === 'left' ? 'primary' : 'secondary'}
+                    size="small"
+                    onClick={() => onUpdate(field.id, { inputAlignment: 'left' })}
+                    aria-label="Align left"
+                  >
+                    <AlignLeft size={18} />
+                  </s-button>
+                  <s-button
+                    variant={(field.inputAlignment || 'left') === 'center' ? 'primary' : 'secondary'}
+                    size="small"
+                    onClick={() => onUpdate(field.id, { inputAlignment: 'center' })}
+                    aria-label="Align center"
+                  >
+                    <AlignCenter size={18} />
+                  </s-button>
+                  <s-button
+                    variant={(field.inputAlignment || 'left') === 'right' ? 'primary' : 'secondary'}
+                    size="small"
+                    onClick={() => onUpdate(field.id, { inputAlignment: 'right' })}
+                    aria-label="Align right"
+                  >
+                    <AlignRight size={18} />
+                  </s-button>
+                </s-stack>
+              </div>
+              <div style={{ flex: 1 }}>
+                <s-text>Font Size</s-text>
+                <input
+                  type="number"
+                  value={parseInt((field.inputFontSize || '16px').replace('px', '')) || 16}
+                  onChange={(e: any) => {
+                    const numValue = parseInt(e.target.value) || 16;
+                    onUpdate(field.id, { inputFontSize: `${numValue}px` });
+                  }}
+                  placeholder="16"
+                  min="8"
+                  max="72"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid #e5e5e5',
+                    borderRadius: '4px',
+                    fontSize: '14px'
+                  }}
+                />
+              </div>
+              <div>
+                <s-text style={{ marginBottom: '8px', display: 'block' }}>Font Style</s-text>
+                <s-stack direction="inline" gap="small">
+                  <s-button
+                    variant={(field.inputFontWeight || 'normal') === 'bold' ? 'primary' : 'secondary'}
+                    size="small"
+                    onClick={() => {
+                      const currentWeight = field.inputFontWeight || 'normal';
+                      onUpdate(field.id, { 
+                        inputFontWeight: currentWeight === 'bold' ? 'normal' : 'bold' 
+                      });
+                    }}
+                    aria-label="Bold"
+                  >
+                    <Bold size={18} />
+                  </s-button>
+                  <s-button
+                    variant={(field.inputFontStyle || 'normal') === 'italic' ? 'primary' : 'secondary'}
+                    size="small"
+                    onClick={() => {
+                      const currentStyle = field.inputFontStyle || 'normal';
+                      onUpdate(field.id, { 
+                        inputFontStyle: currentStyle === 'italic' ? 'normal' : 'italic' 
+                      });
+                    }}
+                    aria-label="Italic"
+                  >
+                    <Italic size={18} />
+                  </s-button>
+                </s-stack>
+              </div>
+            </s-stack>
+          </s-stack>
+        )}
+
+        {/* Apply to all inputs button - Under Advanced Settings */}
         {field.type !== 'buyButton' && (
           <>
             <s-divider />
@@ -173,6 +562,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
               variant="secondary"
               size="small"
               onClick={() => onApplyToAll(field.id)}
+              style={{ width: '100%' }}
             >
               Apply to all inputs
             </s-button>

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import FormBuilder from './FormBuilder';
 import FormPreview from './FormPreview';
-import { FormField, DEFAULT_FORM_FIELDS } from '../../types/form';
+import { FormField, DEFAULT_FORM_FIELDS, GlobalFormSettings, DEFAULT_GLOBAL_SETTINGS } from '../../types/form';
 
 interface FormBuilderClientProps {
   shopUrl: string;
@@ -18,8 +18,13 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
   const initialFields = existingForm?.fields 
     ? (existingForm.fields as FormField[])
     : DEFAULT_FORM_FIELDS;
+  
+  const initialGlobalSettings = existingForm?.settings 
+    ? (existingForm.settings as GlobalFormSettings)
+    : DEFAULT_GLOBAL_SETTINGS;
     
   const [fields, setFields] = useState<FormField[]>(initialFields);
+  const [globalSettings, setGlobalSettings] = useState<GlobalFormSettings>(initialGlobalSettings);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
   return (
@@ -28,7 +33,9 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
           <FormBuilder 
             shopUrl={shopUrl}
             initialFields={fields}
+            initialGlobalSettings={globalSettings}
             onFieldsChange={setFields}
+            onGlobalSettingsChange={setGlobalSettings}
             selectedFieldId={selectedFieldId}
             onFieldSelect={setSelectedFieldId}
           />
@@ -36,7 +43,8 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
 
       <s-box inlineSize="34%">
           <FormPreview 
-            fields={fields} 
+            fields={fields}
+            globalSettings={globalSettings}
             onFieldClick={setSelectedFieldId}
           />
       </s-box>

@@ -30,7 +30,7 @@ export async function saveForm(shopUrl: string, formData: FormSettings, isRender
           shopId: shop.id,
           name: 'Order Form',
           fields: formData.fields as any,
-          settings: {}
+          settings: formData.globalSettings || {}
         }
       });
     } else {
@@ -38,6 +38,7 @@ export async function saveForm(shopUrl: string, formData: FormSettings, isRender
         where: { id: form.id },
         data: {
           fields: formData.fields as any,
+          settings: formData.globalSettings || {},
           updatedAt: new Date()
         }
       });
