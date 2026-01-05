@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, FormEvent } from 'react';
 import * as Icons from 'lucide-react';
 import { FormField, GlobalFormSettings } from '@/app/types/form';
 import { InputGroup, InputGroupInput, InputGroupAddon } from '@/components/ui/input-group';
@@ -8,13 +9,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 
-interface FormPreviewProps {
+interface FormDisplayProps {
   fields: FormField[];
   globalSettings?: GlobalFormSettings;
   onFieldClick?: (fieldId: string) => void;
+  mode?: 'preview' | 'production';
+  onSubmit?: (formData: Record<string, any>) => void;
 }
 
-export default function FormPreview({ fields, globalSettings, onFieldClick }: FormPreviewProps) {
+export default function FormDisplay({ 
+  fields, 
+  globalSettings, 
+  onFieldClick, 
+  mode = 'preview',
+  onSubmit 
+}: FormDisplayProps) {
+  const isPreview = mode === 'preview';
+  const [formData, setFormData] = useState<Record<string, any>>({});
+
   // Filter only visible fields and sort by order
   const visibleFields = fields
     .filter((field) => field.visible)
@@ -32,6 +44,19 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
 
   const getTextAlign = (alignment: 'left' | 'center' | 'right') => {
     return alignment;
+  };
+
+  const handleInputChange = (fieldId: string, value: any) => {
+    if (!isPreview) {
+      setFormData(prev => ({ ...prev, [fieldId]: value }));
+    }
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!isPreview && onSubmit) {
+      onSubmit(formData);
+    }
   };
 
   const renderField = (field: FormField) => {
@@ -101,10 +126,12 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
     };
 
     const handleFieldClick = () => {
-      if (onFieldClick) {
+      if (isPreview && onFieldClick) {
         onFieldClick(field.id);
       }
     };
+
+    const cursorClass = isPreview && onFieldClick ? 'cursor-pointer' : 'cursor-default';
 
     switch (field.type) {
       case 'name':
@@ -118,7 +145,7 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={onFieldClick ? 'cursor-pointer' : 'cursor-default'}>
+            <InputGroup onClick={handleFieldClick} className={cursorClass}>
               {IconComponent && (
                 <InputGroupAddon style={iconStyle}>
                   <IconComponent size={iconSize} />
@@ -129,8 +156,10 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
                 placeholder={field.showPlaceholder ? field.placeholder : ''}
                 style={inputStyle}
                 required={field.required}
-                readOnly
-                className={onFieldClick ? 'cursor-pointer' : 'cursor-default'}
+                readOnly={isPreview}
+                className={cursorClass}
+                value={isPreview ? '' : (formData[field.id] || '')}
+                onChange={(e) => handleInputChange(field.id, e.target.value)}
               />
             </InputGroup>
           </div>
@@ -145,7 +174,7 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={onFieldClick ? 'cursor-pointer' : 'cursor-default'}>
+            <InputGroup onClick={handleFieldClick} className={cursorClass}>
               <InputGroupAddon style={iconStyle}>
                 +213
               </InputGroupAddon>
@@ -154,8 +183,10 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
                 placeholder={field.showPlaceholder ? field.placeholder : ''}
                 style={inputStyle}
                 required={field.required}
-                readOnly
-                className={onFieldClick ? 'cursor-pointer' : 'cursor-default'}
+                readOnly={isPreview}
+                className={cursorClass}
+                value={isPreview ? '' : (formData[field.id] || '')}
+                onChange={(e) => handleInputChange(field.id, e.target.value)}
               />
               {IconComponent && (
                 <InputGroupAddon style={iconStyle}>
@@ -175,24 +206,33 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={onFieldClick ? 'cursor-pointer' : 'cursor-default'}>
+            <InputGroup onClick={handleFieldClick} className={cursorClass}>
               {IconComponent && (
                 <InputGroupAddon style={iconStyle}>
                   <IconComponent size={iconSize} />
                 </InputGroupAddon>
               )}
-              <Select required={field.required}>
+              <Select 
+                required={field.required}
+                value={isPreview ? undefined : (formData[field.id] || '')}
+                onValueChange={(value) => handleInputChange(field.id, value)}
+                disabled={isPreview}
+              >
                 <SelectTrigger 
-                  className={`w-full flex-1 rounded-none rounded-r-md border-l-0 ${onFieldClick ? 'cursor-pointer' : 'cursor-default'}`}
+                  className={`w-full flex-1 rounded-none rounded-r-md border-l-0 ${cursorClass}`}
                   style={inputStyle}
                   onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleFieldClick();
+                    if (isPreview) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleFieldClick();
+                    }
                   }}
                   onPointerDown={(e) => {
-                    e.preventDefault();
-                    handleFieldClick();
+                    if (isPreview) {
+                      e.preventDefault();
+                      handleFieldClick();
+                    }
                   }}
                 >
                   <SelectValue placeholder={field.showPlaceholder ? field.placeholder : 'Select'} />
@@ -219,24 +259,33 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={onFieldClick ? 'cursor-pointer' : 'cursor-default'}>
+            <InputGroup onClick={handleFieldClick} className={cursorClass}>
               {IconComponent && (
                 <InputGroupAddon style={iconStyle}>
                   <IconComponent size={iconSize} />
                 </InputGroupAddon>
               )}
-              <Select required={field.required}>
+              <Select 
+                required={field.required}
+                value={isPreview ? undefined : (formData[field.id] || '')}
+                onValueChange={(value) => handleInputChange(field.id, value)}
+                disabled={isPreview}
+              >
                 <SelectTrigger 
-                  className={`w-full flex-1 rounded-none rounded-r-md border-l-0 ${onFieldClick ? 'cursor-pointer' : 'cursor-default'}`}
+                  className={`w-full flex-1 rounded-none rounded-r-md border-l-0 ${cursorClass}`}
                   style={inputStyle}
                   onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleFieldClick();
+                    if (isPreview) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleFieldClick();
+                    }
                   }}
                   onPointerDown={(e) => {
-                    e.preventDefault();
-                    handleFieldClick();
+                    if (isPreview) {
+                      e.preventDefault();
+                      handleFieldClick();
+                    }
                   }}
                 >
                   <SelectValue placeholder={field.showPlaceholder ? field.placeholder : 'Select'} />
@@ -260,7 +309,7 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={onFieldClick ? 'cursor-pointer' : 'cursor-default'}>
+            <InputGroup onClick={handleFieldClick} className={cursorClass}>
               {IconComponent && (
                 <InputGroupAddon style={iconStyle}>
                   <IconComponent size={iconSize} />
@@ -273,8 +322,10 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
                 placeholder={field.showPlaceholder ? field.placeholder : ''}
                 style={inputStyle}
                 required={field.required}
-                readOnly
-                className={onFieldClick ? 'cursor-pointer' : 'cursor-default'}
+                readOnly={isPreview}
+                className={cursorClass}
+                value={isPreview ? '1' : (formData[field.id] || '1')}
+                onChange={(e) => handleInputChange(field.id, e.target.value)}
               />
             </InputGroup>
           </div>
@@ -290,7 +341,7 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
               </Label>
             )}
             <div className="flex items-center gap-2">
-              <InputGroup className={`flex-1 ${onFieldClick ? 'cursor-pointer' : 'cursor-default'}`} onClick={handleFieldClick}>
+              <InputGroup className={`flex-1 ${cursorClass}`} onClick={handleFieldClick}>
                 {IconComponent && (
                   <InputGroupAddon style={iconStyle}>
                     <IconComponent size={iconSize} />
@@ -300,11 +351,13 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
                   placeholder={field.showPlaceholder ? field.placeholder : ''}
                   style={inputStyle}
                   required={field.required}
-                  readOnly
-                  className={onFieldClick ? 'cursor-pointer' : 'cursor-default'}
+                  readOnly={isPreview}
+                  className={cursorClass}
+                  value={isPreview ? '' : (formData[field.id] || '')}
+                  onChange={(e) => handleInputChange(field.id, e.target.value)}
                 />
               </InputGroup>
-              <Button>
+              <Button type={isPreview ? 'button' : 'button'} disabled={isPreview}>
                 Apply
               </Button>
             </div>
@@ -313,7 +366,7 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
 
       case 'summary':
         return (
-          <Card key={field.id} className={`bg-muted/50 border-2 ${onFieldClick ? 'cursor-pointer' : 'cursor-default'}`} onClick={handleFieldClick}>
+          <Card key={field.id} className={`bg-muted/50 border-2 ${cursorClass}`} onClick={handleFieldClick}>
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold" style={labelStyle}>
                 {field.showLabel ? field.label : 'Summary'}
@@ -498,9 +551,10 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
         return (
           <div key={field.id}>
             <Button 
+              type={isPreview ? 'button' : 'submit'}
               className={`w-full ${getAnimationClass(field.animation)}`}
               size={getButtonSize(field.buttonSize)}
-              onClick={handleFieldClick}
+              onClick={isPreview ? handleFieldClick : undefined}
               style={{
                 ...buttonStyle,
                 ...(isExtraLarge && {
@@ -521,55 +575,71 @@ export default function FormPreview({ fields, globalSettings, onFieldClick }: Fo
     }
   };
 
-  return (
-    <Card>
-      <CardContent className="space-y-4">
-        {globalSettings && (
-          <div className="space-y-5! mb-4">
-            {globalSettings.headline.enabled && (
-              <h2
-                style={{
-                  color: globalSettings.headline.color,
-                  textAlign: getTextAlign(globalSettings.headline.alignment),
-                  fontFamily: getFontFamily(globalSettings.headline.fontFamily),
-                  fontSize: globalSettings.headline.fontSize,
-                  fontWeight: globalSettings.headline.fontWeight,
-                  fontStyle: globalSettings.headline.fontStyle,
-                }}
-              >
-                {globalSettings.headline.text}
-              </h2>
-            )}
-            {globalSettings.subtitle.enabled && (
-              <p
-                style={{
-                  color: globalSettings.subtitle.color,
-                  textAlign: getTextAlign(globalSettings.subtitle.alignment),
-                  fontFamily: getFontFamily(globalSettings.subtitle.fontFamily),
-                  fontSize: globalSettings.subtitle.fontSize,
-                  fontWeight: globalSettings.subtitle.fontWeight,
-                  fontStyle: globalSettings.subtitle.fontStyle,
-                }}
-              >
-                {globalSettings.subtitle.text}
-              </p>
-            )}
-          </div>
-        )}
-        {visibleFields.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="mb-4 flex justify-center">
-              <Icons.AlertCircle size={48} className="text-muted-foreground" />
-            </div>
-            <p className="mb-2 font-medium">No visible fields</p>
-            <p className="text-sm text-muted-foreground">
-              Enable some fields to see the preview
+  const content = (
+    <div className="space-y-4">
+      {globalSettings && (
+        <div className="space-y-5! mb-4">
+          {globalSettings.headline.enabled && (
+            <h2
+              style={{
+                color: globalSettings.headline.color,
+                textAlign: getTextAlign(globalSettings.headline.alignment),
+                fontFamily: getFontFamily(globalSettings.headline.fontFamily),
+                fontSize: globalSettings.headline.fontSize,
+                fontWeight: globalSettings.headline.fontWeight,
+                fontStyle: globalSettings.headline.fontStyle,
+              }}
+            >
+              {globalSettings.headline.text}
+            </h2>
+          )}
+          {globalSettings.subtitle.enabled && (
+            <p
+              style={{
+                color: globalSettings.subtitle.color,
+                textAlign: getTextAlign(globalSettings.subtitle.alignment),
+                fontFamily: getFontFamily(globalSettings.subtitle.fontFamily),
+                fontSize: globalSettings.subtitle.fontSize,
+                fontWeight: globalSettings.subtitle.fontWeight,
+                fontStyle: globalSettings.subtitle.fontStyle,
+              }}
+            >
+              {globalSettings.subtitle.text}
             </p>
+          )}
+        </div>
+      )}
+      {visibleFields.length === 0 ? (
+        <div className="text-center py-8">
+          <div className="mb-4 flex justify-center">
+            <Icons.AlertCircle size={48} className="text-muted-foreground" />
           </div>
-        ) : (
-          visibleFields.map(renderField)
-        )}
-      </CardContent>
-    </Card>
+          <p className="mb-2 font-medium">No visible fields</p>
+          <p className="text-sm text-muted-foreground">
+            Enable some fields to see the {isPreview ? 'preview' : 'form'}
+          </p>
+        </div>
+      ) : (
+        visibleFields.map(renderField)
+      )}
+    </div>
+  );
+
+  // In preview mode, wrap in Card. In production mode, wrap in form element
+  if (isPreview) {
+    return (
+      <Card>
+        <CardContent className="space-y-4">
+          {content}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {content}
+    </form>
   );
 }
+

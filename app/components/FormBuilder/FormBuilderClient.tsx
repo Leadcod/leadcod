@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import FormBuilder from './FormBuilder';
-import FormPreview from './FormPreview';
+import FormDisplay from './FormDisplay';
 import { FormField, DEFAULT_FORM_FIELDS, GlobalFormSettings, DEFAULT_GLOBAL_SETTINGS } from '../../types/form';
 
 interface FormBuilderClientProps {
@@ -42,10 +42,11 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
       </s-box>
 
       <s-box inlineSize="34%">
-          <FormPreview 
+          <FormDisplay 
             fields={fields}
             globalSettings={globalSettings}
             onFieldClick={setSelectedFieldId}
+            mode="preview"
           />
       </s-box>
     </s-stack>
