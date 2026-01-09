@@ -1,0 +1,110 @@
+{% comment %}
+  Leadcod Form - Initialization Script
+  Main script to fetch form data and render the form
+{% endcomment %}
+{% render 'leadcod_config' %}
+{% comment %} Ensure API URL is set, fallback to config value if not available {% endcomment %}
+{% unless LEADCOD_API_URL %}
+  {% assign LEADCOD_API_URL = "https://199b7e106505.ngrok-free.app/api/form" %}
+{% endunless %}
+<script>
+(function() {
+  const container = document.getElementById('leadcod-form-{{ block.id }}');
+  if (!container) return;
+
+  const shopUrl = '{{ shop.domain }}';
+  const apiUrl = '{{ LEADCOD_API_URL }}';
+  
+  console.log(`${apiUrl}?shop=${encodeURIComponent(shopUrl)}`);
+  
+  // Fetch form data
+  fetch(`${apiUrl}?shop=${encodeURIComponent(shopUrl)}`)
+    .then(async response => {
+      console.log(response);
+      return response.json();
+    })
+    .then(result => {
+      if (!result.success || !result.data) {
+        container.innerHTML = `<div class="leadcod-form-error">Form not found. Please configure your form in the app.${result.error ? ' (' + result.error + ')' : ''}</div>`;
+        return;
+      }
+
+      const { fields, settings } = result.data;
+      renderForm(container, fields, settings);
+    })
+    .catch(error => {
+      console.error('Error loading form:', error);
+      container.innerHTML = `<div class="leadcod-form-error">Error loading form: ${error.message}. Please check your API URL configuration.</div>`;
+    });
+
+  function renderForm(container, fields, settings) {
+    const Utils = window.LeadcodFormUtils;
+    const Fields = window.LeadcodFormFields;
+    
+    // Filter visible fields and sort by order
+    const visibleFields = fields
+      .filter(field => field.visible)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    const borderStyle = Utils.getBorderStyle(settings);
+    let formHTML = `<form class="leadcod-form" style="max-width: 100%;${borderStyle}">`;
+
+    // Global settings - headline and subtitle
+    if (settings) {
+      const primaryColor = Utils.getPrimaryColor(settings);
+      if (settings.headline && settings.headline.enabled) {
+        formHTML += `
+          <h2 style="
+            font-family: ${Utils.getFontFamily(settings)}; font-size: 24px; font-weight: bold; font-style: ${Utils.getGlobalFontStyle(settings)}; text-align: ${Utils.getTextAlign(settings.headline.alignment || 'center')};
+            color: ${primaryColor};
+            margin: 0 0 4px 0;
+          ">${settings.headline.text || 'Order Form'}</h2>
+        `;
+      }
+
+      if (settings.subtitle && settings.subtitle.enabled) {
+        formHTML += `
+          <p style="
+            font-family: ${Utils.getFontFamily(settings)}; font-size: ${Utils.getGlobalFontSize(settings)}; font-weight: ${Utils.getGlobalFontWeight(settings)}; font-style: ${Utils.getGlobalFontStyle(settings)}; text-align: ${Utils.getTextAlign(settings.subtitle.alignment || 'center')};
+            color: ${primaryColor};
+            opacity: 0.7;
+            margin: 0 0 8px 0;
+          ">${settings.subtitle.text || 'Please fill out the form below'}</p>
+        `;
+      }
+    }
+
+    // Render fields
+    if (visibleFields.length === 0) {
+      formHTML += '<div style="text-align: center; padding: 32px; color: #6b7280;">No visible fields</div>';
+    } else {
+      visibleFields.forEach(field => {
+        formHTML += Fields.renderField(field, settings);
+      });
+    }
+
+    formHTML += '</form>';
+
+    container.innerHTML = formHTML;
+
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+
+    // Add form submission handler
+    const form = container.querySelector('.leadcod-form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        console.log('Form submitted:', data);
+        // TODO: Handle form submission
+        alert('Form submitted! (This is a demo)');
+      });
+    }
+  }
+})();
+</script>
+

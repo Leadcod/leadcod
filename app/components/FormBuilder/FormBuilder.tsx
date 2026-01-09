@@ -132,21 +132,11 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
         if (item.id === sourceFieldId || item.type === 'buyButton') {
           return item;
         }
-        // Apply color, font family, and styling settings from source field
+        // Apply alignment settings from source field (colors and fonts are now global)
         return {
           ...item,
-          inputTextColor: sourceField.inputTextColor,
-          inputBackgroundColor: sourceField.inputBackgroundColor,
-          fontFamily: sourceField.fontFamily,
-          labelColor: sourceField.labelColor,
           labelAlignment: sourceField.labelAlignment,
-          labelFontSize: sourceField.labelFontSize,
-          labelFontWeight: sourceField.labelFontWeight,
-          labelFontStyle: sourceField.labelFontStyle,
           inputAlignment: sourceField.inputAlignment,
-          inputFontSize: sourceField.inputFontSize,
-          inputFontWeight: sourceField.inputFontWeight,
-          inputFontStyle: sourceField.inputFontStyle,
         };
       })
     );

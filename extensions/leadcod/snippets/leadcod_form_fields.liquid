@@ -1,0 +1,345 @@
+{% comment %}
+  Leadcod Form - Field Rendering Functions
+  Functions to render different field types
+{% endcomment %}
+<script>
+(function() {
+  if (!window.LeadcodFormFields) {
+    window.LeadcodFormFields = {};
+  }
+
+  const Utils = window.LeadcodFormUtils;
+
+  window.LeadcodFormFields.renderField = function(field, settings) {
+    const globalFontSize = Utils.getGlobalFontSize(settings);
+    const globalFontWeight = Utils.getGlobalFontWeight(settings);
+    const globalFontStyle = Utils.getGlobalFontStyle(settings);
+    const primaryColor = Utils.getPrimaryColor(settings);
+    const iconSize = Utils.calculateIconSize(globalFontSize, settings);
+    
+    const inputStyle = `
+      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle}; text-align: ${Utils.getTextAlign(field.inputAlignment || 'left')};
+      color: ${field.inputTextColor || '#000000'};
+      background-color: ${field.inputBackgroundColor || '#ffffff'};
+      padding: ${Utils.calculatePadding(globalFontSize, settings)};
+      height: ${Utils.calculateHeight(globalFontSize, settings)};
+      min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+      border: 1px solid #e5e7eb;
+      border-radius: 0.375rem;
+      width: 100%;
+      box-sizing: border-box;
+    `;
+
+    const iconStyle = `
+      font-family: ${Utils.getFontFamily(settings)};
+      font-size: ${globalFontSize};
+      font-weight: ${globalFontWeight};
+      font-style: ${globalFontStyle};
+      color: ${primaryColor};
+      height: ${Utils.calculateHeight(globalFontSize, settings)};
+      min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      border: 1px solid #e5e7eb;
+      border-right: none;
+      border-radius: 0.375rem 0 0 0.375rem;
+      background-color: #f3f4f6;
+    `;
+
+    const labelStyle = `
+      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle}; text-align: ${Utils.getTextAlign(field.labelAlignment || 'left')};
+      color: ${primaryColor};
+      display: block;
+      margin-bottom: 4px;
+    `;
+
+    let fieldHTML = '<div class="leadcod-field" style="margin-bottom: 4px;">';
+
+    // Label
+    if (field.showLabel) {
+      fieldHTML += `<label style="${labelStyle}">${field.label}${field.required ? ' <span style="color: #ef4444;">*</span>' : ''}</label>`;
+    }
+
+    // Input wrapper
+    fieldHTML += '<div style="display: flex; align-items: stretch;">';
+
+    switch (field.type) {
+      case 'name':
+      case 'city':
+      case 'email':
+        fieldHTML += `
+          ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          <input 
+            type="${field.type === 'email' ? 'email' : 'text'}" 
+            placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
+            style="${inputStyle} ${Utils.renderIcon(field.icon, iconSize) ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-radius: 0.375rem;'}"
+            ${field.required ? 'required' : ''}
+            name="${field.id}"
+            id="field-${field.id}"
+          />
+        `;
+        break;
+
+      case 'phone':
+        const phoneIconStyle = iconStyle.replace('border-right: none;', 'border-left: none; border-right: 1px solid #e5e7eb;').replace('border-radius: 0.375rem 0 0 0.375rem;', 'border-radius: 0 0.375rem 0.375rem 0;');
+        fieldHTML += `
+          <div style="${iconStyle}">+213</div>
+          <input 
+            type="tel" 
+            placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
+            style="${inputStyle} border-left: none; border-radius: 0;"
+            ${field.required ? 'required' : ''}
+            name="${field.id}"
+            id="field-${field.id}"
+          />
+          ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${phoneIconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+        `;
+        break;
+
+      case 'province':
+        const provinceSelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; -webkit-appearance: none; -moz-appearance: none; appearance: none; ${Utils.renderIcon(field.icon, iconSize) ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-radius: 0.375rem;'}`;
+        fieldHTML += `
+          ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          <select 
+            style="${provinceSelectStyle}"
+            ${field.required ? 'required' : ''}
+            name="${field.id}"
+            id="field-${field.id}"
+          >
+            <option value="">${field.showPlaceholder ? field.placeholder : 'Select'}</option>
+            <option value="ontario">Ontario</option>
+            <option value="quebec">Quebec</option>
+            <option value="british-columbia">British Columbia</option>
+            <option value="alberta">Alberta</option>
+            <option value="manitoba">Manitoba</option>
+            <option value="saskatchewan">Saskatchewan</option>
+          </select>
+        `;
+        break;
+
+      case 'variants':
+        const variantsSelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; -webkit-appearance: none; -moz-appearance: none; appearance: none; ${Utils.renderIcon(field.icon, iconSize) ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-radius: 0.375rem;'}`;
+        fieldHTML += `
+          ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          <select 
+            style="${variantsSelectStyle}"
+            ${field.required ? 'required' : ''}
+            name="${field.id}"
+            id="field-${field.id}"
+          >
+            <option value="">${field.showPlaceholder ? field.placeholder : 'Select'}</option>
+            <option value="small">Size: Small</option>
+            <option value="medium">Size: Medium</option>
+            <option value="large">Size: Large</option>
+          </select>
+        `;
+        break;
+
+      case 'quantity':
+        fieldHTML += `
+          ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          <input 
+            type="number" 
+            min="1" 
+            value="1"
+            placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
+            style="${inputStyle} ${Utils.renderIcon(field.icon, iconSize) ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-radius: 0.375rem;'}"
+            ${field.required ? 'required' : ''}
+            name="${field.id}"
+            id="field-${field.id}"
+          />
+        `;
+        break;
+
+      case 'coupon':
+        fieldHTML += `
+          <div style="display: flex; gap: 8px; width: 100%;">
+            <div style="display: flex; flex: 1;">
+              ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+              <input 
+                type="text" 
+                placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
+                style="${inputStyle} ${Utils.renderIcon(field.icon, iconSize) ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-radius: 0.375rem;'}"
+                ${field.required ? 'required' : ''}
+                name="${field.id}"
+                id="field-${field.id}"
+              />
+            </div>
+            <button type="button" style="padding: 0 20px; border: 1px solid #e5e7eb; border-radius: 0.375rem; background: #f9fafb; cursor: pointer;">Apply</button>
+          </div>
+        `;
+        break;
+
+      case 'summary':
+        const summaryStyle = `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: ${globalFontWeight};
+          font-style: ${globalFontStyle};
+          color: ${primaryColor};
+          background-color: #f9fafb;
+          border: 2px solid #e5e7eb;
+          border-radius: 0.375rem;
+          padding: 16px;
+        `;
+        const summaryTitleStyle = `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: bold;
+          font-style: ${globalFontStyle};
+          color: ${primaryColor};
+          margin: 0 0 12px 0;
+        `;
+        const summaryItemStyle = `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: ${globalFontWeight};
+          font-style: ${globalFontStyle};
+        `;
+        fieldHTML = `
+          <div class="leadcod-field" style="margin-bottom: 4px;">
+            <div style="${summaryStyle}">
+              <h3 style="${summaryTitleStyle}">
+                ${field.showLabel ? field.label : 'Summary'}
+              </h3>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 8px; ${summaryItemStyle}">
+                <span style="color: #6b7280;">Subtotal:</span>
+                <span style="font-weight: 500;">$99.99</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 8px; ${summaryItemStyle}">
+                <span style="color: #6b7280;">Shipping:</span>
+                <span style="font-weight: 500;">$10.00</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 12px; ${summaryItemStyle}">
+                <span style="color: #6b7280;">Tax:</span>
+                <span style="font-weight: 500;">$14.00</span>
+              </div>
+              <div style="border-top: 1px solid #e5e7eb; padding-top: 12px; margin-top: 12px;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span style="font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: 600; font-style: ${globalFontStyle}; color: ${primaryColor};">Total:</span>
+                  <span style="font-family: ${Utils.getFontFamily(settings)}; font-size: ${parseInt(globalFontSize.replace('px', '')) + 4}px; font-weight: 700; font-style: ${globalFontStyle}; color: ${primaryColor};">$123.99</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        return fieldHTML;
+
+      case 'buyButton':
+        return window.LeadcodFormFields.renderBuyButton(field, settings);
+    }
+
+    fieldHTML += '</div></div>';
+    return fieldHTML;
+  };
+
+  window.LeadcodFormFields.renderBuyButton = function(field, settings) {
+    const Utils = window.LeadcodFormUtils;
+    const buttonGlobalFontSize = Utils.getGlobalFontSize(settings);
+    const buttonGlobalFontStyle = Utils.getGlobalFontStyle(settings);
+    const buttonPadding = (() => {
+      const fontSizeNum = parseInt(buttonGlobalFontSize.replace('px', '')) || 16;
+      const verticalPadding = Math.max(10, Math.round(fontSizeNum * 0.625));
+      const horizontalPadding = Math.max(20, Math.round(fontSizeNum * 1.5));
+      return `${verticalPadding}px ${horizontalPadding}px`;
+    })();
+
+    const buttonSize = field.buttonSize === 'extra-large' ? '56px' : 
+                      field.buttonSize === 'large' ? '48px' : 
+                      field.buttonSize === 'small' ? '32px' : '40px';
+    
+    const buttonHeightNum = parseInt(buttonSize.replace('px', '')) || 40;
+    const buttonIconSize = Math.round(buttonHeightNum * 0.6);
+
+    let buttonStyle = `
+      font-family: ${Utils.getFontFamily(settings)}; font-size: ${buttonGlobalFontSize}; font-weight: bold; font-style: ${buttonGlobalFontStyle}; text-align: ${Utils.getTextAlign(field.inputAlignment || 'center')};
+      color: ${field.inputTextColor || '#ffffff'};
+      padding: ${buttonPadding};
+      height: ${buttonSize};
+      border: none;
+      border-radius: 0.375rem;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    `;
+
+    // Set glow color CSS variable if glow animation is active
+    if (field.animation === 'glow') {
+      const glowColor = Utils.extractGlowColor(field);
+      let rgbaColor = glowColor;
+      if (glowColor.startsWith('#')) {
+        const hex = glowColor.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        rgbaColor = `rgba(${r}, ${g}, ${b}, 0.6)`;
+      } else if (glowColor.startsWith('rgb(')) {
+        rgbaColor = glowColor.replace('rgb(', 'rgba(').replace(')', ', 0.6)');
+      } else if (!glowColor.startsWith('rgba(')) {
+        rgbaColor = `rgba(0, 0, 0, 0.3)`;
+      }
+      buttonStyle += `--glow-color: ${rgbaColor};`;
+    }
+
+    // Set background properties
+    if (field.backgroundType === 'gradient' && field.gradientBackground) {
+      if (field.animation === 'background-shift') {
+        const baseGradient = field.gradientBackground;
+        buttonStyle += `background-image: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 30%, transparent 70%, rgba(255,255,255,0.4) 100%), ${baseGradient}; background-size: 300% 300%;`;
+      } else {
+        buttonStyle += `background-image: ${field.gradientBackground};`;
+      }
+    } else {
+      const solidColor = field.inputBackgroundColor || '#000000';
+      if (field.animation === 'background-shift') {
+        const hex = solidColor.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        const isDark = r < 30 && g < 30 && b < 30;
+        
+        if (isDark) {
+          const rgbaBase = Utils.colorToRgba(solidColor, 1);
+          buttonStyle += `background-image: linear-gradient(135deg, ${rgbaBase} 0%, rgba(255,255,255,0.15) 25%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.15) 75%, ${rgbaBase} 100%); background-size: 300% 300%;`;
+        } else {
+          const lighterColor = Utils.lightenColor(solidColor, 40);
+          const rgbaBase = Utils.colorToRgba(solidColor, 1);
+          const rgbaLight = Utils.colorToRgba(lighterColor, 0.7);
+          const rgbaTransparent = Utils.colorToRgba(solidColor, 0.5);
+          buttonStyle += `background-image: linear-gradient(135deg, ${rgbaBase} 0%, ${rgbaTransparent} 25%, ${rgbaLight} 50%, ${rgbaTransparent} 75%, ${rgbaBase} 100%); background-size: 300% 300%;`;
+        }
+      } else {
+        buttonStyle += `background-color: ${solidColor};`;
+      }
+    }
+
+    // Add animation classes
+    if (field.animation === 'background-shift') {
+      buttonStyle += `animation: backgroundShift 4s ease infinite;`;
+    } else if (field.animation === 'shake') {
+      buttonStyle += `animation: shake 0.6s ease-in-out infinite;`;
+    } else if (field.animation === 'bounce') {
+      buttonStyle += `animation: bounce 1s ease-in-out infinite;`;
+    } else if (field.animation === 'pulse') {
+      buttonStyle += `animation: pulse 2s ease-in-out infinite;`;
+    } else if (field.animation === 'glow') {
+      buttonStyle += `animation: glow 2s ease-in-out infinite;`;
+    }
+
+    return `
+      <div class="leadcod-field" style="margin-bottom: 4px;">
+        <button type="submit" style="${buttonStyle}">
+          ${Utils.renderIcon(field.icon, buttonIconSize)}
+          ${field.label}
+        </button>
+      </div>
+    `;
+  };
+})();
+</script>
+

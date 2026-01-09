@@ -1,0 +1,95 @@
+{% comment %}
+  Leadcod Form - Styles
+  CSS styles and animations for the form
+{% endcomment %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap');
+
+.leadcod-form-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+.leadcod-form-loading,
+.leadcod-form-error {
+  padding: 20px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.leadcod-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: 'Nunito', sans-serif;
+}
+
+.leadcod-field input,
+.leadcod-field select {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.leadcod-field select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.leadcod-field input:focus,
+.leadcod-field select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+@keyframes backgroundShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-1px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(1px);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.95;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 8px var(--glow-color, rgba(0, 0, 0, 0.3));
+  }
+  50% {
+    box-shadow: 0 0 20px var(--glow-color, rgba(0, 0, 0, 0.5)), 0 0 35px var(--glow-color, rgba(0, 0, 0, 0.3));
+  }
+}
+</style>
+

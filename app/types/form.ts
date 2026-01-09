@@ -44,25 +44,32 @@ export interface FormField {
 }
 
 export interface GlobalFormSettings {
+  primaryColor: string;
+  fontFamily: 'cairo' | 'nunito' | 'poppins' | 'montserrat';
+  fontSize: string;
+  fontWeight: 'normal' | 'bold' | '600' | '700';
+  fontStyle: 'normal' | 'italic';
+  inputPadding: {
+    vertical: number;
+    horizontal: number;
+  };
   headline: {
     enabled: boolean;
     text: string;
-    color: string;
     alignment: 'left' | 'center' | 'right';
-    fontFamily: 'cairo' | 'nunito' | 'poppins' | 'montserrat';
-    fontSize: string;
-    fontWeight: 'normal' | 'bold' | '600' | '700';
-    fontStyle: 'normal' | 'italic';
   };
   subtitle: {
     enabled: boolean;
     text: string;
-    color: string;
     alignment: 'left' | 'center' | 'right';
-    fontFamily: 'cairo' | 'nunito' | 'poppins' | 'montserrat';
-    fontSize: string;
-    fontWeight: 'normal' | 'bold' | '600' | '700';
-    fontStyle: 'normal' | 'italic';
+  };
+  border: {
+    enabled: boolean;
+    width: number;
+    style: 'solid' | 'dashed' | 'dotted' | 'double' | 'none';
+    radius: number;
+    padding: number;
+    color: string;
   };
 }
 
@@ -407,25 +414,32 @@ export const GRADIENT_PRESETS = [
 ];
 
 export const DEFAULT_GLOBAL_SETTINGS: GlobalFormSettings = {
+  primaryColor: '#000000',
+  fontFamily: 'nunito',
+  fontSize: '16px',
+  fontWeight: 'normal',
+  fontStyle: 'normal',
+  inputPadding: {
+    vertical: 8,
+    horizontal: 12
+  },
   headline: {
     enabled: true,
     text: 'Order Form',
-    color: '#000000',
-    alignment: 'center',
-    fontFamily: 'nunito',
-    fontSize: '24px',
-    fontWeight: 'bold',
-    fontStyle: 'normal'
+    alignment: 'center'
   },
   subtitle: {
     enabled: true,
     text: 'Please fill out the form below',
-    color: '#666666',
-    alignment: 'center',
-    fontFamily: 'nunito',
-    fontSize: '16px',
-    fontWeight: 'normal',
-    fontStyle: 'normal'
+    alignment: 'center'
+  },
+  border: {
+    enabled: true,
+    width: 1,
+    style: 'solid',
+    radius: 6,
+    padding: 16,
+    color: '#9ca3af'
   }
 };
 

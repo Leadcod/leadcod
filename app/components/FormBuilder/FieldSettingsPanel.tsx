@@ -55,18 +55,13 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
         ) : (
           <div>
             <s-text style={{ marginBottom: '8px', display: 'block' }}>Label</s-text>
-            <s-stack direction="inline" gap="small" alignItems="center">
-              <CompactColorSwatch
-                value={field.labelColor || '#000000'}
-                onChange={(color) => onUpdate(field.id, { labelColor: color })}
+            <div style={{ flex: 1 }}>
+              <s-text-field
+                value={field.label}
+                onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
+                disabled={!field.showLabel}
               />
-              <div style={{ flex: 1 }}>
-                <s-text-field
-                  value={field.label}
-                  onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
-                  disabled={!field.showLabel}
-                />
-              </div>
+            </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                 <input
                   type="checkbox"
@@ -104,8 +99,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                   )}
                 </s-text>
               </div>
-            </s-stack>
-          </div>
+            </div>
         )}
 
         {/* Placeholder Section - Grouped together */}
@@ -128,47 +122,33 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
 
         <s-divider />
 
-        {/* Icon and Font Family - Grouped together */}
-        <s-stack direction="inline" gap="small" alignItems="flex-end">
-          <div style={{ flex: 1 }}>
-            <s-select
-              label="Input Prefix Icon"
-              value={field.icon}
-              onChange={(e: any) => onUpdate(field.id, { icon: e.target.value || e.detail?.value || field.icon })}
-            >
-              <s-option value="none">None</s-option>
-              {AVAILABLE_ICONS.map((iconName) => (
-                <s-option key={iconName} value={iconName}>
-                  {iconName}
-                </s-option>
-              ))}
-            </s-select>
-            <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {(() => {
-                if (field.icon === 'none') {
-                  return <span style={{ fontSize: '14px', opacity: 0.5 }}>No icon</span>;
-                }
-                const IconComp = (Icons as any)[field.icon];
-                return IconComp ? <IconComp size={24} /> : null;
-              })()}
-              <span style={{ fontSize: '14px', opacity: 0.7 }}>Preview</span>
-            </div>
+        {/* Icon Section */}
+        <div>
+          <s-select
+            label="Input Prefix Icon"
+            value={field.icon}
+            onChange={(e: any) => onUpdate(field.id, { icon: e.target.value || e.detail?.value || field.icon })}
+          >
+            <s-option value="none">None</s-option>
+            {AVAILABLE_ICONS.map((iconName) => (
+              <s-option key={iconName} value={iconName}>
+                {iconName}
+              </s-option>
+            ))}
+          </s-select>
+          <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {(() => {
+              if (field.icon === 'none') {
+                return <span style={{ fontSize: '14px', opacity: 0.5 }}>No icon</span>;
+              }
+              const IconComp = (Icons as any)[field.icon];
+              return IconComp ? <IconComp size={24} /> : null;
+            })()}
+            <span style={{ fontSize: '14px', opacity: 0.7 }}>Preview</span>
           </div>
-          <div style={{ flex: 1 }}>
-            <s-select
-              label="Font Family"
-              value={field.fontFamily}
-              onChange={(e: any) => onUpdate(field.id, { fontFamily: e.target.value || e.detail?.value || field.fontFamily })}
-            >
-              <s-option value="cairo">Cairo</s-option>
-              <s-option value="nunito">Nunito</s-option>
-              <s-option value="poppins">Poppins</s-option>
-              <s-option value="montserrat">Montserrat</s-option>
-            </s-select>
-          </div>
-        </s-stack>
+        </div>
 
-        {/* Input Colors - Grouped together */}
+        {/* Input Colors - Only for buyButton */}
         {field.type === 'buyButton' ? (
           <>
             <s-stack direction="inline" gap="small" alignItems="flex-end">
@@ -365,192 +345,77 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
         {/* Advanced Settings Content */}
         {showAdvancedSettings && (
           <s-stack gap="small">
-            {/* Label Styling Section */}
+            {/* Label Alignment - Only for non-buyButton fields */}
             {field.type !== 'buyButton' && (
               <>
                 <s-divider />
-                <h4 style={{ fontWeight: 600, margin: 0, fontSize: '14px' }}>Label Styling</h4>
-                
-                <s-stack direction="inline" gap="small" alignItems="flex-end">
-                  <div>
-                    <s-text style={{ marginBottom: '8px', display: 'block' }}>Color</s-text>
-                    <CompactColorSwatch
-                      value={field.labelColor || '#000000'}
-                      onChange={(color) => onUpdate(field.id, { labelColor: color })}
-                    />
-                  </div>
-                  <div>
-                    <s-text style={{ marginBottom: '8px', display: 'block' }}>Alignment</s-text>
-                    <s-stack direction="inline" gap="small">
-                      <s-button
-                        variant={(field.labelAlignment || 'left') === 'left' ? 'primary' : 'secondary'}
-                        size="small"
-                        onClick={() => onUpdate(field.id, { labelAlignment: 'left' })}
-                        aria-label="Align left"
-                      >
-                        <AlignLeft size={18} />
-                      </s-button>
-                      <s-button
-                        variant={(field.labelAlignment || 'left') === 'center' ? 'primary' : 'secondary'}
-                        size="small"
-                        onClick={() => onUpdate(field.id, { labelAlignment: 'center' })}
-                        aria-label="Align center"
-                      >
-                        <AlignCenter size={18} />
-                      </s-button>
-                      <s-button
-                        variant={(field.labelAlignment || 'left') === 'right' ? 'primary' : 'secondary'}
-                        size="small"
-                        onClick={() => onUpdate(field.id, { labelAlignment: 'right' })}
-                        aria-label="Align right"
-                      >
-                        <AlignRight size={18} />
-                      </s-button>
-                    </s-stack>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <s-text>Font Size</s-text>
-                    <input
-                      type="number"
-                      value={parseInt((field.labelFontSize || '14px').replace('px', '')) || 14}
-                      onChange={(e: any) => {
-                        const numValue = parseInt(e.target.value) || 14;
-                        onUpdate(field.id, { labelFontSize: `${numValue}px` });
-                      }}
-                      placeholder="14"
-                      min="8"
-                      max="72"
-                      style={{
-                        width: '100%',
-                        padding: '8px 12px',
-                        border: '1px solid #e5e5e5',
-                        borderRadius: '4px',
-                        fontSize: '14px'
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <s-text style={{ marginBottom: '8px', display: 'block' }}>Font Style</s-text>
-                    <s-stack direction="inline" gap="small">
-                      <s-button
-                        variant={(field.labelFontWeight || 'normal') === 'bold' ? 'primary' : 'secondary'}
-                        size="small"
-                        onClick={() => {
-                          const currentWeight = field.labelFontWeight || 'normal';
-                          onUpdate(field.id, { 
-                            labelFontWeight: currentWeight === 'bold' ? 'normal' : 'bold' 
-                          });
-                        }}
-                        aria-label="Bold"
-                      >
-                        <Bold size={18} />
-                      </s-button>
-                      <s-button
-                        variant={(field.labelFontStyle || 'normal') === 'italic' ? 'primary' : 'secondary'}
-                        size="small"
-                        onClick={() => {
-                          const currentStyle = field.labelFontStyle || 'normal';
-                          onUpdate(field.id, { 
-                            labelFontStyle: currentStyle === 'italic' ? 'normal' : 'italic' 
-                          });
-                        }}
-                        aria-label="Italic"
-                      >
-                        <Italic size={18} />
-                      </s-button>
-                    </s-stack>
-                  </div>
-                </s-stack>
+                <h4 style={{ fontWeight: 600, margin: 0, fontSize: '14px' }}>Label Alignment</h4>
+                <div>
+                  <s-stack direction="inline" gap="small">
+                    <s-button
+                      variant={(field.labelAlignment || 'left') === 'left' ? 'primary' : 'secondary'}
+                      size="small"
+                      onClick={() => onUpdate(field.id, { labelAlignment: 'left' })}
+                      aria-label="Align left"
+                    >
+                      <AlignLeft size={18} />
+                    </s-button>
+                    <s-button
+                      variant={(field.labelAlignment || 'left') === 'center' ? 'primary' : 'secondary'}
+                      size="small"
+                      onClick={() => onUpdate(field.id, { labelAlignment: 'center' })}
+                      aria-label="Align center"
+                    >
+                      <AlignCenter size={18} />
+                    </s-button>
+                    <s-button
+                      variant={(field.labelAlignment || 'left') === 'right' ? 'primary' : 'secondary'}
+                      size="small"
+                      onClick={() => onUpdate(field.id, { labelAlignment: 'right' })}
+                      aria-label="Align right"
+                    >
+                      <AlignRight size={18} />
+                    </s-button>
+                  </s-stack>
+                </div>
               </>
             )}
 
-            {/* Input Styling Section */}
-            <s-divider />
-            <h4 style={{ fontWeight: 600, margin: 0, fontSize: '14px' }}>Input Styling</h4>
-
-            <s-stack direction="inline" gap="small" alignItems="flex-end">
-              <div>
-                <s-text style={{ marginBottom: '8px', display: 'block' }}>Alignment</s-text>
-                <s-stack direction="inline" gap="small">
-                  <s-button
-                    variant={(field.inputAlignment || 'left') === 'left' ? 'primary' : 'secondary'}
-                    size="small"
-                    onClick={() => onUpdate(field.id, { inputAlignment: 'left' })}
-                    aria-label="Align left"
-                  >
-                    <AlignLeft size={18} />
-                  </s-button>
-                  <s-button
-                    variant={(field.inputAlignment || 'left') === 'center' ? 'primary' : 'secondary'}
-                    size="small"
-                    onClick={() => onUpdate(field.id, { inputAlignment: 'center' })}
-                    aria-label="Align center"
-                  >
-                    <AlignCenter size={18} />
-                  </s-button>
-                  <s-button
-                    variant={(field.inputAlignment || 'left') === 'right' ? 'primary' : 'secondary'}
-                    size="small"
-                    onClick={() => onUpdate(field.id, { inputAlignment: 'right' })}
-                    aria-label="Align right"
-                  >
-                    <AlignRight size={18} />
-                  </s-button>
-                </s-stack>
-              </div>
-              <div style={{ flex: 1 }}>
-                <s-text>Font Size</s-text>
-                <input
-                  type="number"
-                  value={parseInt((field.inputFontSize || '16px').replace('px', '')) || 16}
-                  onChange={(e: any) => {
-                    const numValue = parseInt(e.target.value) || 16;
-                    onUpdate(field.id, { inputFontSize: `${numValue}px` });
-                  }}
-                  placeholder="16"
-                  min="8"
-                  max="72"
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    border: '1px solid #e5e5e5',
-                    borderRadius: '4px',
-                    fontSize: '14px'
-                  }}
-                />
-              </div>
-              <div>
-                <s-text style={{ marginBottom: '8px', display: 'block' }}>Font Style</s-text>
-                <s-stack direction="inline" gap="small">
-                  <s-button
-                    variant={(field.inputFontWeight || 'normal') === 'bold' ? 'primary' : 'secondary'}
-                    size="small"
-                    onClick={() => {
-                      const currentWeight = field.inputFontWeight || 'normal';
-                      onUpdate(field.id, { 
-                        inputFontWeight: currentWeight === 'bold' ? 'normal' : 'bold' 
-                      });
-                    }}
-                    aria-label="Bold"
-                  >
-                    <Bold size={18} />
-                  </s-button>
-                  <s-button
-                    variant={(field.inputFontStyle || 'normal') === 'italic' ? 'primary' : 'secondary'}
-                    size="small"
-                    onClick={() => {
-                      const currentStyle = field.inputFontStyle || 'normal';
-                      onUpdate(field.id, { 
-                        inputFontStyle: currentStyle === 'italic' ? 'normal' : 'italic' 
-                      });
-                    }}
-                    aria-label="Italic"
-                  >
-                    <Italic size={18} />
-                  </s-button>
-                </s-stack>
-              </div>
-            </s-stack>
+            {/* Input Alignment - Only for non-buyButton fields */}
+            {field.type !== 'buyButton' && (
+              <>
+                <s-divider />
+                <h4 style={{ fontWeight: 600, margin: 0, fontSize: '14px' }}>Input Alignment</h4>
+                <div>
+                  <s-stack direction="inline" gap="small">
+                    <s-button
+                      variant={(field.inputAlignment || 'left') === 'left' ? 'primary' : 'secondary'}
+                      size="small"
+                      onClick={() => onUpdate(field.id, { inputAlignment: 'left' })}
+                      aria-label="Align left"
+                    >
+                      <AlignLeft size={18} />
+                    </s-button>
+                    <s-button
+                      variant={(field.inputAlignment || 'left') === 'center' ? 'primary' : 'secondary'}
+                      size="small"
+                      onClick={() => onUpdate(field.id, { inputAlignment: 'center' })}
+                      aria-label="Align center"
+                    >
+                      <AlignCenter size={18} />
+                    </s-button>
+                    <s-button
+                      variant={(field.inputAlignment || 'left') === 'right' ? 'primary' : 'secondary'}
+                      size="small"
+                      onClick={() => onUpdate(field.id, { inputAlignment: 'right' })}
+                      aria-label="Align right"
+                    >
+                      <AlignRight size={18} />
+                    </s-button>
+                  </s-stack>
+                </div>
+              </>
+            )}
           </s-stack>
         )}
 

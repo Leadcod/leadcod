@@ -32,14 +32,31 @@ export default function FormDisplay({
     .filter((field) => field.visible)
     .sort((a, b) => a.order - b.order);
 
-  const getFontFamily = (fontFamily: string) => {
+  const getFontFamily = (fontFamily?: string) => {
+    const fontToUse = fontFamily || globalSettings?.fontFamily || 'nunito';
     const fontMap: Record<string, string> = {
       cairo: 'var(--font-cairo)',
       nunito: 'var(--font-nunito)',
       poppins: 'var(--font-poppins)',
       montserrat: 'var(--font-montserrat)',
     };
-    return fontMap[fontFamily] || 'var(--font-poppins)';
+    return fontMap[fontToUse] || 'var(--font-nunito)';
+  };
+
+  const getGlobalFontSize = () => {
+    return globalSettings?.fontSize || '16px';
+  };
+
+  const getGlobalFontWeight = () => {
+    return globalSettings?.fontWeight || 'normal';
+  };
+
+  const getGlobalFontStyle = () => {
+    return globalSettings?.fontStyle || 'normal';
+  };
+
+  const getPrimaryColor = () => {
+    return globalSettings?.primaryColor || '#000000';
   };
 
   const getTextAlign = (alignment: 'left' | 'center' | 'right') => {
@@ -62,18 +79,24 @@ export default function FormDisplay({
   const renderField = (field: FormField) => {
     const IconComponent = field.icon === 'none' ? null : ((Icons as any)[field.icon] || Icons.Circle);
 
-    // Helper function to calculate icon size based on font size
+    // Helper function to calculate icon size based on font size only (independent of padding)
     const getIconSize = (fontSize?: string, defaultSize: number = 16): number => {
-      if (!fontSize) return defaultSize;
-      const fontSizeNum = parseInt(fontSize.replace('px', '')) || defaultSize;
-      // Icon size should be proportional to font size (slightly smaller)
-      return Math.round(fontSizeNum * 0.9);
+      const fontSizeToUse = fontSize || getGlobalFontSize();
+      const fontSizeNum = parseInt(fontSizeToUse.replace('px', '')) || defaultSize;
+      // Calculate icon size based on font size only, not input height/padding
+      // Icon should be about 1.2x the font size to maintain proper visual proportion
+      return Math.round(fontSizeNum * 1.2);
     };
 
-    // Helper function to calculate padding based on font size
+    // Helper function to calculate padding based on global settings or font size
     const getPadding = (fontSize?: string): string => {
-      if (!fontSize) return '12px 16px';
-      const fontSizeNum = parseInt(fontSize.replace('px', '')) || 16;
+      // Use global input padding if available
+      if (globalSettings?.inputPadding) {
+        return `${globalSettings.inputPadding.vertical}px ${globalSettings.inputPadding.horizontal}px`;
+      }
+      // Fallback to calculated padding based on font size
+      const fontSizeToUse = fontSize || getGlobalFontSize();
+      const fontSizeNum = parseInt(fontSizeToUse.replace('px', '')) || 16;
       // Padding scales with font size: base padding + proportional increase
       const basePadding = 8;
       const verticalPadding = Math.max(basePadding, Math.round(fontSizeNum * 0.5));
@@ -81,48 +104,58 @@ export default function FormDisplay({
       return `${verticalPadding}px ${horizontalPadding}px`;
     };
 
-    // Helper function to calculate height based on font size
+    // Helper function to calculate height based on font size and global padding
     const getHeight = (fontSize?: string): string => {
-      if (!fontSize) return '36px';
-      const fontSizeNum = parseInt(fontSize.replace('px', '')) || 16;
-      // Height = font size + padding top + padding bottom + some extra space
-      const padding = Math.max(8, Math.round(fontSizeNum * 0.5));
-      const height = fontSizeNum + (padding * 2) + 4; // 4px extra for border/line-height
+      const fontSizeToUse = fontSize || getGlobalFontSize();
+      const fontSizeNum = parseInt(fontSizeToUse.replace('px', '')) || 16;
+      // Use global input padding if available, otherwise calculate from font size
+      const verticalPadding = globalSettings?.inputPadding?.vertical ?? Math.max(8, Math.round(fontSizeNum * 0.5));
+      const height = fontSizeNum + (verticalPadding * 2) + 4; // 4px extra for border/line-height
       return `${height}px`;
     };
+
+    const globalFontSize = getGlobalFontSize();
+    const globalFontWeight = getGlobalFontWeight();
+    const globalFontStyle = getGlobalFontStyle();
+    const primaryColor = getPrimaryColor();
 
     const inputStyle = {
       color: field.inputTextColor,
       backgroundColor: field.inputBackgroundColor,
-      fontFamily: getFontFamily(field.fontFamily),
+      fontFamily: getFontFamily(),
       textAlign: getTextAlign(field.inputAlignment || 'left'),
-      fontSize: field.inputFontSize || '16px',
-      fontWeight: field.inputFontWeight || 'normal',
-      fontStyle: field.inputFontStyle || 'normal',
-      padding: getPadding(field.inputFontSize),
-      height: getHeight(field.inputFontSize),
-      minHeight: getHeight(field.inputFontSize),
+      fontSize: globalFontSize,
+      fontWeight: globalFontWeight,
+      fontStyle: globalFontStyle,
+      padding: getPadding(globalFontSize),
+      height: getHeight(globalFontSize),
+      minHeight: getHeight(globalFontSize),
     };
 
     const iconStyle = {
-      color: field.inputTextColor,
-      height: getHeight(field.inputFontSize),
-      minHeight: getHeight(field.inputFontSize),
+      fontFamily: getFontFamily(),
+      fontSize: globalFontSize,
+      fontWeight: globalFontWeight,
+      fontStyle: globalFontStyle,
+      color: primaryColor,
+      height: getHeight(globalFontSize),
+      minHeight: getHeight(globalFontSize),
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
+      backgroundColor: '#f3f4f6',
     };
     
-    // Calculate icon size based on input font size
-    const iconSize = getIconSize(field.inputFontSize, 16);
+    // Calculate icon size based on global font size
+    const iconSize = getIconSize(globalFontSize, 16);
 
     const labelStyle = {
-      fontFamily: getFontFamily(field.fontFamily),
-      color: field.labelColor || '#000000',
+      fontFamily: getFontFamily(),
+      color: primaryColor,
       textAlign: getTextAlign(field.labelAlignment || 'left'),
-      fontSize: field.labelFontSize || '14px',
-      fontWeight: field.labelFontWeight || 'normal',
-      fontStyle: field.labelFontStyle || 'normal',
+      fontSize: globalFontSize,
+      fontWeight: globalFontWeight,
+      fontStyle: globalFontStyle,
     };
 
     const handleFieldClick = () => {
@@ -436,22 +469,26 @@ export default function FormDisplay({
         
         // Helper function to calculate button padding based on font size
         const getButtonPadding = (fontSize?: string): string => {
-          if (!fontSize) return '12px 24px';
-          const fontSizeNum = parseInt(fontSize.replace('px', '')) || 16;
+          const fontSizeToUse = fontSize || getGlobalFontSize();
+          const fontSizeNum = parseInt(fontSizeToUse.replace('px', '')) || 16;
           const verticalPadding = Math.max(10, Math.round(fontSizeNum * 0.625));
           const horizontalPadding = Math.max(20, Math.round(fontSizeNum * 1.5));
           return `${verticalPadding}px ${horizontalPadding}px`;
         };
         
+        const globalFontSize = getGlobalFontSize();
+        const globalFontWeight = getGlobalFontWeight();
+        const globalFontStyle = getGlobalFontStyle();
+        
         // Use separate background properties to avoid shorthand/non-shorthand conflicts
         const buttonStyle: any = {
           color: field.inputTextColor,
-          fontFamily: getFontFamily(field.fontFamily),
+          fontFamily: getFontFamily(),
           textAlign: getTextAlign(field.inputAlignment || 'center'),
-          fontSize: field.inputFontSize || '16px',
-          fontWeight: field.inputFontWeight || 'bold',
-          fontStyle: field.inputFontStyle || 'normal',
-          padding: getButtonPadding(field.inputFontSize),
+          fontSize: globalFontSize,
+          fontWeight: 'bold',
+          fontStyle: globalFontStyle,
+          padding: getButtonPadding(globalFontSize),
         };
         
         // Set glow color CSS variable if glow animation is active
@@ -473,6 +510,24 @@ export default function FormDisplay({
           }
           buttonStyle['--glow-color'] = rgbaColor;
         }
+        
+        // Calculate icon size based on button height (60% of button height)
+        const getButtonHeight = (): number => {
+          switch (field.buttonSize) {
+            case 'small':
+              return 32;
+            case 'base':
+              return 40;
+            case 'large':
+              return 48;
+            case 'extra-large':
+              return 56;
+            default:
+              return 40;
+          }
+        };
+        const buttonHeight = getButtonHeight();
+        const iconSize = Math.round(buttonHeight * 0.6);
         
         // Helper function to lighten a color for gradient effect
         const lightenColor = (color: string, percent: number): string => {
@@ -575,19 +630,35 @@ export default function FormDisplay({
     }
   };
 
+  const getBorderStyle = () => {
+    if (!globalSettings?.border?.enabled) {
+      return {};
+    }
+    return {
+      borderWidth: `${globalSettings.border.width}px`,
+      borderStyle: globalSettings.border.style,
+      borderColor: globalSettings.border.color || '#9ca3af',
+      borderRadius: `${globalSettings.border.radius}px`,
+      padding: `${globalSettings.border.padding}px`,
+      width: '100%',
+      boxSizing: 'border-box',
+    };
+  };
+
   const content = (
     <div className="space-y-4">
       {globalSettings && (
-        <div className="space-y-5! mb-4">
+        <div className="space-y-3! mb-0">
           {globalSettings.headline.enabled && (
             <h2
               style={{
-                color: globalSettings.headline.color,
+                color: getPrimaryColor(),
                 textAlign: getTextAlign(globalSettings.headline.alignment),
-                fontFamily: getFontFamily(globalSettings.headline.fontFamily),
-                fontSize: globalSettings.headline.fontSize,
-                fontWeight: globalSettings.headline.fontWeight,
-                fontStyle: globalSettings.headline.fontStyle,
+                fontFamily: getFontFamily(),
+                fontSize: '24px',
+                fontWeight: 'bold',
+                fontStyle: getGlobalFontStyle(),
+                margin: 0,
               }}
             >
               {globalSettings.headline.text}
@@ -596,12 +667,14 @@ export default function FormDisplay({
           {globalSettings.subtitle.enabled && (
             <p
               style={{
-                color: globalSettings.subtitle.color,
+                color: getPrimaryColor(),
                 textAlign: getTextAlign(globalSettings.subtitle.alignment),
-                fontFamily: getFontFamily(globalSettings.subtitle.fontFamily),
-                fontSize: globalSettings.subtitle.fontSize,
-                fontWeight: globalSettings.subtitle.fontWeight,
-                fontStyle: globalSettings.subtitle.fontStyle,
+                fontFamily: getFontFamily(),
+                fontSize: getGlobalFontSize(),
+                fontWeight: getGlobalFontWeight(),
+                fontStyle: getGlobalFontStyle(),
+                opacity: 0.7,
+                margin: 0,
               }}
             >
               {globalSettings.subtitle.text}
@@ -627,9 +700,10 @@ export default function FormDisplay({
 
   // In preview mode, wrap in Card. In production mode, wrap in form element
   if (isPreview) {
+    const borderStyle = getBorderStyle();
     return (
-      <Card>
-        <CardContent className="space-y-4">
+      <Card style={borderStyle} className="p-0">
+        <CardContent className="space-y-4 p-0">
           {content}
         </CardContent>
       </Card>
@@ -637,7 +711,7 @@ export default function FormDisplay({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" style={getBorderStyle()}>
       {content}
     </form>
   );
