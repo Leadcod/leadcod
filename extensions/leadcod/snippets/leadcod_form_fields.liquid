@@ -16,9 +16,22 @@
     const globalFontStyle = Utils.getGlobalFontStyle(settings);
     const primaryColor = Utils.getPrimaryColor(settings);
     const iconSize = Utils.calculateIconSize(globalFontSize, settings);
+    const direction = (settings && settings.direction) || 'ltr';
+    const isRTL = direction === 'rtl';
     
+    // Adjust text-align for RTL - 'left' becomes 'right' in RTL
+    const getInputTextAlign = (alignment) => {
+      if (isRTL && (alignment === 'left' || !alignment)) {
+        return 'right';
+      }
+      if (!isRTL && (alignment === 'right')) {
+        return 'right';
+      }
+      return alignment || 'left';
+    };
+
     const inputStyle = `
-      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle}; text-align: ${Utils.getTextAlign(field.inputAlignment || 'left')};
+      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle}; text-align: ${getInputTextAlign(field.inputAlignment)};
       color: ${field.inputTextColor || '#000000'};
       background-color: ${field.inputBackgroundColor || '#ffffff'};
       padding: ${Utils.calculatePadding(globalFontSize, settings)};
@@ -28,9 +41,13 @@
       border-radius: 0.375rem;
       width: 100%;
       box-sizing: border-box;
+      direction: ${direction};
     `;
 
-    const iconStyle = `
+    // Icon style - adjust for RTL visual position
+    // LTR: icon visually on right, rounded on right, no border on left
+    // RTL: icon visually on left (due to direction:rtl), rounded on left, no border on right
+    const iconStyle = isRTL ? `
       font-family: ${Utils.getFontFamily(settings)};
       font-size: ${globalFontSize};
       font-weight: ${globalFontWeight};
@@ -46,13 +63,41 @@
       border-right: none;
       border-radius: 0.375rem 0 0 0.375rem;
       background-color: #f3f4f6;
+    ` : `
+      font-family: ${Utils.getFontFamily(settings)};
+      font-size: ${globalFontSize};
+      font-weight: ${globalFontWeight};
+      font-style: ${globalFontStyle};
+      color: ${primaryColor};
+      height: ${Utils.calculateHeight(globalFontSize, settings)};
+      min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      border: 1px solid #e5e7eb;
+      border-left: none;
+      border-radius: 0 0.375rem 0.375rem 0;
+      background-color: #f3f4f6;
     `;
 
+    // Adjust label text-align for RTL
+    const getLabelTextAlign = (alignment) => {
+      if (isRTL && (alignment === 'left' || !alignment)) {
+        return 'right';
+      }
+      if (!isRTL && (alignment === 'right')) {
+        return 'right';
+      }
+      return alignment || 'left';
+    };
+
     const labelStyle = `
-      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle}; text-align: ${Utils.getTextAlign(field.labelAlignment || 'left')};
+      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle}; text-align: ${getLabelTextAlign(field.labelAlignment)};
       color: ${primaryColor};
       display: block;
       margin-bottom: 4px;
+      direction: ${direction};
     `;
 
     let fieldHTML = '<div class="leadcod-field" style="margin-bottom: 4px;">';
@@ -62,46 +107,141 @@
       fieldHTML += `<label style="${labelStyle}">${field.label}${field.required ? ' <span style="color: #ef4444;">*</span>' : ''}</label>`;
     }
 
-    // Input wrapper
-    fieldHTML += '<div style="display: flex; align-items: stretch;">';
+    // Input wrapper - add direction to respect RTL
+    fieldHTML += `<div style="display: flex; align-items: stretch; direction: ${direction};">`;
 
     switch (field.type) {
       case 'name':
       case 'city':
       case 'email':
+        // Input border radius - adjust for RTL visual position
+        // LTR: input visually on left, rounded on left when icon exists
+        // RTL: input visually on right (due to direction:rtl), rounded on right when icon exists
+        const inputBorderRadius = Utils.renderIcon(field.icon, iconSize, isRTL) 
+          ? (isRTL ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
+          : 'border-radius: 0.375rem;';
         fieldHTML += `
-          ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
           <input 
             type="${field.type === 'email' ? 'email' : 'text'}" 
             placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
-            style="${inputStyle} ${Utils.renderIcon(field.icon, iconSize) ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-radius: 0.375rem;'}"
+            style="${inputStyle} ${inputBorderRadius}"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
           />
+          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
         `;
         break;
 
       case 'phone':
-        const phoneIconStyle = iconStyle.replace('border-right: none;', 'border-left: none; border-right: 1px solid #e5e7eb;').replace('border-radius: 0.375rem 0 0 0.375rem;', 'border-radius: 0 0.375rem 0.375rem 0;');
-        fieldHTML += `
-          <div style="${iconStyle}">+213</div>
+        // Phone field: LTR = icon + input + prefix, RTL = prefix + input + icon
+        // LTR: icon (left, rounded left) + input (middle) + +213 (right, rounded right)
+        // RTL: +213 (left, rounded left) + input (middle) + icon (right, rounded right)
+        const phonePrefixStyleLTR = `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: ${globalFontWeight};
+          font-style: ${globalFontStyle};
+          color: ${primaryColor};
+          height: ${Utils.calculateHeight(globalFontSize, settings)};
+          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 12px;
+          border: 1px solid #e5e7eb;
+          border-left: none;
+          border-radius: 0 0.375rem 0.375rem 0;
+          background-color: #f3f4f6;
+        `;
+        const phonePrefixStyleRTL = `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: ${globalFontWeight};
+          font-style: ${globalFontStyle};
+          color: ${primaryColor};
+          height: ${Utils.calculateHeight(globalFontSize, settings)};
+          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 12px;
+          border: 1px solid #e5e7eb;
+          border-right: none;
+          border-radius: 0.375rem 0 0 0.375rem;
+          background-color: #f3f4f6;
+        `;
+        const phoneIconStyleLTR = `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: ${globalFontWeight};
+          font-style: ${globalFontStyle};
+          color: ${primaryColor};
+          height: ${Utils.calculateHeight(globalFontSize, settings)};
+          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 12px;
+          border: 1px solid #e5e7eb;
+          border-right: none;
+          border-radius: 0.375rem 0 0 0.375rem;
+          background-color: #f3f4f6;
+        `;
+        const phoneIconStyleRTL = `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: ${globalFontWeight};
+          font-style: ${globalFontStyle};
+          color: ${primaryColor};
+          height: ${Utils.calculateHeight(globalFontSize, settings)};
+          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 12px;
+          border: 1px solid #e5e7eb;
+          border-left: none;
+          border-radius: 0 0.375rem 0.375rem 0;
+          background-color: #f3f4f6;
+        `;
+        const phoneInputBorder = 'border-left: none; border-right: none; border-radius: 0;';
+        fieldHTML += isRTL ? `
+          <div style="${phonePrefixStyleRTL}">+213</div>
           <input 
             type="tel" 
             placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
-            style="${inputStyle} border-left: none; border-radius: 0;"
+            style="${inputStyle} ${phoneInputBorder}"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
           />
-          ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${phoneIconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${phoneIconStyleRTL}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
+        ` : `
+          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${phoneIconStyleLTR}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
+          <input 
+            type="tel" 
+            placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
+            style="${inputStyle} ${phoneInputBorder}"
+            ${field.required ? 'required' : ''}
+            name="${field.id}"
+            id="field-${field.id}"
+          />
+          <div style="${phonePrefixStyleLTR}">+213</div>
         `;
         break;
 
       case 'province':
-        const provinceSelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; -webkit-appearance: none; -moz-appearance: none; appearance: none; ${Utils.renderIcon(field.icon, iconSize) ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-radius: 0.375rem;'}`;
+        // Select border radius - adjust for RTL visual position
+        // LTR: select visually on left, rounded on left when icon exists
+        // RTL: select visually on right (due to direction:rtl), rounded on right when icon exists
+        const provinceSelectBorder = Utils.renderIcon(field.icon, iconSize, isRTL) 
+          ? (isRTL ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
+          : 'border-radius: 0.375rem;';
+        const provinceSelectArrowPos = isRTL ? 'left 12px' : 'right 12px';
+        const provinceSelectPadding = isRTL ? 'padding-left: 32px;' : 'padding-right: 32px;';
+        const provinceSelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: ${provinceSelectArrowPos} center; ${provinceSelectPadding} -webkit-appearance: none; -moz-appearance: none; appearance: none; ${provinceSelectBorder}`;
         fieldHTML += `
-          ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
           <select 
             style="${provinceSelectStyle}"
             ${field.required ? 'required' : ''}
@@ -116,13 +256,21 @@
             <option value="manitoba">Manitoba</option>
             <option value="saskatchewan">Saskatchewan</option>
           </select>
+          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
         `;
         break;
 
       case 'variants':
-        const variantsSelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; -webkit-appearance: none; -moz-appearance: none; appearance: none; ${Utils.renderIcon(field.icon, iconSize) ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-radius: 0.375rem;'}`;
+        // Select border radius - adjust for RTL visual position
+        // LTR: select visually on left, rounded on left when icon exists
+        // RTL: select visually on right (due to direction:rtl), rounded on right when icon exists
+        const variantsSelectBorder = Utils.renderIcon(field.icon, iconSize, isRTL) 
+          ? (isRTL ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
+          : 'border-radius: 0.375rem;';
+        const variantsSelectArrowPos = isRTL ? 'left 12px' : 'right 12px';
+        const variantsSelectPadding = isRTL ? 'padding-left: 32px;' : 'padding-right: 32px;';
+        const variantsSelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: ${variantsSelectArrowPos} center; ${variantsSelectPadding} -webkit-appearance: none; -moz-appearance: none; appearance: none; ${variantsSelectBorder}`;
         fieldHTML += `
-          ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
           <select 
             style="${variantsSelectStyle}"
             ${field.required ? 'required' : ''}
@@ -134,38 +282,51 @@
             <option value="medium">Size: Medium</option>
             <option value="large">Size: Large</option>
           </select>
+          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
         `;
         break;
 
       case 'quantity':
+        // Input border radius - adjust for RTL visual position
+        // LTR: input visually on left, rounded on left when icon exists
+        // RTL: input visually on right (due to direction:rtl), rounded on right when icon exists
+        const quantityBorderRadius = Utils.renderIcon(field.icon, iconSize, isRTL) 
+          ? (isRTL ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
+          : 'border-radius: 0.375rem;';
         fieldHTML += `
-          ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
           <input 
             type="number" 
             min="1" 
             value="1"
             placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
-            style="${inputStyle} ${Utils.renderIcon(field.icon, iconSize) ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-radius: 0.375rem;'}"
+            style="${inputStyle} ${quantityBorderRadius}"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
           />
+          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
         `;
         break;
 
       case 'coupon':
+        // Input border radius - adjust for RTL visual position
+        // LTR: input visually on left, rounded on left when icon exists
+        // RTL: input visually on right (due to direction:rtl), rounded on right when icon exists
+        const couponInputBorder = Utils.renderIcon(field.icon, iconSize, isRTL) 
+          ? (isRTL ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
+          : 'border-radius: 0.375rem;';
         fieldHTML += `
-          <div style="display: flex; gap: 8px; width: 100%;">
-            <div style="display: flex; flex: 1;">
-              ${Utils.renderIcon(field.icon, iconSize) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          <div style="display: flex; gap: 8px; width: 100%; direction: ${direction};">
+            <div style="display: flex; flex: 1; direction: ${direction};">
               <input 
                 type="text" 
                 placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
-                style="${inputStyle} ${Utils.renderIcon(field.icon, iconSize) ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-radius: 0.375rem;'}"
+                style="${inputStyle} ${couponInputBorder}"
                 ${field.required ? 'required' : ''}
                 name="${field.id}"
                 id="field-${field.id}"
               />
+              ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
             </div>
             <button type="button" style="padding: 0 20px; border: 1px solid #e5e7eb; border-radius: 0.375rem; background: #f9fafb; cursor: pointer;">Apply</button>
           </div>
@@ -331,10 +492,12 @@
       buttonStyle += `animation: glow 2s ease-in-out infinite;`;
     }
 
+    const direction = (settings && settings.direction) || 'ltr';
+    const isRTL = direction === 'rtl';
     return `
       <div class="leadcod-field" style="margin-bottom: 4px;">
         <button type="submit" style="${buttonStyle}">
-          ${Utils.renderIcon(field.icon, buttonIconSize)}
+          ${Utils.renderIcon(field.icon, buttonIconSize, isRTL)}
           ${field.label}
         </button>
       </div>

@@ -5,7 +5,7 @@
 {% render 'leadcod_config' %}
 {% comment %} Ensure API URL is set, fallback to config value if not available {% endcomment %}
 {% unless LEADCOD_API_URL %}
-  {% assign LEADCOD_API_URL = "https://199b7e106505.ngrok-free.app/api/form" %}
+  {% assign LEADCOD_API_URL = "https://1586904d3f76.ngrok-free.app/api/form" %}
 {% endunless %}
 <script>
 (function() {
@@ -47,7 +47,8 @@
       .sort((a, b) => (a.order || 0) - (b.order || 0));
 
     const borderStyle = Utils.getBorderStyle(settings);
-    let formHTML = `<form class="leadcod-form" style="max-width: 100%;${borderStyle}">`;
+    const direction = (settings && settings.direction) || 'ltr';
+    let formHTML = `<form class="leadcod-form" style="max-width: 100%; direction: ${direction};${borderStyle}">`;
 
     // Global settings - headline and subtitle
     if (settings) {

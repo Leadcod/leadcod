@@ -91,5 +91,11 @@
     box-shadow: 0 0 20px var(--glow-color, rgba(0, 0, 0, 0.5)), 0 0 35px var(--glow-color, rgba(0, 0, 0, 0.3));
   }
 }
+
+/* RTL icon flipping - targets SVG elements created by Lucide */
+.leadcod-icon-rtl i svg,
+.leadcod-icon-rtl svg {
+  transform: scaleX(-1);
+}
 </style>
 

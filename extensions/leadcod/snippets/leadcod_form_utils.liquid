@@ -106,11 +106,12 @@
       return iconMap[iconName] || iconName.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '');
     },
 
-    renderIcon: function(iconName, size) {
+    renderIcon: function(iconName, size, isRTL) {
       if (!iconName || iconName === 'none') return '';
       const lucideName = this.getLucideIconName(iconName);
       if (!lucideName) return '';
-      return `<i data-lucide="${lucideName}" style="width: ${size}px; height: ${size}px;"></i>`;
+      const rtlClass = isRTL ? ' leadcod-icon-rtl' : '';
+      return `<span class="leadcod-icon-wrapper${rtlClass}" style="display: inline-flex; align-items: center; justify-content: center;"><i data-lucide="${lucideName}" style="width: ${size}px; height: ${size}px;"></i></span>`;
     },
 
     getBorderStyle: function(settings) {

@@ -28,7 +28,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
       background="base"
       border="base"
       borderRadius="base"
-      style={{ marginLeft: '0' }}
+     
     >
       <s-stack gap="base">
         <s-stack direction="inline" justifyContent="space-between" alignItems="center">
@@ -54,7 +54,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
           </div>
         ) : (
           <div>
-            <s-text style={{ marginBottom: '8px', display: 'block' }}>Label</s-text>
+            <s-text>Label</s-text>
             <div style={{ flex: 1 }}>
               <s-text-field
                 value={field.label}
@@ -74,7 +74,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     accentColor: '#000000'
                   }}
                 />
-                <s-text style={{ fontSize: '14px' }}>Show</s-text>
+                <s-text>Show</s-text>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                 <input
@@ -90,7 +90,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     opacity: isAlwaysRequired(field.type) ? 0.5 : 1
                   }}
                 />
-                <s-text style={{ fontSize: '14px' }}>
+                <s-text>
                   Required
                   {isAlwaysRequired(field.type) && (
                     <span style={{ fontSize: '11px', opacity: 0.6, marginLeft: '4px' }}>
@@ -105,7 +105,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
         {/* Placeholder Section - Grouped together */}
         {field.type !== 'buyButton' && (
           <div>
-            <s-stack direction="inline" justifyContent="space-between" alignItems="center" style={{ marginBottom: '8px' }}>
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
               <s-text>Placeholder</s-text>
               <s-switch
                 checked={field.showPlaceholder}
@@ -151,16 +151,16 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
         {/* Input Colors - Only for buyButton */}
         {field.type === 'buyButton' ? (
           <>
-            <s-stack direction="inline" gap="small" alignItems="flex-end">
+            <s-stack direction="inline" gap="small" alignItems="end">
               <div style={{ flex: 1 }}>
-                <s-text style={{ marginBottom: '8px', display: 'block' }}>Text Color</s-text>
+                <s-text>Text Color</s-text>
                 <CompactColorSwatch
                   value={field.inputTextColor}
                   onChange={(color) => onUpdate(field.id, { inputTextColor: color })}
                 />
               </div>
               <div style={{ flex: 1, position: 'relative' }}>
-                <s-text style={{ marginBottom: '8px', display: 'block' }}>Button Background</s-text>
+                <s-text>Button Background</s-text>
                 <div
                   onClick={() => setShowBackgroundSettings(!showBackgroundSettings)}
                   style={{
@@ -258,7 +258,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                         </div>
                       ) : (
                         <div>
-                          <s-text style={{ marginBottom: '8px', display: 'block' }}>Solid Color</s-text>
+                          <s-text>Solid Color</s-text>
                           <s-color-picker 
                             value={field.inputBackgroundColor || '#000000'} 
                             alpha 
@@ -275,7 +275,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                 )}
               </div>
               <div style={{ flex: 1 }}>
-                <s-text style={{ marginBottom: '8px', display: 'block' }}>Animation</s-text>
+                <s-text>Animation</s-text>
                 <s-select
                   value={field.animation || 'none'}
                   onChange={(e: any) => {
@@ -292,7 +292,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                 </s-select>
               </div>
               <div style={{ flex: 1 }}>
-                <s-text style={{ marginBottom: '8px', display: 'block' }}>Button Size</s-text>
+                <s-text>Button Size</s-text>
                 <s-select
                   value={field.buttonSize || 'base'}
                   onChange={(e: any) => {
@@ -309,16 +309,16 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
             </s-stack>
           </>
         ) : (
-          <s-stack direction="inline" gap="small" alignItems="flex-end">
+          <s-stack direction="inline" gap="small" alignItems="end">
             <div style={{ flex: 1 }}>
-              <s-text style={{ marginBottom: '8px', display: 'block' }}>Input Text Color</s-text>
+              <s-text>Input Text Color</s-text>
               <CompactColorSwatch
                 value={field.inputTextColor}
                 onChange={(color) => onUpdate(field.id, { inputTextColor: color })}
               />
             </div>
             <div style={{ flex: 1 }}>
-              <s-text style={{ marginBottom: '8px', display: 'block' }}>Input Background Color</s-text>
+              <s-text>Input Background Color</s-text>
               <CompactColorSwatch
                 value={field.inputBackgroundColor}
                 onChange={(color) => onUpdate(field.id, { inputBackgroundColor: color })}
@@ -333,9 +333,8 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
         <div>
           <s-button
             variant="secondary"
-            size="small"
+            
             onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
-            style={{ width: '100%', justifyContent: 'space-between' }}
           >
             <span>Advanced Settings</span>
             {showAdvancedSettings ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -349,12 +348,12 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
             {field.type !== 'buyButton' && (
               <>
                 <s-divider />
-                <h4 style={{ fontWeight: 600, margin: 0, fontSize: '14px' }}>Label Alignment</h4>
+                <h4>Label Alignment</h4>
                 <div>
                   <s-stack direction="inline" gap="small">
                     <s-button
                       variant={(field.labelAlignment || 'left') === 'left' ? 'primary' : 'secondary'}
-                      size="small"
+                      
                       onClick={() => onUpdate(field.id, { labelAlignment: 'left' })}
                       aria-label="Align left"
                     >
@@ -362,7 +361,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     </s-button>
                     <s-button
                       variant={(field.labelAlignment || 'left') === 'center' ? 'primary' : 'secondary'}
-                      size="small"
+                      
                       onClick={() => onUpdate(field.id, { labelAlignment: 'center' })}
                       aria-label="Align center"
                     >
@@ -370,7 +369,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     </s-button>
                     <s-button
                       variant={(field.labelAlignment || 'left') === 'right' ? 'primary' : 'secondary'}
-                      size="small"
+                      
                       onClick={() => onUpdate(field.id, { labelAlignment: 'right' })}
                       aria-label="Align right"
                     >
@@ -385,12 +384,12 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
             {field.type !== 'buyButton' && (
               <>
                 <s-divider />
-                <h4 style={{ fontWeight: 600, margin: 0, fontSize: '14px' }}>Input Alignment</h4>
+                <h4>Input Alignment</h4>
                 <div>
                   <s-stack direction="inline" gap="small">
                     <s-button
                       variant={(field.inputAlignment || 'left') === 'left' ? 'primary' : 'secondary'}
-                      size="small"
+                      
                       onClick={() => onUpdate(field.id, { inputAlignment: 'left' })}
                       aria-label="Align left"
                     >
@@ -398,7 +397,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     </s-button>
                     <s-button
                       variant={(field.inputAlignment || 'left') === 'center' ? 'primary' : 'secondary'}
-                      size="small"
+                      
                       onClick={() => onUpdate(field.id, { inputAlignment: 'center' })}
                       aria-label="Align center"
                     >
@@ -406,7 +405,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     </s-button>
                     <s-button
                       variant={(field.inputAlignment || 'left') === 'right' ? 'primary' : 'secondary'}
-                      size="small"
+                      
                       onClick={() => onUpdate(field.id, { inputAlignment: 'right' })}
                       aria-label="Align right"
                     >
@@ -425,9 +424,8 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
             <s-divider />
             <s-button
               variant="secondary"
-              size="small"
+              
               onClick={() => onApplyToAll(field.id)}
-              style={{ width: '100%' }}
             >
               Apply to all inputs
             </s-button>

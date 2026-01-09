@@ -63,6 +63,12 @@ export default function FormDisplay({
     return alignment;
   };
 
+  const getDirection = () => {
+    return globalSettings?.direction || 'ltr';
+  };
+
+  const isRTL = getDirection() === 'rtl';
+
   const handleInputChange = (fieldId: string, value: any) => {
     if (!isPreview) {
       setFormData(prev => ({ ...prev, [fieldId]: value }));
@@ -119,19 +125,32 @@ export default function FormDisplay({
     const globalFontStyle = getGlobalFontStyle();
     const primaryColor = getPrimaryColor();
 
+    // Adjust text-align for RTL - 'left' becomes 'right' in RTL
+    const getInputTextAlign = (alignment: 'left' | 'center' | 'right' | undefined) => {
+      const align = alignment || 'left';
+      if (isRTL && align === 'left') {
+        return 'right';
+      }
+      return align;
+    };
+
     const inputStyle = {
       color: field.inputTextColor,
       backgroundColor: field.inputBackgroundColor,
       fontFamily: getFontFamily(),
-      textAlign: getTextAlign(field.inputAlignment || 'left'),
+      textAlign: getInputTextAlign(field.inputAlignment),
       fontSize: globalFontSize,
       fontWeight: globalFontWeight,
       fontStyle: globalFontStyle,
       padding: getPadding(globalFontSize),
       height: getHeight(globalFontSize),
       minHeight: getHeight(globalFontSize),
+      direction: getDirection(),
     };
 
+    // Icon style - adjust for RTL visual position
+    // LTR: icon visually on right, rounded on right, no border on left
+    // RTL: icon visually on left (due to direction:rtl), rounded on left, no border on right
     const iconStyle = {
       fontFamily: getFontFamily(),
       fontSize: globalFontSize,
@@ -144,18 +163,41 @@ export default function FormDisplay({
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#f3f4f6',
+      ...(isRTL ? {
+        borderRight: 'none',
+        borderTopLeftRadius: '0.375rem',
+        borderBottomLeftRadius: '0.375rem',
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
+      } : {
+        borderLeft: 'none',
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+        borderTopRightRadius: '0.375rem',
+        borderBottomRightRadius: '0.375rem',
+      }),
     };
     
     // Calculate icon size based on global font size
     const iconSize = getIconSize(globalFontSize, 16);
 
+    // Adjust label text-align for RTL
+    const getLabelTextAlign = (alignment: 'left' | 'center' | 'right' | undefined) => {
+      const align = alignment || 'left';
+      if (isRTL && align === 'left') {
+        return 'right';
+      }
+      return align;
+    };
+
     const labelStyle = {
       fontFamily: getFontFamily(),
       color: primaryColor,
-      textAlign: getTextAlign(field.labelAlignment || 'left'),
+      textAlign: getLabelTextAlign(field.labelAlignment),
       fontSize: globalFontSize,
       fontWeight: globalFontWeight,
       fontStyle: globalFontStyle,
+      direction: getDirection(),
     };
 
     const handleFieldClick = () => {
@@ -178,12 +220,7 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={cursorClass}>
-              {IconComponent && (
-                <InputGroupAddon style={iconStyle}>
-                  <IconComponent size={iconSize} />
-                </InputGroupAddon>
-              )}
+            <InputGroup onClick={handleFieldClick} className={cursorClass} style={{ direction: getDirection() }}>
               <InputGroupInput
                 type={field.type === 'email' ? 'email' : 'text'}
                 placeholder={field.showPlaceholder ? field.placeholder : ''}
@@ -194,6 +231,11 @@ export default function FormDisplay({
                 value={isPreview ? '' : (formData[field.id] || '')}
                 onChange={(e) => handleInputChange(field.id, e.target.value)}
               />
+              {IconComponent && (
+                <InputGroupAddon style={iconStyle}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
             </InputGroup>
           </div>
         );
@@ -207,30 +249,63 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={cursorClass}>
-              <InputGroupAddon style={iconStyle}>
-                +213
-              </InputGroupAddon>
-              <InputGroupInput
-                type="tel"
-                placeholder={field.showPlaceholder ? field.placeholder : ''}
-                style={inputStyle}
-                required={field.required}
-                readOnly={isPreview}
-                className={cursorClass}
-                value={isPreview ? '' : (formData[field.id] || '')}
-                onChange={(e) => handleInputChange(field.id, e.target.value)}
-              />
-              {IconComponent && (
-                <InputGroupAddon style={iconStyle}>
-                  <IconComponent size={iconSize} />
-                </InputGroupAddon>
+            <InputGroup onClick={handleFieldClick} className={cursorClass} style={{ direction: getDirection() }}>
+              {isRTL ? (
+                <>
+                  <InputGroupAddon style={iconStyle}>
+                    +213
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    type="tel"
+                    placeholder={field.showPlaceholder ? field.placeholder : ''}
+                    style={inputStyle}
+                    required={field.required}
+                    readOnly={isPreview}
+                    className={cursorClass}
+                    value={isPreview ? '' : (formData[field.id] || '')}
+                    onChange={(e) => handleInputChange(field.id, e.target.value)}
+                  />
+                  {IconComponent && (
+                    <InputGroupAddon style={iconStyle}>
+                      <IconComponent size={iconSize} />
+                    </InputGroupAddon>
+                  )}
+                </>
+              ) : (
+                <>
+                  {IconComponent && (
+                    <InputGroupAddon style={iconStyle}>
+                      <IconComponent size={iconSize} />
+                    </InputGroupAddon>
+                  )}
+                  <InputGroupInput
+                    type="tel"
+                    placeholder={field.showPlaceholder ? field.placeholder : ''}
+                    style={inputStyle}
+                    required={field.required}
+                    readOnly={isPreview}
+                    className={cursorClass}
+                    value={isPreview ? '' : (formData[field.id] || '')}
+                    onChange={(e) => handleInputChange(field.id, e.target.value)}
+                  />
+                  <InputGroupAddon style={iconStyle}>
+                    +213
+                  </InputGroupAddon>
+                </>
               )}
             </InputGroup>
           </div>
         );
 
       case 'province':
+        // Select border radius - adjust for RTL visual position
+        // LTR: select visually on left, rounded on left when icon exists
+        // RTL: select visually on right (due to direction:rtl), rounded on right when icon exists
+        const provinceSelectClass = IconComponent
+          ? (isRTL 
+            ? `w-full flex-1 rounded-none rounded-r-md border-l-0 ${cursorClass}`
+            : `w-full flex-1 rounded-none rounded-l-md border-r-0 ${cursorClass}`)
+          : `w-full rounded-md ${cursorClass}`;
         return (
           <div key={field.id} className="space-y-2">
             {field.showLabel && (
@@ -239,12 +314,7 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={cursorClass}>
-              {IconComponent && (
-                <InputGroupAddon style={iconStyle}>
-                  <IconComponent size={iconSize} />
-                </InputGroupAddon>
-              )}
+            <InputGroup onClick={handleFieldClick} className={cursorClass} style={{ direction: getDirection() }}>
               <Select 
                 required={field.required}
                 value={isPreview ? undefined : (formData[field.id] || '')}
@@ -252,7 +322,7 @@ export default function FormDisplay({
                 disabled={isPreview}
               >
                 <SelectTrigger 
-                  className={`w-full flex-1 rounded-none rounded-r-md border-l-0 ${cursorClass}`}
+                  className={provinceSelectClass}
                   style={inputStyle}
                   onClick={(e) => {
                     if (isPreview) {
@@ -279,11 +349,24 @@ export default function FormDisplay({
                   <SelectItem value="saskatchewan">Saskatchewan</SelectItem>
                 </SelectContent>
               </Select>
+              {IconComponent && (
+                <InputGroupAddon style={iconStyle}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
             </InputGroup>
           </div>
         );
 
       case 'variants':
+        // Select border radius - adjust for RTL visual position
+        // LTR: select visually on left, rounded on left when icon exists
+        // RTL: select visually on right (due to direction:rtl), rounded on right when icon exists
+        const variantsSelectClass = IconComponent
+          ? (isRTL 
+            ? `w-full flex-1 rounded-none rounded-r-md border-l-0 ${cursorClass}`
+            : `w-full flex-1 rounded-none rounded-l-md border-r-0 ${cursorClass}`)
+          : `w-full rounded-md ${cursorClass}`;
         return (
           <div key={field.id} className="space-y-2">
             {field.showLabel && (
@@ -292,12 +375,7 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={cursorClass}>
-              {IconComponent && (
-                <InputGroupAddon style={iconStyle}>
-                  <IconComponent size={iconSize} />
-                </InputGroupAddon>
-              )}
+            <InputGroup onClick={handleFieldClick} className={cursorClass} style={{ direction: getDirection() }}>
               <Select 
                 required={field.required}
                 value={isPreview ? undefined : (formData[field.id] || '')}
@@ -305,7 +383,7 @@ export default function FormDisplay({
                 disabled={isPreview}
               >
                 <SelectTrigger 
-                  className={`w-full flex-1 rounded-none rounded-r-md border-l-0 ${cursorClass}`}
+                  className={variantsSelectClass}
                   style={inputStyle}
                   onClick={(e) => {
                     if (isPreview) {
@@ -329,6 +407,11 @@ export default function FormDisplay({
                   <SelectItem value="large">Size: Large</SelectItem>
                 </SelectContent>
               </Select>
+              {IconComponent && (
+                <InputGroupAddon style={iconStyle}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
             </InputGroup>
           </div>
         );
@@ -342,12 +425,7 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={cursorClass}>
-              {IconComponent && (
-                <InputGroupAddon style={iconStyle}>
-                  <IconComponent size={iconSize} />
-                </InputGroupAddon>
-              )}
+            <InputGroup onClick={handleFieldClick} className={cursorClass} style={{ direction: getDirection() }}>
               <InputGroupInput
                 type="number"
                 min={1}
@@ -360,6 +438,11 @@ export default function FormDisplay({
                 value={isPreview ? '1' : (formData[field.id] || '1')}
                 onChange={(e) => handleInputChange(field.id, e.target.value)}
               />
+              {IconComponent && (
+                <InputGroupAddon style={iconStyle}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
             </InputGroup>
           </div>
         );
@@ -373,13 +456,8 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <div className="flex items-center gap-2">
-              <InputGroup className={`flex-1 ${cursorClass}`} onClick={handleFieldClick}>
-                {IconComponent && (
-                  <InputGroupAddon style={iconStyle}>
-                    <IconComponent size={iconSize} />
-                  </InputGroupAddon>
-                )}
+            <div className="flex items-center gap-2" style={{ direction: getDirection() }}>
+              <InputGroup className={`flex-1 ${cursorClass}`} onClick={handleFieldClick} style={{ direction: getDirection() }}>
                 <InputGroupInput
                   placeholder={field.showPlaceholder ? field.placeholder : ''}
                   style={inputStyle}
@@ -389,6 +467,11 @@ export default function FormDisplay({
                   value={isPreview ? '' : (formData[field.id] || '')}
                   onChange={(e) => handleInputChange(field.id, e.target.value)}
                 />
+                {IconComponent && (
+                  <InputGroupAddon style={iconStyle}>
+                    <IconComponent size={iconSize} />
+                  </InputGroupAddon>
+                )}
               </InputGroup>
               <Button type={isPreview ? 'button' : 'button'} disabled={isPreview}>
                 Apply
@@ -428,7 +511,7 @@ export default function FormDisplay({
           </Card>
         );
 
-      case 'buyButton':
+      case 'buyButton': {
         // Map animation type to CSS class
         const getAnimationClass = (animation?: string) => {
           if (!animation || animation === 'none') return '';
@@ -624,6 +707,7 @@ export default function FormDisplay({
             </Button>
           </div>
         );
+      }
 
       default:
         return null;
@@ -641,7 +725,7 @@ export default function FormDisplay({
       borderRadius: `${globalSettings.border.radius}px`,
       padding: `${globalSettings.border.padding}px`,
       width: '100%',
-      boxSizing: 'border-box',
+      boxSizing: 'border-box' as const,
     };
   };
 
@@ -702,7 +786,7 @@ export default function FormDisplay({
   if (isPreview) {
     const borderStyle = getBorderStyle();
     return (
-      <Card style={borderStyle} className="p-0">
+      <Card style={{ ...borderStyle, direction: getDirection() }} className="p-0">
         <CardContent className="space-y-4 p-0">
           {content}
         </CardContent>
@@ -711,7 +795,7 @@ export default function FormDisplay({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" style={getBorderStyle()}>
+    <form onSubmit={handleSubmit} className="space-y-4" style={{ ...getBorderStyle(), direction: getDirection() }}>
       {content}
     </form>
   );

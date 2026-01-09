@@ -49,6 +49,7 @@ export interface GlobalFormSettings {
   fontSize: string;
   fontWeight: 'normal' | 'bold' | '600' | '700';
   fontStyle: 'normal' | 'italic';
+  direction: 'ltr' | 'rtl';
   inputPadding: {
     vertical: number;
     horizontal: number;
@@ -419,6 +420,7 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalFormSettings = {
   fontSize: '16px',
   fontWeight: 'normal',
   fontStyle: 'normal',
+  direction: 'ltr',
   inputPadding: {
     vertical: 8,
     horizontal: 12

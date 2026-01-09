@@ -54,7 +54,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
           <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }}>Font Settings & Color</h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
             <div style={{ flex: '1 1 150px', minWidth: '120px' }}>
-              <s-text style={{ marginBottom: '8px', display: 'block' }}>Primary Color</s-text>
+              <s-text >Primary Color</s-text>
               <CompactColorSwatch
                 value={settings.primaryColor}
                 onChange={(color) => onUpdate({ primaryColor: color })}
@@ -94,11 +94,11 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
               />
             </div>
             <div style={{ flex: '0 0 auto' }}>
-              <s-text style={{ marginBottom: '8px', display: 'block' }}>Font Style</s-text>
+              <s-text>Font Style</s-text>
               <s-stack direction="inline" gap="small">
                 <s-button
                   variant={settings.fontWeight === 'bold' ? 'primary' : 'secondary'}
-                  size="small"
+                  
                   onClick={() => {
                     const currentWeight = settings.fontWeight || 'normal';
                     onUpdate({ fontWeight: currentWeight === 'bold' ? 'normal' : 'bold' });
@@ -109,7 +109,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                 </s-button>
                 <s-button
                   variant={settings.fontStyle === 'italic' ? 'primary' : 'secondary'}
-                  size="small"
+                  
                   onClick={() => {
                     const currentStyle = settings.fontStyle || 'normal';
                     onUpdate({ fontStyle: currentStyle === 'italic' ? 'normal' : 'italic' });
@@ -121,8 +121,30 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
               </s-stack>
             </div>
           </div>
-          <s-text style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
+          <s-text>
             These settings will be applied to all form fields. Primary color is used for borders, icons, labels, and other form elements.
+          </s-text>
+        </div>
+
+        <s-divider />
+
+        {/* Direction Section */}
+        <div>
+          <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }}>Text Direction</h4>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
+            <div style={{ flex: '1 1 150px', minWidth: '120px' }}>
+              <s-select
+                label="Direction"
+                value={settings.direction || 'ltr'}
+                onChange={(e: any) => onUpdate({ direction: e.target.value || e.detail?.value || 'ltr' })}
+              >
+                <s-option value="ltr">Left to Right (LTR)</s-option>
+                <s-option value="rtl">Right to Left (RTL)</s-option>
+              </s-select>
+            </div>
+          </div>
+          <s-text>
+            Set the text direction for the entire form. RTL is used for languages like Arabic.
           </s-text>
         </div>
 
@@ -130,7 +152,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
 
         {/* Headline Section */}
         <div>
-          <s-stack direction="inline" justifyContent="space-between" alignItems="center" style={{ marginBottom: '8px' }}>
+          <s-stack direction="inline" justifyContent="space-between" alignItems="center">
             <h4 style={{ fontWeight: 600, margin: 0 }}>Headline</h4>
             <s-switch
               checked={settings.headline.enabled}
@@ -139,7 +161,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
           </s-stack>
 
           {settings.headline.enabled && (
-            <s-stack gap="small" style={{ marginTop: '12px' }}>
+            <s-stack gap="small">
               <div>
                 <s-text>Text</s-text>
                 <s-text-field
@@ -148,11 +170,11 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                 />
               </div>
               <div>
-                <s-text style={{ marginBottom: '8px', display: 'block' }}>Alignment</s-text>
+                <s-text>Alignment</s-text>
                 <s-stack direction="inline" gap="small">
                   <s-button
                     variant={settings.headline.alignment === 'left' ? 'primary' : 'secondary'}
-                    size="small"
+                    
                     onClick={() => updateHeadline({ alignment: 'left' })}
                     aria-label="Align left"
                   >
@@ -160,7 +182,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   </s-button>
                   <s-button
                     variant={settings.headline.alignment === 'center' ? 'primary' : 'secondary'}
-                    size="small"
+                    
                     onClick={() => updateHeadline({ alignment: 'center' })}
                     aria-label="Align center"
                   >
@@ -168,7 +190,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   </s-button>
                   <s-button
                     variant={settings.headline.alignment === 'right' ? 'primary' : 'secondary'}
-                    size="small"
+                    
                     onClick={() => updateHeadline({ alignment: 'right' })}
                     aria-label="Align right"
                   >
@@ -184,7 +206,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
 
         {/* Subtitle Section */}
         <div>
-          <s-stack direction="inline" justifyContent="space-between" alignItems="center" style={{ marginBottom: '8px' }}>
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
             <h4 style={{ fontWeight: 600, margin: 0 }}>Subtitle</h4>
             <s-switch
               checked={settings.subtitle.enabled}
@@ -193,7 +215,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
           </s-stack>
 
           {settings.subtitle.enabled && (
-            <s-stack gap="small" style={{ marginTop: '12px' }}>
+            <s-stack gap="small">
               <div>
                 <s-text>Text</s-text>
                 <s-text-field
@@ -202,11 +224,10 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                 />
               </div>
               <div>
-                <s-text style={{ marginBottom: '8px', display: 'block' }}>Alignment</s-text>
+                <s-text>Alignment</s-text>
                 <s-stack direction="inline" gap="small">
                   <s-button
                     variant={settings.subtitle.alignment === 'left' ? 'primary' : 'secondary'}
-                    size="small"
                     onClick={() => updateSubtitle({ alignment: 'left' })}
                     aria-label="Align left"
                   >
@@ -214,7 +235,6 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   </s-button>
                   <s-button
                     variant={settings.subtitle.alignment === 'center' ? 'primary' : 'secondary'}
-                    size="small"
                     onClick={() => updateSubtitle({ alignment: 'center' })}
                     aria-label="Align center"
                   >
@@ -222,7 +242,6 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   </s-button>
                   <s-button
                     variant={settings.subtitle.alignment === 'right' ? 'primary' : 'secondary'}
-                    size="small"
                     onClick={() => updateSubtitle({ alignment: 'right' })}
                     aria-label="Align right"
                   >
@@ -287,7 +306,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
               />
             </div>
           </div>
-          <s-text style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
+          <s-text>
             Adjust the padding inside all form input fields. Vertical padding controls top/bottom spacing, horizontal padding controls left/right spacing.
           </s-text>
         </div>
@@ -296,7 +315,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
 
         {/* Border Section */}
         <div>
-          <s-stack direction="inline" justifyContent="space-between" alignItems="center" style={{ marginBottom: '8px' }}>
+          <s-stack direction="inline" justifyContent="space-between" alignItems="center">
             <h4 style={{ fontWeight: 600, margin: 0 }}>Form Border</h4>
             <s-switch
               checked={settings.border.enabled}
@@ -305,7 +324,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
           </s-stack>
 
           {settings.border.enabled && (
-            <s-stack gap="small" style={{ marginTop: '12px' }}>
+            <s-stack gap="small">
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
                 <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
                   <s-text>Border Width</s-text>
@@ -375,7 +394,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   />
                 </div>
                 <div style={{ flex: '0 0 auto' }}>
-                  <s-text style={{ marginBottom: '8px', display: 'block' }}>Border Color</s-text>
+                  <s-text>Border Color</s-text>
                   <CompactColorSwatch
                     value={settings.border.color || '#9ca3af'}
                     onChange={(color) => updateBorder({ color })}
