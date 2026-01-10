@@ -99,7 +99,6 @@
 
     switch (field.type) {
       case 'name':
-      case 'city':
       case 'email':
         // Input border radius - depends on icon position
         const inputBorderRadius = Utils.renderIcon(field.icon, iconSize) 
@@ -117,6 +116,35 @@
             name="${field.id}"
             id="field-${field.id}"
           />
+          ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+        `;
+        break;
+
+      case 'city':
+        // Select border radius - depends on icon position
+        const citySelectBorder = Utils.renderIcon(field.icon, iconSize) 
+          ? (iconOnLeft 
+              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
+              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
+          : 'border-radius: 0.375rem;';
+        const citySelectArrowPos = 'right 12px';
+        // Get base padding and ensure right padding accounts for arrow
+        const cityBasePadding = Utils.calculatePadding(globalFontSize, settings);
+        const citySelectPadding = cityBasePadding.replace(/padding-right:\s*[^;]+/, 'padding-right: 32px');
+        const citySelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: ${citySelectArrowPos} center; ${citySelectPadding} -webkit-appearance: none; -moz-appearance: none; appearance: none; ${citySelectBorder}`;
+        fieldHTML += `
+          ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          <select 
+            style="${citySelectStyle} opacity: 0.6; cursor: not-allowed; background-color: #f9fafb;"
+            ${field.required ? 'required' : ''}
+            name="${field.id}"
+            id="field-${field.id}"
+            class="leadcod-city-select"
+            data-placeholder="${field.showPlaceholder ? field.placeholder : 'Select'}"
+            disabled
+          >
+            <option value="">Select province first</option>
+          </select>
           ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
         `;
         break;
@@ -153,23 +181,22 @@
               : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
           : 'border-radius: 0.375rem;';
         const provinceSelectArrowPos = 'right 12px';
-        const provinceSelectPadding = 'padding-right: 32px;';
+        // Get base padding and ensure right padding accounts for arrow
+        const basePadding = Utils.calculatePadding(globalFontSize, settings);
+        const provinceSelectPadding = basePadding.replace(/padding-right:\s*[^;]+/, 'padding-right: 32px');
         const provinceSelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: ${provinceSelectArrowPos} center; ${provinceSelectPadding} -webkit-appearance: none; -moz-appearance: none; appearance: none; ${provinceSelectBorder}`;
         fieldHTML += `
           ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
           <select 
-            style="${provinceSelectStyle}"
+            style="${provinceSelectStyle} opacity: 0.6; cursor: not-allowed; background-color: #f9fafb;"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
+            class="leadcod-province-select"
+            data-placeholder="${field.showPlaceholder ? field.placeholder : 'Select'}"
+            disabled
           >
             <option value="">${field.showPlaceholder ? field.placeholder : 'Select'}</option>
-            <option value="ontario">Ontario</option>
-            <option value="quebec">Quebec</option>
-            <option value="british-columbia">British Columbia</option>
-            <option value="alberta">Alberta</option>
-            <option value="manitoba">Manitoba</option>
-            <option value="saskatchewan">Saskatchewan</option>
           </select>
           ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
         `;

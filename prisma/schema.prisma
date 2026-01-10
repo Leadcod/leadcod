@@ -20,6 +20,8 @@ model Shop {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Form Form[]
+  shippingSettings ShippingSettings?
+  shippingFees ShippingFee[]
 }
 
 model Form {
@@ -52,6 +54,7 @@ model State {
   updatedAt DateTime @updatedAt
   country Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
   cities City[]
+  shippingFees ShippingFee[]
 }
 
 model City {
@@ -62,5 +65,31 @@ model City {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   state State @relation(fields: [stateId], references: [id], onDelete: Cascade)
+}
+
+model ShippingSettings {
+  id String @id @default(uuid())
+  shopId String @unique
+  method String // 'free' or 'per-province'
+  stopDeskEnabled Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+}
+
+model ShippingFee {
+  id String @id @default(uuid())
+  shopId String
+  stateId String
+  cashOnDelivery Int? // Nullable, stored as integer
+  stopDesk Int? // Nullable, stored as integer
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  state State @relation(fields: [stateId], references: [id], onDelete: Cascade)
+
+  @@unique([shopId, stateId])
+  @@index([shopId])
+  @@index([stateId])
 }
 

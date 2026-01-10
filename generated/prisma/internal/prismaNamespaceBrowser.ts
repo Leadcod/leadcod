@@ -55,7 +55,9 @@ export const ModelName = {
   Form: 'Form',
   Country: 'Country',
   State: 'State',
-  City: 'City'
+  City: 'City',
+  ShippingSettings: 'ShippingSettings',
+  ShippingFee: 'ShippingFee'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -131,6 +133,31 @@ export const CityScalarFieldEnum = {
 } as const
 
 export type CityScalarFieldEnum = (typeof CityScalarFieldEnum)[keyof typeof CityScalarFieldEnum]
+
+
+export const ShippingSettingsScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  method: 'method',
+  stopDeskEnabled: 'stopDeskEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShippingSettingsScalarFieldEnum = (typeof ShippingSettingsScalarFieldEnum)[keyof typeof ShippingSettingsScalarFieldEnum]
+
+
+export const ShippingFeeScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  stateId: 'stateId',
+  cashOnDelivery: 'cashOnDelivery',
+  stopDesk: 'stopDesk',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShippingFeeScalarFieldEnum = (typeof ShippingFeeScalarFieldEnum)[keyof typeof ShippingFeeScalarFieldEnum]
 
 
 export const SortOrder = {

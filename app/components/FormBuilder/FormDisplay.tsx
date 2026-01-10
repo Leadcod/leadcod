@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import * as Icons from 'lucide-react';
 import { FormField, GlobalFormSettings } from '@/app/types/form';
 import { InputGroup, InputGroupInput, InputGroupAddon } from '@/components/ui/input-group';
@@ -8,6 +8,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+
+interface State {
+  id: string;
+  code: string;
+  name: string;
+  nameAr: string;
+}
+
+interface City {
+  id: string;
+  name: string;
+  nameAr: string;
+}
 
 interface FormDisplayProps {
   fields: FormField[];
@@ -26,6 +39,81 @@ export default function FormDisplay({
 }: FormDisplayProps) {
   const isPreview = mode === 'preview';
   const [formData, setFormData] = useState<Record<string, any>>({});
+  const [states, setStates] = useState<State[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
+  const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
+
+  // Fetch states on mount
+  useEffect(() => {
+    const fetchStates = async () => {
+      setLoadingStates(true);
+      try {
+        const response = await fetch('/api/states');
+        const result = await response.json();
+        if (result.success) {
+          setStates(result.data);
+        }
+      } catch (error) {
+        console.error('Error fetching states:', error);
+      } finally {
+        setLoadingStates(false);
+      }
+    };
+    fetchStates();
+  }, []);
+
+  // Fetch cities when state is selected
+  useEffect(() => {
+    const fetchCities = async () => {
+      if (!selectedStateId) {
+        setCities([]);
+        return;
+      }
+      setLoadingCities(true);
+      try {
+        const response = await fetch(`/api/cities?stateId=${selectedStateId}`);
+        const result = await response.json();
+        if (result.success) {
+          setCities(result.data);
+        }
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      } finally {
+        setLoadingCities(false);
+      }
+    };
+    fetchCities();
+  }, [selectedStateId]);
+
+  // Sync selectedStateId with formData
+  useEffect(() => {
+    const provinceField = fields.find(f => f.type === 'province');
+    if (provinceField && formData[provinceField.id] && formData[provinceField.id] !== selectedStateId) {
+      setSelectedStateId(formData[provinceField.id]);
+    }
+  }, [formData, fields, selectedStateId]);
+
+  // Handle province/state change
+  const handleProvinceChange = (stateId: string) => {
+    const provinceField = fields.find(f => f.type === 'province');
+    const cityField = fields.find(f => f.type === 'city');
+    if (provinceField) {
+      setSelectedStateId(stateId);
+      const updates: Record<string, any> = { [provinceField.id]: stateId };
+      if (cityField) {
+        updates[cityField.id] = ''; // Clear city when state changes
+      }
+      setFormData(prev => ({ ...prev, ...updates }));
+      if (!isPreview) {
+        handleInputChange(provinceField.id, stateId);
+        if (cityField) {
+          handleInputChange(cityField.id, '');
+        }
+      }
+    }
+  };
 
   // Filter only visible fields and sort by order
   const visibleFields = fields
@@ -190,7 +278,6 @@ export default function FormDisplay({
 
     switch (field.type) {
       case 'name':
-      case 'city':
       case 'email':
         return (
           <div key={field.id} className="space-y-2">
@@ -216,6 +303,88 @@ export default function FormDisplay({
                 value={isPreview ? '' : (formData[field.id] || '')}
                 onChange={(e) => handleInputChange(field.id, e.target.value)}
               />
+              {IconComponent && iconOnRight && (
+                <InputGroupAddon style={getIconStyle(false)}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
+            </InputGroup>
+          </div>
+        );
+
+      case 'city':
+        // Select border radius - depends on icon position
+        const citySelectClass = IconComponent
+          ? iconOnLeft
+            ? `w-full flex-1 rounded-none rounded-r-md border-l-0 ${cursorClass}`
+            : `w-full flex-1 rounded-none rounded-l-md border-r-0 ${cursorClass}`
+          : `w-full rounded-md ${cursorClass}`;
+        return (
+          <div key={field.id} className="space-y-2">
+            {field.showLabel && (
+              <Label style={labelStyle}>
+                {field.label}
+                {field.required && <span className="text-red-500">*</span>}
+              </Label>
+            )}
+            <InputGroup onClick={handleFieldClick} className={cursorClass}>
+              {IconComponent && iconOnLeft && (
+                <InputGroupAddon style={getIconStyle(true)}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
+              <Select 
+                required={field.required}
+                value={isPreview ? undefined : (formData[field.id] || '')}
+                onValueChange={(value) => handleInputChange(field.id, value)}
+                disabled={isPreview || loadingCities || !selectedStateId}
+              >
+                <SelectTrigger 
+                  className={citySelectClass}
+                  style={{
+                    ...inputStyle,
+                    padding: getPadding(globalFontSize),
+                    height: getHeight(globalFontSize),
+                    minHeight: getHeight(globalFontSize),
+                    justifyContent: inputAlignment === 'center' ? 'center' : inputAlignment === 'right' ? 'flex-end' : 'space-between',
+                    opacity: (loadingCities || !selectedStateId) ? 0.6 : 1,
+                    cursor: (loadingCities || !selectedStateId) ? 'not-allowed' : 'pointer',
+                    backgroundColor: (loadingCities || !selectedStateId) ? '#f9fafb' : inputStyle.backgroundColor,
+                  }}
+                  onClick={(e) => {
+                    if (isPreview) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleFieldClick();
+                    }
+                  }}
+                  onPointerDown={(e) => {
+                    if (isPreview) {
+                      e.preventDefault();
+                      handleFieldClick();
+                    }
+                  }}
+                >
+                  <SelectValue 
+                    placeholder={
+                      !selectedStateId 
+                        ? 'Select province first' 
+                        : (field.showPlaceholder ? field.placeholder : 'Select')
+                    }
+                    style={{ textAlign: inputAlignment }}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {cities.map((city) => {
+                    const displayName = `${city.name} - ${city.nameAr}`;
+                    return (
+                      <SelectItem key={city.id} value={city.id}>
+                        {displayName}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
               {IconComponent && iconOnRight && (
                 <InputGroupAddon style={getIconStyle(false)}>
                   <IconComponent size={iconSize} />
@@ -299,14 +468,20 @@ export default function FormDisplay({
               <Select 
                 required={field.required}
                 value={isPreview ? undefined : (formData[field.id] || '')}
-                onValueChange={(value) => handleInputChange(field.id, value)}
-                disabled={isPreview}
+                onValueChange={(value) => handleProvinceChange(value)}
+                disabled={isPreview || loadingStates}
               >
                 <SelectTrigger 
                   className={provinceSelectClass}
                   style={{
                     ...inputStyle,
+                    padding: getPadding(globalFontSize),
+                    height: getHeight(globalFontSize),
+                    minHeight: getHeight(globalFontSize),
                     justifyContent: inputAlignment === 'center' ? 'center' : inputAlignment === 'right' ? 'flex-end' : 'space-between',
+                    opacity: loadingStates ? 0.6 : 1,
+                    cursor: loadingStates ? 'not-allowed' : 'pointer',
+                    backgroundColor: loadingStates ? '#f9fafb' : inputStyle.backgroundColor,
                   }}
                   onClick={(e) => {
                     if (isPreview) {
@@ -328,12 +503,14 @@ export default function FormDisplay({
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ontario">Ontario</SelectItem>
-                  <SelectItem value="quebec">Quebec</SelectItem>
-                  <SelectItem value="british-columbia">British Columbia</SelectItem>
-                  <SelectItem value="alberta">Alberta</SelectItem>
-                  <SelectItem value="manitoba">Manitoba</SelectItem>
-                  <SelectItem value="saskatchewan">Saskatchewan</SelectItem>
+                  {states.map((state) => {
+                    const displayName = `${state.name} - ${state.nameAr} (${state.code})`;
+                    return (
+                      <SelectItem key={state.id} value={state.id}>
+                        {displayName}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
               {IconComponent && iconOnRight && (

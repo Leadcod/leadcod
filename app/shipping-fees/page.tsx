@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import ShippingFeesClient from "../components/ShippingFees/ShippingFeesClient";
 
 export default async function ShippingFeesPage({
   searchParams,
@@ -11,9 +12,7 @@ export default async function ShippingFeesPage({
   return (
     <>
       <s-page heading="Shipping fees" />
-      <div className="p-6">
-        <p>Shipping fees settings page for shop: {shop}</p>
-      </div>
+      <ShippingFeesClient shopUrl={shop} />
     </>
   );
 }

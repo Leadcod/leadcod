@@ -5,7 +5,7 @@
 {% render 'leadcod_config' %}
 {% comment %} Ensure API URL is set, fallback to config value if not available {% endcomment %}
 {% unless LEADCOD_API_URL %}
-  {% assign LEADCOD_API_URL = "https://1586904d3f76.ngrok-free.app/api/form" %}
+  {% assign LEADCOD_API_URL = "https://9b1a587349e8.ngrok-free.app/api/form" %}
 {% endunless %}
 <script>
 (function() {
@@ -92,6 +92,9 @@
       lucide.createIcons();
     }
 
+    // Load states and cities
+    loadStatesAndCities(container, apiUrl);
+
     // Add form submission handler
     const form = container.querySelector('.leadcod-form');
     if (form) {
@@ -104,6 +107,94 @@
         alert('Form submitted! (This is a demo)');
       });
     }
+  }
+
+  function loadStatesAndCities(container, apiUrl) {
+    const baseApiUrl = apiUrl.replace('/form', '');
+    const provinceSelect = container.querySelector('.leadcod-province-select');
+    const cityField = container.querySelector('.leadcod-city-select');
+    
+    if (!provinceSelect) return;
+
+    // Fetch states
+    fetch(`${baseApiUrl}/states`)
+      .then(response => response.json())
+      .then(result => {
+        if (result.success && result.data) {
+          // Clear loading option - use placeholder from field if available
+          const placeholder = provinceSelect.getAttribute('data-placeholder') || 'Select province';
+          provinceSelect.innerHTML = `<option value="">${placeholder}</option>`;
+          
+          // Populate states
+          result.data.forEach(state => {
+            const option = document.createElement('option');
+            option.value = state.id;
+            option.textContent = `${state.name} - ${state.nameAr} (${state.code})`;
+            provinceSelect.appendChild(option);
+          });
+
+          // Enable the select and restore normal styling
+          provinceSelect.disabled = false;
+          provinceSelect.style.opacity = '1';
+          provinceSelect.style.cursor = 'pointer';
+          provinceSelect.style.backgroundColor = '';
+
+          // Add change listener to province select
+          provinceSelect.addEventListener('change', function() {
+            const selectedStateId = this.value;
+            if (cityField) {
+              if (selectedStateId) {
+                // Fetch cities for selected state
+                cityField.disabled = true;
+                cityField.style.opacity = '0.6';
+                cityField.style.cursor = 'not-allowed';
+                cityField.style.backgroundColor = '#f9fafb';
+                const placeholder = cityField.getAttribute('data-placeholder') || 'Select city';
+                cityField.innerHTML = `<option value="">${placeholder}</option>`;
+                
+                fetch(`${baseApiUrl}/cities?stateId=${selectedStateId}`)
+                  .then(response => response.json())
+                  .then(result => {
+                    if (result.success && result.data) {
+                      cityField.innerHTML = `<option value="">${placeholder}</option>`;
+                      result.data.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city.id;
+                        option.textContent = `${city.name} - ${city.nameAr}`;
+                        cityField.appendChild(option);
+                      });
+                      cityField.disabled = false;
+                      cityField.style.opacity = '1';
+                      cityField.style.cursor = 'pointer';
+                      cityField.style.backgroundColor = '';
+                    } else {
+                      cityField.innerHTML = '<option value="">Error loading cities</option>';
+                      cityField.style.opacity = '0.6';
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Error fetching cities:', error);
+                    cityField.innerHTML = '<option value="">Error loading cities</option>';
+                    cityField.style.opacity = '0.6';
+                  });
+              } else {
+                // Clear city dropdown
+                cityField.innerHTML = '<option value="">Select province first</option>';
+                cityField.disabled = true;
+                cityField.style.opacity = '0.6';
+                cityField.style.cursor = 'not-allowed';
+                cityField.style.backgroundColor = '#f9fafb';
+              }
+            }
+          });
+        } else {
+          provinceSelect.innerHTML = '<option value="">Error loading provinces</option>';
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching states:', error);
+        provinceSelect.innerHTML = '<option value="">Error loading provinces</option>';
+      });
   }
 })();
 </script>

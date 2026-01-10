@@ -42,3 +42,13 @@ export type State = Prisma.StateModel
  * 
  */
 export type City = Prisma.CityModel
+/**
+ * Model ShippingSettings
+ * 
+ */
+export type ShippingSettings = Prisma.ShippingSettingsModel
+/**
+ * Model ShippingFee
+ * 
+ */
+export type ShippingFee = Prisma.ShippingFeeModel

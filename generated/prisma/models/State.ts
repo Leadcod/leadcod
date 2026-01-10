@@ -200,6 +200,7 @@ export type StateWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"State"> | Date | string
   country?: Prisma.XOR<Prisma.CountryScalarRelationFilter, Prisma.CountryWhereInput>
   cities?: Prisma.CityListRelationFilter
+  shippingFees?: Prisma.ShippingFeeListRelationFilter
 }
 
 export type StateOrderByWithRelationInput = {
@@ -212,6 +213,7 @@ export type StateOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   country?: Prisma.CountryOrderByWithRelationInput
   cities?: Prisma.CityOrderByRelationAggregateInput
+  shippingFees?: Prisma.ShippingFeeOrderByRelationAggregateInput
 }
 
 export type StateWhereUniqueInput = Prisma.AtLeast<{
@@ -227,6 +229,7 @@ export type StateWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"State"> | Date | string
   country?: Prisma.XOR<Prisma.CountryScalarRelationFilter, Prisma.CountryWhereInput>
   cities?: Prisma.CityListRelationFilter
+  shippingFees?: Prisma.ShippingFeeListRelationFilter
 }, "id">
 
 export type StateOrderByWithAggregationInput = {
@@ -264,6 +267,7 @@ export type StateCreateInput = {
   updatedAt?: Date | string
   country: Prisma.CountryCreateNestedOneWithoutStatesInput
   cities?: Prisma.CityCreateNestedManyWithoutStateInput
+  shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutStateInput
 }
 
 export type StateUncheckedCreateInput = {
@@ -275,6 +279,7 @@ export type StateUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   cities?: Prisma.CityUncheckedCreateNestedManyWithoutStateInput
+  shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutStateInput
 }
 
 export type StateUpdateInput = {
@@ -286,6 +291,7 @@ export type StateUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   country?: Prisma.CountryUpdateOneRequiredWithoutStatesNestedInput
   cities?: Prisma.CityUpdateManyWithoutStateNestedInput
+  shippingFees?: Prisma.ShippingFeeUpdateManyWithoutStateNestedInput
 }
 
 export type StateUncheckedUpdateInput = {
@@ -297,6 +303,7 @@ export type StateUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cities?: Prisma.CityUncheckedUpdateManyWithoutStateNestedInput
+  shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutStateNestedInput
 }
 
 export type StateCreateManyInput = {
@@ -429,6 +436,20 @@ export type StateUpdateOneRequiredWithoutCitiesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StateUpdateToOneWithWhereWithoutCitiesInput, Prisma.StateUpdateWithoutCitiesInput>, Prisma.StateUncheckedUpdateWithoutCitiesInput>
 }
 
+export type StateCreateNestedOneWithoutShippingFeesInput = {
+  create?: Prisma.XOR<Prisma.StateCreateWithoutShippingFeesInput, Prisma.StateUncheckedCreateWithoutShippingFeesInput>
+  connectOrCreate?: Prisma.StateCreateOrConnectWithoutShippingFeesInput
+  connect?: Prisma.StateWhereUniqueInput
+}
+
+export type StateUpdateOneRequiredWithoutShippingFeesNestedInput = {
+  create?: Prisma.XOR<Prisma.StateCreateWithoutShippingFeesInput, Prisma.StateUncheckedCreateWithoutShippingFeesInput>
+  connectOrCreate?: Prisma.StateCreateOrConnectWithoutShippingFeesInput
+  upsert?: Prisma.StateUpsertWithoutShippingFeesInput
+  connect?: Prisma.StateWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StateUpdateToOneWithWhereWithoutShippingFeesInput, Prisma.StateUpdateWithoutShippingFeesInput>, Prisma.StateUncheckedUpdateWithoutShippingFeesInput>
+}
+
 export type StateCreateWithoutCountryInput = {
   id?: string
   code: string
@@ -437,6 +458,7 @@ export type StateCreateWithoutCountryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   cities?: Prisma.CityCreateNestedManyWithoutStateInput
+  shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutStateInput
 }
 
 export type StateUncheckedCreateWithoutCountryInput = {
@@ -447,6 +469,7 @@ export type StateUncheckedCreateWithoutCountryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   cities?: Prisma.CityUncheckedCreateNestedManyWithoutStateInput
+  shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutStateInput
 }
 
 export type StateCreateOrConnectWithoutCountryInput = {
@@ -496,6 +519,7 @@ export type StateCreateWithoutCitiesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   country: Prisma.CountryCreateNestedOneWithoutStatesInput
+  shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutStateInput
 }
 
 export type StateUncheckedCreateWithoutCitiesInput = {
@@ -506,6 +530,7 @@ export type StateUncheckedCreateWithoutCitiesInput = {
   nameAr: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutStateInput
 }
 
 export type StateCreateOrConnectWithoutCitiesInput = {
@@ -532,6 +557,7 @@ export type StateUpdateWithoutCitiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   country?: Prisma.CountryUpdateOneRequiredWithoutStatesNestedInput
+  shippingFees?: Prisma.ShippingFeeUpdateManyWithoutStateNestedInput
 }
 
 export type StateUncheckedUpdateWithoutCitiesInput = {
@@ -542,6 +568,67 @@ export type StateUncheckedUpdateWithoutCitiesInput = {
   nameAr?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutStateNestedInput
+}
+
+export type StateCreateWithoutShippingFeesInput = {
+  id?: string
+  code: string
+  name: string
+  nameAr: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  country: Prisma.CountryCreateNestedOneWithoutStatesInput
+  cities?: Prisma.CityCreateNestedManyWithoutStateInput
+}
+
+export type StateUncheckedCreateWithoutShippingFeesInput = {
+  id?: string
+  countryId: string
+  code: string
+  name: string
+  nameAr: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  cities?: Prisma.CityUncheckedCreateNestedManyWithoutStateInput
+}
+
+export type StateCreateOrConnectWithoutShippingFeesInput = {
+  where: Prisma.StateWhereUniqueInput
+  create: Prisma.XOR<Prisma.StateCreateWithoutShippingFeesInput, Prisma.StateUncheckedCreateWithoutShippingFeesInput>
+}
+
+export type StateUpsertWithoutShippingFeesInput = {
+  update: Prisma.XOR<Prisma.StateUpdateWithoutShippingFeesInput, Prisma.StateUncheckedUpdateWithoutShippingFeesInput>
+  create: Prisma.XOR<Prisma.StateCreateWithoutShippingFeesInput, Prisma.StateUncheckedCreateWithoutShippingFeesInput>
+  where?: Prisma.StateWhereInput
+}
+
+export type StateUpdateToOneWithWhereWithoutShippingFeesInput = {
+  where?: Prisma.StateWhereInput
+  data: Prisma.XOR<Prisma.StateUpdateWithoutShippingFeesInput, Prisma.StateUncheckedUpdateWithoutShippingFeesInput>
+}
+
+export type StateUpdateWithoutShippingFeesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  nameAr?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  country?: Prisma.CountryUpdateOneRequiredWithoutStatesNestedInput
+  cities?: Prisma.CityUpdateManyWithoutStateNestedInput
+}
+
+export type StateUncheckedUpdateWithoutShippingFeesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  countryId?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  nameAr?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cities?: Prisma.CityUncheckedUpdateManyWithoutStateNestedInput
 }
 
 export type StateCreateManyCountryInput = {
@@ -561,6 +648,7 @@ export type StateUpdateWithoutCountryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cities?: Prisma.CityUpdateManyWithoutStateNestedInput
+  shippingFees?: Prisma.ShippingFeeUpdateManyWithoutStateNestedInput
 }
 
 export type StateUncheckedUpdateWithoutCountryInput = {
@@ -571,6 +659,7 @@ export type StateUncheckedUpdateWithoutCountryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cities?: Prisma.CityUncheckedUpdateManyWithoutStateNestedInput
+  shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutStateNestedInput
 }
 
 export type StateUncheckedUpdateManyWithoutCountryInput = {
@@ -589,10 +678,12 @@ export type StateUncheckedUpdateManyWithoutCountryInput = {
 
 export type StateCountOutputType = {
   cities: number
+  shippingFees: number
 }
 
 export type StateCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   cities?: boolean | StateCountOutputTypeCountCitiesArgs
+  shippingFees?: boolean | StateCountOutputTypeCountShippingFeesArgs
 }
 
 /**
@@ -612,6 +703,13 @@ export type StateCountOutputTypeCountCitiesArgs<ExtArgs extends runtime.Types.Ex
   where?: Prisma.CityWhereInput
 }
 
+/**
+ * StateCountOutputType without action
+ */
+export type StateCountOutputTypeCountShippingFeesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ShippingFeeWhereInput
+}
+
 
 export type StateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -623,6 +721,7 @@ export type StateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   updatedAt?: boolean
   country?: boolean | Prisma.CountryDefaultArgs<ExtArgs>
   cities?: boolean | Prisma.State$citiesArgs<ExtArgs>
+  shippingFees?: boolean | Prisma.State$shippingFeesArgs<ExtArgs>
   _count?: boolean | Prisma.StateCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["state"]>
 
@@ -662,6 +761,7 @@ export type StateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
 export type StateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   country?: boolean | Prisma.CountryDefaultArgs<ExtArgs>
   cities?: boolean | Prisma.State$citiesArgs<ExtArgs>
+  shippingFees?: boolean | Prisma.State$shippingFeesArgs<ExtArgs>
   _count?: boolean | Prisma.StateCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -676,6 +776,7 @@ export type $StatePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   objects: {
     country: Prisma.$CountryPayload<ExtArgs>
     cities: Prisma.$CityPayload<ExtArgs>[]
+    shippingFees: Prisma.$ShippingFeePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1081,6 +1182,7 @@ export interface Prisma__StateClient<T, Null = never, ExtArgs extends runtime.Ty
   readonly [Symbol.toStringTag]: "PrismaPromise"
   country<T extends Prisma.CountryDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CountryDefaultArgs<ExtArgs>>): Prisma.Prisma__CountryClient<runtime.Types.Result.GetResult<Prisma.$CountryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   cities<T extends Prisma.State$citiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.State$citiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  shippingFees<T extends Prisma.State$shippingFeesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.State$shippingFeesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShippingFeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1534,6 +1636,30 @@ export type State$citiesArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   distinct?: Prisma.CityScalarFieldEnum | Prisma.CityScalarFieldEnum[]
+}
+
+/**
+ * State.shippingFees
+ */
+export type State$shippingFeesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ShippingFee
+   */
+  select?: Prisma.ShippingFeeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ShippingFee
+   */
+  omit?: Prisma.ShippingFeeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ShippingFeeInclude<ExtArgs> | null
+  where?: Prisma.ShippingFeeWhereInput
+  orderBy?: Prisma.ShippingFeeOrderByWithRelationInput | Prisma.ShippingFeeOrderByWithRelationInput[]
+  cursor?: Prisma.ShippingFeeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ShippingFeeScalarFieldEnum | Prisma.ShippingFeeScalarFieldEnum[]
 }
 
 /**

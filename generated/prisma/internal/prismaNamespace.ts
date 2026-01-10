@@ -388,7 +388,9 @@ export const ModelName = {
   Form: 'Form',
   Country: 'Country',
   State: 'State',
-  City: 'City'
+  City: 'City',
+  ShippingSettings: 'ShippingSettings',
+  ShippingFee: 'ShippingFee'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "shop" | "form" | "country" | "state" | "city"
+    modelProps: "shop" | "form" | "country" | "state" | "city" | "shippingSettings" | "shippingFee"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -778,6 +780,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ShippingSettings: {
+      payload: Prisma.$ShippingSettingsPayload<ExtArgs>
+      fields: Prisma.ShippingSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ShippingSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ShippingSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.ShippingSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ShippingSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.ShippingSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.ShippingSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.ShippingSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ShippingSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.ShippingSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingSettingsPayload>
+        }
+        update: {
+          args: Prisma.ShippingSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.ShippingSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ShippingSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ShippingSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.ShippingSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.ShippingSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateShippingSettings>
+        }
+        groupBy: {
+          args: Prisma.ShippingSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShippingSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ShippingSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShippingSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
+    ShippingFee: {
+      payload: Prisma.$ShippingFeePayload<ExtArgs>
+      fields: Prisma.ShippingFeeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ShippingFeeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingFeePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ShippingFeeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingFeePayload>
+        }
+        findFirst: {
+          args: Prisma.ShippingFeeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingFeePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ShippingFeeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingFeePayload>
+        }
+        findMany: {
+          args: Prisma.ShippingFeeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingFeePayload>[]
+        }
+        create: {
+          args: Prisma.ShippingFeeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingFeePayload>
+        }
+        createMany: {
+          args: Prisma.ShippingFeeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ShippingFeeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingFeePayload>[]
+        }
+        delete: {
+          args: Prisma.ShippingFeeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingFeePayload>
+        }
+        update: {
+          args: Prisma.ShippingFeeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingFeePayload>
+        }
+        deleteMany: {
+          args: Prisma.ShippingFeeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ShippingFeeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ShippingFeeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingFeePayload>[]
+        }
+        upsert: {
+          args: Prisma.ShippingFeeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShippingFeePayload>
+        }
+        aggregate: {
+          args: Prisma.ShippingFeeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateShippingFee>
+        }
+        groupBy: {
+          args: Prisma.ShippingFeeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShippingFeeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ShippingFeeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShippingFeeCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -874,6 +1024,31 @@ export const CityScalarFieldEnum = {
 } as const
 
 export type CityScalarFieldEnum = (typeof CityScalarFieldEnum)[keyof typeof CityScalarFieldEnum]
+
+
+export const ShippingSettingsScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  method: 'method',
+  stopDeskEnabled: 'stopDeskEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShippingSettingsScalarFieldEnum = (typeof ShippingSettingsScalarFieldEnum)[keyof typeof ShippingSettingsScalarFieldEnum]
+
+
+export const ShippingFeeScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  stateId: 'stateId',
+  cashOnDelivery: 'cashOnDelivery',
+  stopDesk: 'stopDesk',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShippingFeeScalarFieldEnum = (typeof ShippingFeeScalarFieldEnum)[keyof typeof ShippingFeeScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -973,6 +1148,13 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -983,6 +1165,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -1085,6 +1281,8 @@ export type GlobalOmitConfig = {
   country?: Prisma.CountryOmit
   state?: Prisma.StateOmit
   city?: Prisma.CityOmit
+  shippingSettings?: Prisma.ShippingSettingsOmit
+  shippingFee?: Prisma.ShippingFeeOmit
 }
 
 /* Types for Logging */

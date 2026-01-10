@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "ShippingFee" ALTER COLUMN "cashOnDelivery" TYPE INTEGER USING ROUND("cashOnDelivery")::INTEGER,
+ALTER COLUMN "stopDesk" TYPE INTEGER USING ROUND("stopDesk")::INTEGER;
+

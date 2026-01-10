@@ -2,12 +2,11 @@
 
 client_id = "af620696e3a620f77e307087f6e3d5a2"
 name = "Leadcod"
-application_url = "https://1586904d3f76.ngrok-free.app"
+application_url = "https://9b1a587349e8.ngrok-free.app"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-include_config_on_deploy = true
 
 [webhooks]
 api_version = "2026-04"
@@ -19,4 +18,4 @@ scopes = "read_products"
 embedded_app_direct_api_access=true
 
 [auth]
-redirect_urls = [ "https://1586904d3f76.ngrok-free.app/api/auth/api/auth" ]
+redirect_urls = [ "https://9b1a587349e8.ngrok-free.app/api/auth/api/auth" ]
