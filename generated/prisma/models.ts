@@ -10,4 +10,7 @@
  */
 export type * from './models/Shop'
 export type * from './models/Form'
+export type * from './models/Country'
+export type * from './models/State'
+export type * from './models/City'
 export type * from './commonInputTypes'

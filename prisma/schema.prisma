@@ -34,3 +34,33 @@ model Form {
   shop Shop @relation(fields: [shopId], references: [id])
 }
 
+model Country {
+  id String @id @default(uuid())
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  states State[]
+}
+
+model State {
+  id String @id @default(uuid())
+  countryId String
+  code String
+  name String
+  nameAr String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  country Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  cities City[]
+}
+
+model City {
+  id String @id @default(uuid())
+  stateId String
+  name String
+  nameAr String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  state State @relation(fields: [stateId], references: [id], onDelete: Cascade)
+}
+

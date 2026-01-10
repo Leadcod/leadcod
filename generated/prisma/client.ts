@@ -49,3 +49,18 @@ export type Shop = Prisma.ShopModel
  * 
  */
 export type Form = Prisma.FormModel
+/**
+ * Model Country
+ * 
+ */
+export type Country = Prisma.CountryModel
+/**
+ * Model State
+ * 
+ */
+export type State = Prisma.StateModel
+/**
+ * Model City
+ * 
+ */
+export type City = Prisma.CityModel
