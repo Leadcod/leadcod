@@ -42,12 +42,20 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+.leadcod-field input::placeholder,
+.leadcod-field textarea::placeholder,
+.leadcod-field select::placeholder {
+  font-weight: normal !important;
+  font-style: normal !important;
+  font-size: 14px !important;
+}
+
 @keyframes backgroundShift {
   0%, 100% {
     background-position: 0% 50%;
   }
   50% {
-    background-position: 100% 50%;
+    background-position: 50% 50%;
   }
 }
 
@@ -56,10 +64,10 @@
     transform: translateX(0);
   }
   10%, 30%, 50%, 70%, 90% {
-    transform: translateX(-1px);
+    transform: translateX(-4px);
   }
   20%, 40%, 60%, 80% {
-    transform: translateX(1px);
+    transform: translateX(4px);
   }
 }
 
@@ -68,7 +76,7 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-4px);
+    transform: translateY(-8px);
   }
 }
 
@@ -78,8 +86,8 @@
     opacity: 1;
   }
   50% {
-    transform: scale(1.02);
-    opacity: 0.95;
+    transform: scale(1.05);
+    opacity: 0.9;
   }
 }
 
@@ -90,12 +98,6 @@
   50% {
     box-shadow: 0 0 20px var(--glow-color, rgba(0, 0, 0, 0.5)), 0 0 35px var(--glow-color, rgba(0, 0, 0, 0.3));
   }
-}
-
-/* RTL icon flipping - targets SVG elements created by Lucide */
-.leadcod-icon-rtl i svg,
-.leadcod-icon-rtl svg {
-  transform: scaleX(-1);
 }
 </style>
 

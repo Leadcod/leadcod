@@ -16,22 +16,11 @@
     const globalFontStyle = Utils.getGlobalFontStyle(settings);
     const primaryColor = Utils.getPrimaryColor(settings);
     const iconSize = Utils.calculateIconSize(globalFontSize, settings);
-    const direction = (settings && settings.direction) || 'ltr';
-    const isRTL = direction === 'rtl';
     
-    // Adjust text-align for RTL - 'left' becomes 'right' in RTL
-    const getInputTextAlign = (alignment) => {
-      if (isRTL && (alignment === 'left' || !alignment)) {
-        return 'right';
-      }
-      if (!isRTL && (alignment === 'right')) {
-        return 'right';
-      }
-      return alignment || 'left';
-    };
+    const inputAlignment = field.inputAlignment || 'left';
 
     const inputStyle = `
-      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle}; text-align: ${getInputTextAlign(field.inputAlignment)};
+      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; text-align: ${inputAlignment};
       color: ${field.inputTextColor || '#000000'};
       background-color: ${field.inputBackgroundColor || '#ffffff'};
       padding: ${Utils.calculatePadding(globalFontSize, settings)};
@@ -41,63 +30,61 @@
       border-radius: 0.375rem;
       width: 100%;
       box-sizing: border-box;
-      direction: ${direction};
     `;
 
-    // Icon style - adjust for RTL visual position
-    // LTR: icon visually on right, rounded on right, no border on left
-    // RTL: icon visually on left (due to direction:rtl), rounded on left, no border on right
-    const iconStyle = isRTL ? `
-      font-family: ${Utils.getFontFamily(settings)};
-      font-size: ${globalFontSize};
-      font-weight: ${globalFontWeight};
-      font-style: ${globalFontStyle};
-      color: ${primaryColor};
-      height: ${Utils.calculateHeight(globalFontSize, settings)};
-      min-height: ${Utils.calculateHeight(globalFontSize, settings)};
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 12px;
-      border: 1px solid #e5e7eb;
-      border-right: none;
-      border-radius: 0.375rem 0 0 0.375rem;
-      background-color: #f3f4f6;
-    ` : `
-      font-family: ${Utils.getFontFamily(settings)};
-      font-size: ${globalFontSize};
-      font-weight: ${globalFontWeight};
-      font-style: ${globalFontStyle};
-      color: ${primaryColor};
-      height: ${Utils.calculateHeight(globalFontSize, settings)};
-      min-height: ${Utils.calculateHeight(globalFontSize, settings)};
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 12px;
-      border: 1px solid #e5e7eb;
-      border-left: none;
-      border-radius: 0 0.375rem 0.375rem 0;
-      background-color: #f3f4f6;
-    `;
-
-    // Adjust label text-align for RTL
-    const getLabelTextAlign = (alignment) => {
-      if (isRTL && (alignment === 'left' || !alignment)) {
-        return 'right';
+    const labelAlignment = field.labelAlignment || 'left';
+    
+    // Determine icon position based on label alignment
+    // left -> icon on left, right -> icon on right, center -> icon on right (default)
+    const iconOnLeft = labelAlignment === 'left';
+    const iconOnRight = labelAlignment === 'right' || labelAlignment === 'center';
+    
+    // Icon style function - border radius depends on position (left or right)
+    const getIconStyle = function(onLeft) {
+      if (onLeft) {
+        return `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: ${globalFontWeight};
+          font-style: ${globalFontStyle};
+          color: ${primaryColor};
+          height: ${Utils.calculateHeight(globalFontSize, settings)};
+          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 12px;
+          border: 1px solid #e5e7eb;
+          border-right: none;
+          border-radius: 0.375rem 0 0 0.375rem;
+          background-color: #f3f4f6;
+        `;
+      } else {
+        return `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: ${globalFontWeight};
+          font-style: ${globalFontStyle};
+          color: ${primaryColor};
+          height: ${Utils.calculateHeight(globalFontSize, settings)};
+          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 12px;
+          border: 1px solid #e5e7eb;
+          border-left: none;
+          border-radius: 0 0.375rem 0.375rem 0;
+          background-color: #f3f4f6;
+        `;
       }
-      if (!isRTL && (alignment === 'right')) {
-        return 'right';
-      }
-      return alignment || 'left';
     };
 
     const labelStyle = `
-      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle}; text-align: ${getLabelTextAlign(field.labelAlignment)};
+      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle}; text-align: ${labelAlignment};
       color: ${primaryColor};
       display: block;
       margin-bottom: 4px;
-      direction: ${direction};
     `;
 
     let fieldHTML = '<div class="leadcod-field" style="margin-bottom: 4px;">';
@@ -107,20 +94,21 @@
       fieldHTML += `<label style="${labelStyle}">${field.label}${field.required ? ' <span style="color: #ef4444;">*</span>' : ''}</label>`;
     }
 
-    // Input wrapper - add direction to respect RTL
-    fieldHTML += `<div style="display: flex; align-items: stretch; direction: ${direction};">`;
+    // Input wrapper
+    fieldHTML += `<div style="display: flex; align-items: stretch;">`;
 
     switch (field.type) {
       case 'name':
       case 'city':
       case 'email':
-        // Input border radius - adjust for RTL visual position
-        // LTR: input visually on left, rounded on left when icon exists
-        // RTL: input visually on right (due to direction:rtl), rounded on right when icon exists
-        const inputBorderRadius = Utils.renderIcon(field.icon, iconSize, isRTL) 
-          ? (isRTL ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
+        // Input border radius - depends on icon position
+        const inputBorderRadius = Utils.renderIcon(field.icon, iconSize) 
+          ? (iconOnLeft 
+              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
+              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
           : 'border-radius: 0.375rem;';
         fieldHTML += `
+          ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
           <input 
             type="${field.type === 'email' ? 'email' : 'text'}" 
             placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
@@ -129,85 +117,21 @@
             name="${field.id}"
             id="field-${field.id}"
           />
-          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
+          ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
         `;
         break;
 
       case 'phone':
-        // Phone field: LTR = icon + input + prefix, RTL = prefix + input + icon
-        // LTR: icon (left, rounded left) + input (middle) + +213 (right, rounded right)
-        // RTL: +213 (left, rounded left) + input (middle) + icon (right, rounded right)
-        const phonePrefixStyleLTR = `
-          font-family: ${Utils.getFontFamily(settings)};
-          font-size: ${globalFontSize};
-          font-weight: ${globalFontWeight};
-          font-style: ${globalFontStyle};
-          color: ${primaryColor};
-          height: ${Utils.calculateHeight(globalFontSize, settings)};
-          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0 12px;
-          border: 1px solid #e5e7eb;
-          border-left: none;
-          border-radius: 0 0.375rem 0.375rem 0;
-          background-color: #f3f4f6;
-        `;
-        const phonePrefixStyleRTL = `
-          font-family: ${Utils.getFontFamily(settings)};
-          font-size: ${globalFontSize};
-          font-weight: ${globalFontWeight};
-          font-style: ${globalFontStyle};
-          color: ${primaryColor};
-          height: ${Utils.calculateHeight(globalFontSize, settings)};
-          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0 12px;
-          border: 1px solid #e5e7eb;
-          border-right: none;
-          border-radius: 0.375rem 0 0 0.375rem;
-          background-color: #f3f4f6;
-        `;
-        const phoneIconStyleLTR = `
-          font-family: ${Utils.getFontFamily(settings)};
-          font-size: ${globalFontSize};
-          font-weight: ${globalFontWeight};
-          font-style: ${globalFontStyle};
-          color: ${primaryColor};
-          height: ${Utils.calculateHeight(globalFontSize, settings)};
-          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0 12px;
-          border: 1px solid #e5e7eb;
-          border-right: none;
-          border-radius: 0.375rem 0 0 0.375rem;
-          background-color: #f3f4f6;
-        `;
-        const phoneIconStyleRTL = `
-          font-family: ${Utils.getFontFamily(settings)};
-          font-size: ${globalFontSize};
-          font-weight: ${globalFontWeight};
-          font-style: ${globalFontStyle};
-          color: ${primaryColor};
-          height: ${Utils.calculateHeight(globalFontSize, settings)};
-          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0 12px;
-          border: 1px solid #e5e7eb;
-          border-left: none;
-          border-radius: 0 0.375rem 0.375rem 0;
-          background-color: #f3f4f6;
-        `;
+        // Phone field is special: +213 follows label position, icon is opposite
+        const phoneCodeOnLeft = labelAlignment === 'left';
+        const phoneCodeOnRight = labelAlignment === 'right' || labelAlignment === 'center';
+        const phoneIconOnLeft = !phoneCodeOnLeft; // Opposite of code position
+        const phoneIconOnRight = !phoneCodeOnRight; // Opposite of code position
+        
         const phoneInputBorder = 'border-left: none; border-right: none; border-radius: 0;';
-        fieldHTML += isRTL ? `
-          <div style="${phonePrefixStyleRTL}">+213</div>
+        fieldHTML += `
+          ${phoneCodeOnLeft ? `<div style="${getIconStyle(true)}">+213</div>` : ''}
+          ${Utils.renderIcon(field.icon, iconSize) && phoneIconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
           <input 
             type="tel" 
             placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
@@ -216,32 +140,23 @@
             name="${field.id}"
             id="field-${field.id}"
           />
-          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${phoneIconStyleRTL}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
-        ` : `
-          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${phoneIconStyleLTR}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
-          <input 
-            type="tel" 
-            placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
-            style="${inputStyle} ${phoneInputBorder}"
-            ${field.required ? 'required' : ''}
-            name="${field.id}"
-            id="field-${field.id}"
-          />
-          <div style="${phonePrefixStyleLTR}">+213</div>
+          ${Utils.renderIcon(field.icon, iconSize) && phoneIconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${phoneCodeOnRight ? `<div style="${getIconStyle(false)}">+213</div>` : ''}
         `;
         break;
 
       case 'province':
-        // Select border radius - adjust for RTL visual position
-        // LTR: select visually on left, rounded on left when icon exists
-        // RTL: select visually on right (due to direction:rtl), rounded on right when icon exists
-        const provinceSelectBorder = Utils.renderIcon(field.icon, iconSize, isRTL) 
-          ? (isRTL ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
+        // Select border radius - depends on icon position
+        const provinceSelectBorder = Utils.renderIcon(field.icon, iconSize) 
+          ? (iconOnLeft 
+              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
+              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
           : 'border-radius: 0.375rem;';
-        const provinceSelectArrowPos = isRTL ? 'left 12px' : 'right 12px';
-        const provinceSelectPadding = isRTL ? 'padding-left: 32px;' : 'padding-right: 32px;';
+        const provinceSelectArrowPos = 'right 12px';
+        const provinceSelectPadding = 'padding-right: 32px;';
         const provinceSelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: ${provinceSelectArrowPos} center; ${provinceSelectPadding} -webkit-appearance: none; -moz-appearance: none; appearance: none; ${provinceSelectBorder}`;
         fieldHTML += `
+          ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
           <select 
             style="${provinceSelectStyle}"
             ${field.required ? 'required' : ''}
@@ -256,21 +171,22 @@
             <option value="manitoba">Manitoba</option>
             <option value="saskatchewan">Saskatchewan</option>
           </select>
-          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
+          ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
         `;
         break;
 
       case 'variants':
-        // Select border radius - adjust for RTL visual position
-        // LTR: select visually on left, rounded on left when icon exists
-        // RTL: select visually on right (due to direction:rtl), rounded on right when icon exists
-        const variantsSelectBorder = Utils.renderIcon(field.icon, iconSize, isRTL) 
-          ? (isRTL ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
+        // Select border radius - depends on icon position
+        const variantsSelectBorder = Utils.renderIcon(field.icon, iconSize) 
+          ? (iconOnLeft 
+              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
+              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
           : 'border-radius: 0.375rem;';
-        const variantsSelectArrowPos = isRTL ? 'left 12px' : 'right 12px';
-        const variantsSelectPadding = isRTL ? 'padding-left: 32px;' : 'padding-right: 32px;';
+        const variantsSelectArrowPos = 'right 12px';
+        const variantsSelectPadding = 'padding-right: 32px;';
         const variantsSelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: ${variantsSelectArrowPos} center; ${variantsSelectPadding} -webkit-appearance: none; -moz-appearance: none; appearance: none; ${variantsSelectBorder}`;
         fieldHTML += `
+          ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
           <select 
             style="${variantsSelectStyle}"
             ${field.required ? 'required' : ''}
@@ -282,18 +198,19 @@
             <option value="medium">Size: Medium</option>
             <option value="large">Size: Large</option>
           </select>
-          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
+          ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
         `;
         break;
 
       case 'quantity':
-        // Input border radius - adjust for RTL visual position
-        // LTR: input visually on left, rounded on left when icon exists
-        // RTL: input visually on right (due to direction:rtl), rounded on right when icon exists
-        const quantityBorderRadius = Utils.renderIcon(field.icon, iconSize, isRTL) 
-          ? (isRTL ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
+        // Input border radius - depends on icon position
+        const quantityBorderRadius = Utils.renderIcon(field.icon, iconSize) 
+          ? (iconOnLeft 
+              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
+              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
           : 'border-radius: 0.375rem;';
         fieldHTML += `
+          ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
           <input 
             type="number" 
             min="1" 
@@ -304,20 +221,21 @@
             name="${field.id}"
             id="field-${field.id}"
           />
-          ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
+          ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
         `;
         break;
 
       case 'coupon':
-        // Input border radius - adjust for RTL visual position
-        // LTR: input visually on left, rounded on left when icon exists
-        // RTL: input visually on right (due to direction:rtl), rounded on right when icon exists
-        const couponInputBorder = Utils.renderIcon(field.icon, iconSize, isRTL) 
-          ? (isRTL ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;' : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
+        // Input border radius - depends on icon position
+        const couponInputBorder = Utils.renderIcon(field.icon, iconSize) 
+          ? (iconOnLeft 
+              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
+              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
           : 'border-radius: 0.375rem;';
         fieldHTML += `
-          <div style="display: flex; gap: 8px; width: 100%; direction: ${direction};">
-            <div style="display: flex; flex: 1; direction: ${direction};">
+          <div style="display: flex; gap: 8px; width: 100%;">
+            <div style="display: flex; flex: 1;">
+              ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
               <input 
                 type="text" 
                 placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
@@ -326,7 +244,7 @@
                 name="${field.id}"
                 id="field-${field.id}"
               />
-              ${Utils.renderIcon(field.icon, iconSize, isRTL) ? `<div style="${iconStyle}">${Utils.renderIcon(field.icon, iconSize, isRTL)}</div>` : ''}
+              ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
             </div>
             <button type="button" style="padding: 0 20px; border: 1px solid #e5e7eb; border-radius: 0.375rem; background: #f9fafb; cursor: pointer;">Apply</button>
           </div>
@@ -400,8 +318,12 @@
     const Utils = window.LeadcodFormUtils;
     const buttonGlobalFontSize = Utils.getGlobalFontSize(settings);
     const buttonGlobalFontStyle = Utils.getGlobalFontStyle(settings);
+    
+    // Use button-specific font size if available, otherwise fall back to global
+    const buttonFontSize = field.buttonFontSize || buttonGlobalFontSize;
+    
     const buttonPadding = (() => {
-      const fontSizeNum = parseInt(buttonGlobalFontSize.replace('px', '')) || 16;
+      const fontSizeNum = parseInt(buttonFontSize.replace('px', '')) || 16;
       const verticalPadding = Math.max(10, Math.round(fontSizeNum * 0.625));
       const horizontalPadding = Math.max(20, Math.round(fontSizeNum * 1.5));
       return `${verticalPadding}px ${horizontalPadding}px`;
@@ -412,10 +334,11 @@
                       field.buttonSize === 'small' ? '32px' : '40px';
     
     const buttonHeightNum = parseInt(buttonSize.replace('px', '')) || 40;
-    const buttonIconSize = Math.round(buttonHeightNum * 0.6);
+    // Use button-specific icon size if available, otherwise calculate from button height
+    const buttonIconSize = field.buttonIconSize || Math.round(buttonHeightNum * 0.6);
 
     let buttonStyle = `
-      font-family: ${Utils.getFontFamily(settings)}; font-size: ${buttonGlobalFontSize}; font-weight: bold; font-style: ${buttonGlobalFontStyle}; text-align: ${Utils.getTextAlign(field.inputAlignment || 'center')};
+      font-family: ${Utils.getFontFamily(settings)}; font-size: ${buttonFontSize}; font-weight: bold; font-style: ${buttonGlobalFontStyle}; text-align: ${Utils.getTextAlign(field.inputAlignment || 'center')};
       color: ${field.inputTextColor || '#ffffff'};
       padding: ${buttonPadding};
       height: ${buttonSize};
@@ -449,15 +372,17 @@
 
     // Set background properties
     if (field.backgroundType === 'gradient' && field.gradientBackground) {
+      // For gradients with background-shift, use the gradient directly without overlay
       if (field.animation === 'background-shift') {
-        const baseGradient = field.gradientBackground;
-        buttonStyle += `background-image: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 30%, transparent 70%, rgba(255,255,255,0.4) 100%), ${baseGradient}; background-size: 300% 300%;`;
+        buttonStyle += `background-image: ${field.gradientBackground}; background-size: 200% 200% !important;`;
       } else {
         buttonStyle += `background-image: ${field.gradientBackground};`;
       }
     } else {
       const solidColor = field.inputBackgroundColor || '#000000';
+      // For background-shift animation with solid colors, convert to gradient with transparency
       if (field.animation === 'background-shift') {
+        // Check if color is black or very dark (to handle black specifically)
         const hex = solidColor.replace('#', '');
         const r = parseInt(hex.substring(0, 2), 16);
         const g = parseInt(hex.substring(2, 4), 16);
@@ -465,39 +390,41 @@
         const isDark = r < 30 && g < 30 && b < 30;
         
         if (isDark) {
+          // For black/dark colors, use visible gray variations that keep black as base
           const rgbaBase = Utils.colorToRgba(solidColor, 1);
-          buttonStyle += `background-image: linear-gradient(135deg, ${rgbaBase} 0%, rgba(255,255,255,0.15) 25%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.15) 75%, ${rgbaBase} 100%); background-size: 300% 300%;`;
+          const rgbaMid = Utils.colorToRgba('#404040', 1);
+          const rgbaLight = Utils.colorToRgba('#606060', 1);
+          buttonStyle += `background-image: linear-gradient(135deg, ${rgbaBase} 0%, ${rgbaMid} 25%, ${rgbaLight} 50%, ${rgbaMid} 75%, ${rgbaBase} 100%); background-size: 200% 200% !important;`;
         } else {
-          const lighterColor = Utils.lightenColor(solidColor, 40);
+          // For lighter colors, make base color more prominent with less aggressive shift
+          const lighterColor = Utils.lightenColor(solidColor, 25);
           const rgbaBase = Utils.colorToRgba(solidColor, 1);
-          const rgbaLight = Utils.colorToRgba(lighterColor, 0.7);
-          const rgbaTransparent = Utils.colorToRgba(solidColor, 0.5);
-          buttonStyle += `background-image: linear-gradient(135deg, ${rgbaBase} 0%, ${rgbaTransparent} 25%, ${rgbaLight} 50%, ${rgbaTransparent} 75%, ${rgbaBase} 100%); background-size: 300% 300%;`;
+          const rgbaLight = Utils.colorToRgba(lighterColor, 0.8);
+          const rgbaSemiTransparent = Utils.colorToRgba(solidColor, 0.7);
+          buttonStyle += `background-image: linear-gradient(135deg, ${rgbaBase} 0%, ${rgbaSemiTransparent} 25%, ${rgbaLight} 50%, ${rgbaSemiTransparent} 75%, ${rgbaBase} 100%); background-size: 200% 200% !important;`;
         }
       } else {
         buttonStyle += `background-color: ${solidColor};`;
       }
     }
 
-    // Add animation classes
+    // Add animation classes with proper priority and performance optimizations
     if (field.animation === 'background-shift') {
-      buttonStyle += `animation: backgroundShift 4s ease infinite;`;
+      buttonStyle += `animation: backgroundShift 4s ease infinite !important; will-change: background-position;`;
     } else if (field.animation === 'shake') {
-      buttonStyle += `animation: shake 0.6s ease-in-out infinite;`;
+      buttonStyle += `animation: shake 0.6s ease-in-out infinite !important; will-change: transform; transform-origin: center;`;
     } else if (field.animation === 'bounce') {
-      buttonStyle += `animation: bounce 1s ease-in-out infinite;`;
+      buttonStyle += `animation: bounce 1s ease-in-out infinite !important; will-change: transform; transform-origin: center;`;
     } else if (field.animation === 'pulse') {
-      buttonStyle += `animation: pulse 2s ease-in-out infinite;`;
+      buttonStyle += `animation: pulse 2s ease-in-out infinite !important; will-change: transform, opacity; transform-origin: center;`;
     } else if (field.animation === 'glow') {
-      buttonStyle += `animation: glow 2s ease-in-out infinite;`;
+      buttonStyle += `animation: glow 2s ease-in-out infinite !important; will-change: box-shadow;`;
     }
 
-    const direction = (settings && settings.direction) || 'ltr';
-    const isRTL = direction === 'rtl';
     return `
       <div class="leadcod-field" style="margin-bottom: 4px;">
         <button type="submit" style="${buttonStyle}">
-          ${Utils.renderIcon(field.icon, buttonIconSize, isRTL)}
+          ${Utils.renderIcon(field.icon, buttonIconSize, true)}
           ${field.label}
         </button>
       </div>

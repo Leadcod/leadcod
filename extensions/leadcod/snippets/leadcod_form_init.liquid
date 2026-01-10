@@ -47,8 +47,7 @@
       .sort((a, b) => (a.order || 0) - (b.order || 0));
 
     const borderStyle = Utils.getBorderStyle(settings);
-    const direction = (settings && settings.direction) || 'ltr';
-    let formHTML = `<form class="leadcod-form" style="max-width: 100%; direction: ${direction};${borderStyle}">`;
+    let formHTML = `<form class="leadcod-form" style="max-width: 100%;${borderStyle}">`;
 
     // Global settings - headline and subtitle
     if (settings) {

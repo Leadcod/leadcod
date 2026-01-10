@@ -63,6 +63,8 @@ export default async function RootLayout({
       >
         <s-app-nav>
           <s-link href="/form-builder">Form Builder</s-link>
+          <s-link href="/shipping-fees">Shipping fees</s-link>
+          <s-link href="/special-offers">Special offers</s-link>
         </s-app-nav>
         {children}
       </body>

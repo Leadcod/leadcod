@@ -101,27 +101,46 @@
         Check: 'check',
         X: 'x',
         Plus: 'plus',
-        Minus: 'minus'
+        Minus: 'minus',
+        Zap: 'zap',
+        ArrowRight: 'arrow-right'
       };
       return iconMap[iconName] || iconName.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '');
     },
 
-    renderIcon: function(iconName, size, isRTL) {
+    renderIcon: function(iconName, size, isSolid) {
       if (!iconName || iconName === 'none') return '';
       const lucideName = this.getLucideIconName(iconName);
       if (!lucideName) return '';
-      const rtlClass = isRTL ? ' leadcod-icon-rtl' : '';
-      return `<span class="leadcod-icon-wrapper${rtlClass}" style="display: inline-flex; align-items: center; justify-content: center;"><i data-lucide="${lucideName}" style="width: ${size}px; height: ${size}px;"></i></span>`;
+      const solidStyle = isSolid ? 'fill: currentColor; stroke-width: 1.5;' : '';
+      return `<span class="leadcod-icon-wrapper" style="display: inline-flex; align-items: center; justify-content: center;"><i data-lucide="${lucideName}" style="width: ${size}px; height: ${size}px; ${solidStyle}"></i></span>`;
     },
 
     getBorderStyle: function(settings) {
       if (!settings || !settings.border || !settings.border.enabled) {
         return '';
       }
+      const blurRadius = settings.border.width || 4;
+      const spreadRadius = 1; // Slight spread for more aggressive shadow
+      const shadowColor = settings.border.color || '#9ca3af';
+      const shadowOpacity = 0.3;
+      
+      // Convert hex to rgba for shadow
+      let rgbaColor = shadowColor;
+      if (shadowColor.startsWith('#')) {
+        const hex = shadowColor.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        rgbaColor = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + shadowOpacity + ')';
+      } else if (shadowColor.startsWith('rgb(')) {
+        rgbaColor = shadowColor.replace('rgb(', 'rgba(').replace(')', ', ' + shadowOpacity + ')');
+      } else if (!shadowColor.startsWith('rgba(')) {
+        rgbaColor = 'rgba(156, 163, 175, ' + shadowOpacity + ')';
+      }
+      
       return `
-        border-width: ${settings.border.width || 3}px;
-        border-style: ${settings.border.style || 'solid'};
-        border-color: ${settings.border.color || '#9ca3af'};
+        box-shadow: 0 0 ${blurRadius}px ${spreadRadius}px ${rgbaColor};
         border-radius: ${settings.border.radius || 8}px;
         padding: ${settings.border.padding || 16}px;
       `;

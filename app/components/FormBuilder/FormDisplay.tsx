@@ -63,12 +63,6 @@ export default function FormDisplay({
     return alignment;
   };
 
-  const getDirection = () => {
-    return globalSettings?.direction || 'ltr';
-  };
-
-  const isRTL = getDirection() === 'rtl';
-
   const handleInputChange = (fieldId: string, value: any) => {
     if (!isPreview) {
       setFormData(prev => ({ ...prev, [fieldId]: value }));
@@ -125,33 +119,21 @@ export default function FormDisplay({
     const globalFontStyle = getGlobalFontStyle();
     const primaryColor = getPrimaryColor();
 
-    // Adjust text-align for RTL - 'left' becomes 'right' in RTL
-    const getInputTextAlign = (alignment: 'left' | 'center' | 'right' | undefined) => {
-      const align = alignment || 'left';
-      if (isRTL && align === 'left') {
-        return 'right';
-      }
-      return align;
-    };
-
+    const inputAlignment = field.inputAlignment || 'left';
     const inputStyle = {
       color: field.inputTextColor,
       backgroundColor: field.inputBackgroundColor,
       fontFamily: getFontFamily(),
-      textAlign: getInputTextAlign(field.inputAlignment),
+      textAlign: inputAlignment as 'left' | 'center' | 'right',
       fontSize: globalFontSize,
-      fontWeight: globalFontWeight,
-      fontStyle: globalFontStyle,
+      // fontWeight and fontStyle removed - these should only apply to labels, not placeholders
       padding: getPadding(globalFontSize),
       height: getHeight(globalFontSize),
       minHeight: getHeight(globalFontSize),
-      direction: getDirection(),
     };
 
-    // Icon style - adjust for RTL visual position
-    // LTR: icon visually on right, rounded on right, no border on left
-    // RTL: icon visually on left (due to direction:rtl), rounded on left, no border on right
-    const iconStyle = {
+    // Icon style - border radius depends on position (left or right)
+    const getIconStyle = (onLeft: boolean) => ({
       fontFamily: getFontFamily(),
       fontSize: globalFontSize,
       fontWeight: globalFontWeight,
@@ -163,7 +145,7 @@ export default function FormDisplay({
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#f3f4f6',
-      ...(isRTL ? {
+      ...(onLeft ? {
         borderRight: 'none',
         borderTopLeftRadius: '0.375rem',
         borderBottomLeftRadius: '0.375rem',
@@ -176,29 +158,27 @@ export default function FormDisplay({
         borderTopRightRadius: '0.375rem',
         borderBottomRightRadius: '0.375rem',
       }),
-    };
+    });
     
     // Calculate icon size based on global font size
     const iconSize = getIconSize(globalFontSize, 16);
 
-    // Adjust label text-align for RTL
-    const getLabelTextAlign = (alignment: 'left' | 'center' | 'right' | undefined) => {
-      const align = alignment || 'left';
-      if (isRTL && align === 'left') {
-        return 'right';
-      }
-      return align;
-    };
-
+    const labelAlignment = field.labelAlignment || 'left';
     const labelStyle = {
       fontFamily: getFontFamily(),
       color: primaryColor,
-      textAlign: getLabelTextAlign(field.labelAlignment),
+      textAlign: labelAlignment,
       fontSize: globalFontSize,
       fontWeight: globalFontWeight,
       fontStyle: globalFontStyle,
-      direction: getDirection(),
+      display: 'block', // Override flex to allow text-align to work
+      width: '100%',
     };
+
+    // Determine icon position based on label alignment
+    // left -> icon on left, right -> icon on right, center -> icon on right (default)
+    const iconOnLeft = labelAlignment === 'left';
+    const iconOnRight = labelAlignment === 'right' || labelAlignment === 'center';
 
     const handleFieldClick = () => {
       if (isPreview && onFieldClick) {
@@ -220,7 +200,12 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={cursorClass} style={{ direction: getDirection() }}>
+            <InputGroup onClick={handleFieldClick} className={cursorClass}>
+              {IconComponent && iconOnLeft && (
+                <InputGroupAddon style={getIconStyle(true)}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
               <InputGroupInput
                 type={field.type === 'email' ? 'email' : 'text'}
                 placeholder={field.showPlaceholder ? field.placeholder : ''}
@@ -231,8 +216,8 @@ export default function FormDisplay({
                 value={isPreview ? '' : (formData[field.id] || '')}
                 onChange={(e) => handleInputChange(field.id, e.target.value)}
               />
-              {IconComponent && (
-                <InputGroupAddon style={iconStyle}>
+              {IconComponent && iconOnRight && (
+                <InputGroupAddon style={getIconStyle(false)}>
                   <IconComponent size={iconSize} />
                 </InputGroupAddon>
               )}
@@ -241,6 +226,12 @@ export default function FormDisplay({
         );
 
       case 'phone':
+        // Phone field is special: +213 follows label position, icon is opposite
+        const phoneCodeOnLeft = labelAlignment === 'left';
+        const phoneCodeOnRight = labelAlignment === 'right' || labelAlignment === 'center';
+        const phoneIconOnLeft = !phoneCodeOnLeft; // Opposite of code position
+        const phoneIconOnRight = !phoneCodeOnRight; // Opposite of code position
+        
         return (
           <div key={field.id} className="space-y-2">
             {field.showLabel && (
@@ -249,62 +240,47 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={cursorClass} style={{ direction: getDirection() }}>
-              {isRTL ? (
-                <>
-                  <InputGroupAddon style={iconStyle}>
-                    +213
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    type="tel"
-                    placeholder={field.showPlaceholder ? field.placeholder : ''}
-                    style={inputStyle}
-                    required={field.required}
-                    readOnly={isPreview}
-                    className={cursorClass}
-                    value={isPreview ? '' : (formData[field.id] || '')}
-                    onChange={(e) => handleInputChange(field.id, e.target.value)}
-                  />
-                  {IconComponent && (
-                    <InputGroupAddon style={iconStyle}>
-                      <IconComponent size={iconSize} />
-                    </InputGroupAddon>
-                  )}
-                </>
-              ) : (
-                <>
-                  {IconComponent && (
-                    <InputGroupAddon style={iconStyle}>
-                      <IconComponent size={iconSize} />
-                    </InputGroupAddon>
-                  )}
-                  <InputGroupInput
-                    type="tel"
-                    placeholder={field.showPlaceholder ? field.placeholder : ''}
-                    style={inputStyle}
-                    required={field.required}
-                    readOnly={isPreview}
-                    className={cursorClass}
-                    value={isPreview ? '' : (formData[field.id] || '')}
-                    onChange={(e) => handleInputChange(field.id, e.target.value)}
-                  />
-                  <InputGroupAddon style={iconStyle}>
-                    +213
-                  </InputGroupAddon>
-                </>
+            <InputGroup onClick={handleFieldClick} className={cursorClass}>
+              {phoneCodeOnLeft && (
+                <InputGroupAddon style={getIconStyle(true)}>
+                  +213
+                </InputGroupAddon>
+              )}
+              {IconComponent && phoneIconOnLeft && (
+                <InputGroupAddon style={getIconStyle(true)}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
+              <InputGroupInput
+                type="tel"
+                placeholder={field.showPlaceholder ? field.placeholder : ''}
+                style={inputStyle}
+                required={field.required}
+                readOnly={isPreview}
+                className={cursorClass}
+                value={isPreview ? '' : (formData[field.id] || '')}
+                onChange={(e) => handleInputChange(field.id, e.target.value)}
+              />
+              {IconComponent && phoneIconOnRight && (
+                <InputGroupAddon style={getIconStyle(false)}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
+              {phoneCodeOnRight && (
+                <InputGroupAddon style={getIconStyle(false)}>
+                  +213
+                </InputGroupAddon>
               )}
             </InputGroup>
           </div>
         );
 
       case 'province':
-        // Select border radius - adjust for RTL visual position
-        // LTR: select visually on left, rounded on left when icon exists
-        // RTL: select visually on right (due to direction:rtl), rounded on right when icon exists
+        // Select border radius - depends on icon position
         const provinceSelectClass = IconComponent
-          ? (isRTL 
+          ? iconOnLeft
             ? `w-full flex-1 rounded-none rounded-r-md border-l-0 ${cursorClass}`
-            : `w-full flex-1 rounded-none rounded-l-md border-r-0 ${cursorClass}`)
+            : `w-full flex-1 rounded-none rounded-l-md border-r-0 ${cursorClass}`
           : `w-full rounded-md ${cursorClass}`;
         return (
           <div key={field.id} className="space-y-2">
@@ -314,7 +290,12 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={cursorClass} style={{ direction: getDirection() }}>
+            <InputGroup onClick={handleFieldClick} className={cursorClass}>
+              {IconComponent && iconOnLeft && (
+                <InputGroupAddon style={getIconStyle(true)}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
               <Select 
                 required={field.required}
                 value={isPreview ? undefined : (formData[field.id] || '')}
@@ -323,7 +304,10 @@ export default function FormDisplay({
               >
                 <SelectTrigger 
                   className={provinceSelectClass}
-                  style={inputStyle}
+                  style={{
+                    ...inputStyle,
+                    justifyContent: inputAlignment === 'center' ? 'center' : inputAlignment === 'right' ? 'flex-end' : 'space-between',
+                  }}
                   onClick={(e) => {
                     if (isPreview) {
                       e.preventDefault();
@@ -338,7 +322,10 @@ export default function FormDisplay({
                     }
                   }}
                 >
-                  <SelectValue placeholder={field.showPlaceholder ? field.placeholder : 'Select'} />
+                  <SelectValue 
+                    placeholder={field.showPlaceholder ? field.placeholder : 'Select'}
+                    style={{ textAlign: inputAlignment }}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ontario">Ontario</SelectItem>
@@ -349,8 +336,8 @@ export default function FormDisplay({
                   <SelectItem value="saskatchewan">Saskatchewan</SelectItem>
                 </SelectContent>
               </Select>
-              {IconComponent && (
-                <InputGroupAddon style={iconStyle}>
+              {IconComponent && iconOnRight && (
+                <InputGroupAddon style={getIconStyle(false)}>
                   <IconComponent size={iconSize} />
                 </InputGroupAddon>
               )}
@@ -359,13 +346,11 @@ export default function FormDisplay({
         );
 
       case 'variants':
-        // Select border radius - adjust for RTL visual position
-        // LTR: select visually on left, rounded on left when icon exists
-        // RTL: select visually on right (due to direction:rtl), rounded on right when icon exists
+        // Select border radius - depends on icon position
         const variantsSelectClass = IconComponent
-          ? (isRTL 
+          ? iconOnLeft
             ? `w-full flex-1 rounded-none rounded-r-md border-l-0 ${cursorClass}`
-            : `w-full flex-1 rounded-none rounded-l-md border-r-0 ${cursorClass}`)
+            : `w-full flex-1 rounded-none rounded-l-md border-r-0 ${cursorClass}`
           : `w-full rounded-md ${cursorClass}`;
         return (
           <div key={field.id} className="space-y-2">
@@ -375,7 +360,12 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={cursorClass} style={{ direction: getDirection() }}>
+            <InputGroup onClick={handleFieldClick} className={cursorClass}>
+              {IconComponent && iconOnLeft && (
+                <InputGroupAddon style={getIconStyle(true)}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
               <Select 
                 required={field.required}
                 value={isPreview ? undefined : (formData[field.id] || '')}
@@ -384,7 +374,10 @@ export default function FormDisplay({
               >
                 <SelectTrigger 
                   className={variantsSelectClass}
-                  style={inputStyle}
+                  style={{
+                    ...inputStyle,
+                    justifyContent: inputAlignment === 'center' ? 'center' : inputAlignment === 'right' ? 'flex-end' : 'space-between',
+                  }}
                   onClick={(e) => {
                     if (isPreview) {
                       e.preventDefault();
@@ -399,7 +392,10 @@ export default function FormDisplay({
                     }
                   }}
                 >
-                  <SelectValue placeholder={field.showPlaceholder ? field.placeholder : 'Select'} />
+                  <SelectValue 
+                    placeholder={field.showPlaceholder ? field.placeholder : 'Select'}
+                    style={{ textAlign: inputAlignment }}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="small">Size: Small</SelectItem>
@@ -407,8 +403,8 @@ export default function FormDisplay({
                   <SelectItem value="large">Size: Large</SelectItem>
                 </SelectContent>
               </Select>
-              {IconComponent && (
-                <InputGroupAddon style={iconStyle}>
+              {IconComponent && iconOnRight && (
+                <InputGroupAddon style={getIconStyle(false)}>
                   <IconComponent size={iconSize} />
                 </InputGroupAddon>
               )}
@@ -425,7 +421,12 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <InputGroup onClick={handleFieldClick} className={cursorClass} style={{ direction: getDirection() }}>
+            <InputGroup onClick={handleFieldClick} className={cursorClass}>
+              {IconComponent && iconOnLeft && (
+                <InputGroupAddon style={getIconStyle(true)}>
+                  <IconComponent size={iconSize} />
+                </InputGroupAddon>
+              )}
               <InputGroupInput
                 type="number"
                 min={1}
@@ -438,8 +439,8 @@ export default function FormDisplay({
                 value={isPreview ? '1' : (formData[field.id] || '1')}
                 onChange={(e) => handleInputChange(field.id, e.target.value)}
               />
-              {IconComponent && (
-                <InputGroupAddon style={iconStyle}>
+              {IconComponent && iconOnRight && (
+                <InputGroupAddon style={getIconStyle(false)}>
                   <IconComponent size={iconSize} />
                 </InputGroupAddon>
               )}
@@ -456,8 +457,13 @@ export default function FormDisplay({
                 {field.required && <span className="text-red-500">*</span>}
               </Label>
             )}
-            <div className="flex items-center gap-2" style={{ direction: getDirection() }}>
-              <InputGroup className={`flex-1 ${cursorClass}`} onClick={handleFieldClick} style={{ direction: getDirection() }}>
+            <div className="flex items-center gap-2">
+              <InputGroup className={`flex-1 ${cursorClass}`} onClick={handleFieldClick}>
+                {IconComponent && iconOnLeft && (
+                  <InputGroupAddon style={getIconStyle(true)}>
+                    <IconComponent size={iconSize} />
+                  </InputGroupAddon>
+                )}
                 <InputGroupInput
                   placeholder={field.showPlaceholder ? field.placeholder : ''}
                   style={inputStyle}
@@ -467,8 +473,8 @@ export default function FormDisplay({
                   value={isPreview ? '' : (formData[field.id] || '')}
                   onChange={(e) => handleInputChange(field.id, e.target.value)}
                 />
-                {IconComponent && (
-                  <InputGroupAddon style={iconStyle}>
+                {IconComponent && iconOnRight && (
+                  <InputGroupAddon style={getIconStyle(false)}>
                     <IconComponent size={iconSize} />
                   </InputGroupAddon>
                 )}
@@ -563,15 +569,18 @@ export default function FormDisplay({
         const globalFontWeight = getGlobalFontWeight();
         const globalFontStyle = getGlobalFontStyle();
         
+        // Use button-specific font size if available, otherwise fall back to global
+        const buttonFontSize = field.buttonFontSize || globalFontSize;
+        
         // Use separate background properties to avoid shorthand/non-shorthand conflicts
         const buttonStyle: any = {
           color: field.inputTextColor,
           fontFamily: getFontFamily(),
           textAlign: getTextAlign(field.inputAlignment || 'center'),
-          fontSize: globalFontSize,
+          fontSize: buttonFontSize,
           fontWeight: 'bold',
           fontStyle: globalFontStyle,
-          padding: getButtonPadding(globalFontSize),
+          padding: getButtonPadding(buttonFontSize),
         };
         
         // Set glow color CSS variable if glow animation is active
@@ -594,7 +603,7 @@ export default function FormDisplay({
           buttonStyle['--glow-color'] = rgbaColor;
         }
         
-        // Calculate icon size based on button height (60% of button height)
+        // Use button-specific icon size if available, otherwise calculate from button height
         const getButtonHeight = (): number => {
           switch (field.buttonSize) {
             case 'small':
@@ -610,7 +619,7 @@ export default function FormDisplay({
           }
         };
         const buttonHeight = getButtonHeight();
-        const iconSize = Math.round(buttonHeight * 0.6);
+        const iconSize = field.buttonIconSize ?? Math.round(buttonHeight * 0.6);
         
         // Helper function to lighten a color for gradient effect
         const lightenColor = (color: string, percent: number): string => {
@@ -648,11 +657,10 @@ export default function FormDisplay({
         
         // Set background properties separately
         if (field.backgroundType === 'gradient' && field.gradientBackground) {
-          // For gradients with background-shift, enhance with transparency overlay
+          // For gradients with background-shift, use the gradient directly without overlay
           if (field.animation === 'background-shift') {
-            const baseGradient = field.gradientBackground;
-            // Add a semi-transparent overlay gradient for more dramatic effect
-            buttonStyle.backgroundImage = `linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 30%, transparent 70%, rgba(255,255,255,0.4) 100%), ${baseGradient}`;
+            buttonStyle.backgroundImage = field.gradientBackground;
+            // background-size is set by CSS class, but we ensure it's here too for consistency
             buttonStyle.backgroundSize = '300% 300%';
           } else {
             buttonStyle.backgroundImage = field.gradientBackground;
@@ -680,9 +688,23 @@ export default function FormDisplay({
               const rgbaTransparent = colorToRgba(solidColor, 0.5);
               buttonStyle.backgroundImage = `linear-gradient(135deg, ${rgbaBase} 0%, ${rgbaTransparent} 25%, ${rgbaLight} 50%, ${rgbaTransparent} 75%, ${rgbaBase} 100%)`;
             }
+            // background-size is set by CSS class, but we ensure it's here too for consistency
             buttonStyle.backgroundSize = '300% 300%';
           } else {
             buttonStyle.backgroundColor = solidColor;
+          }
+        }
+        
+        // Ensure animations work properly by setting will-change for better performance
+        if (field.animation && field.animation !== 'none') {
+          if (field.animation === 'background-shift') {
+            buttonStyle.willChange = 'background-position';
+          } else if (field.animation === 'shake' || field.animation === 'bounce') {
+            buttonStyle.willChange = 'transform';
+          } else if (field.animation === 'pulse') {
+            buttonStyle.willChange = 'transform, opacity';
+          } else if (field.animation === 'glow') {
+            buttonStyle.willChange = 'box-shadow';
           }
         }
         
@@ -698,11 +720,16 @@ export default function FormDisplay({
                 ...(isExtraLarge && {
                   height: '56px',
                   padding: '16px 32px',
-                  fontSize: '18px'
+                  fontSize: buttonFontSize || '18px'
                 })
               }}
             >
-              {IconComponent && <IconComponent size={iconSize} />}
+              {IconComponent && (
+                <IconComponent 
+                  size={iconSize} 
+                  style={{ fill: 'currentColor', strokeWidth: 1.5, width: `${iconSize}px`, height: `${iconSize}px` }}
+                />
+              )}
               {field.label}
             </Button>
           </div>
@@ -718,10 +745,27 @@ export default function FormDisplay({
     if (!globalSettings?.border?.enabled) {
       return {};
     }
+    const blurRadius = globalSettings.border.width || 4;
+    const spreadRadius = 1; // Slight spread for more aggressive shadow
+    const shadowColor = globalSettings.border.color || '#9ca3af';
+    const shadowOpacity = 0.3;
+    
+    // Convert hex to rgba for shadow
+    let rgbaColor = shadowColor;
+    if (shadowColor.startsWith('#')) {
+      const hex = shadowColor.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      rgbaColor = `rgba(${r}, ${g}, ${b}, ${shadowOpacity})`;
+    } else if (shadowColor.startsWith('rgb(')) {
+      rgbaColor = shadowColor.replace('rgb(', 'rgba(').replace(')', `, ${shadowOpacity})`);
+    } else if (!shadowColor.startsWith('rgba(')) {
+      rgbaColor = `rgba(156, 163, 175, ${shadowOpacity})`;
+    }
+    
     return {
-      borderWidth: `${globalSettings.border.width}px`,
-      borderStyle: globalSettings.border.style,
-      borderColor: globalSettings.border.color || '#9ca3af',
+      boxShadow: `0 0 ${blurRadius}px ${spreadRadius}px ${rgbaColor}`,
       borderRadius: `${globalSettings.border.radius}px`,
       padding: `${globalSettings.border.padding}px`,
       width: '100%',
@@ -731,6 +775,15 @@ export default function FormDisplay({
 
   const content = (
     <div className="space-y-4">
+      <style>{`
+        input::placeholder,
+        textarea::placeholder,
+        select::placeholder {
+          font-weight: normal !important;
+          font-style: normal !important;
+          font-size: 14px !important;
+        }
+      `}</style>
       {globalSettings && (
         <div className="space-y-3! mb-0">
           {globalSettings.headline.enabled && (
@@ -786,7 +839,7 @@ export default function FormDisplay({
   if (isPreview) {
     const borderStyle = getBorderStyle();
     return (
-      <Card style={{ ...borderStyle, direction: getDirection() }} className="p-0">
+      <Card style={borderStyle} className="p-0">
         <CardContent className="space-y-4 p-0">
           {content}
         </CardContent>
@@ -795,7 +848,7 @@ export default function FormDisplay({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" style={{ ...getBorderStyle(), direction: getDirection() }}>
+    <form onSubmit={handleSubmit} className="space-y-4" style={getBorderStyle()}>
       {content}
     </form>
   );

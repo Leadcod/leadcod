@@ -128,28 +128,6 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
 
         <s-divider />
 
-        {/* Direction Section */}
-        <div>
-          <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }}>Text Direction</h4>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
-            <div style={{ flex: '1 1 150px', minWidth: '120px' }}>
-              <s-select
-                label="Direction"
-                value={settings.direction || 'ltr'}
-                onChange={(e: any) => onUpdate({ direction: e.target.value || e.detail?.value || 'ltr' })}
-              >
-                <s-option value="ltr">Left to Right (LTR)</s-option>
-                <s-option value="rtl">Right to Left (RTL)</s-option>
-              </s-select>
-            </div>
-          </div>
-          <s-text>
-            Set the text direction for the entire form. RTL is used for languages like Arabic.
-          </s-text>
-        </div>
-
-        <s-divider />
-
         {/* Headline Section */}
         <div>
           <s-stack direction="inline" justifyContent="space-between" alignItems="center">
@@ -313,10 +291,10 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
 
         <s-divider />
 
-        {/* Border Section */}
+        {/* Shadow Section */}
         <div>
           <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-            <h4 style={{ fontWeight: 600, margin: 0 }}>Form Border</h4>
+            <h4 style={{ fontWeight: 600, margin: 0 }}>Form Shadow</h4>
             <s-switch
               checked={settings.border.enabled}
               onInput={(e: any) => updateBorder({ enabled: e.target?.checked ?? e.detail?.checked ?? !settings.border.enabled })}
@@ -327,14 +305,14 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
             <s-stack gap="small">
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
                 <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
-                  <s-text>Border Width</s-text>
+                  <s-text>Blur Radius</s-text>
                   <input
                     type="number"
                     value={settings.border.width}
-                    onChange={(e: any) => updateBorder({ width: parseInt(e.target.value) || 1 })}
-                    placeholder="1"
+                    onChange={(e: any) => updateBorder({ width: parseInt(e.target.value) || 4 })}
+                    placeholder="4"
                     min="0"
-                    max="20"
+                    max="50"
                     style={{
                       width: '100%',
                       padding: '8px 12px',
@@ -343,19 +321,6 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                       fontSize: '14px'
                     }}
                   />
-                </div>
-                <div style={{ flex: '1 1 120px', minWidth: '100px' }}>
-                  <s-select
-                    label="Border Style"
-                    value={settings.border.style}
-                    onChange={(e: any) => updateBorder({ style: e.target.value || e.detail?.value || settings.border.style })}
-                  >
-                    <s-option value="solid">Solid</s-option>
-                    <s-option value="dashed">Dashed</s-option>
-                    <s-option value="dotted">Dotted</s-option>
-                    <s-option value="double">Double</s-option>
-                    <s-option value="none">None</s-option>
-                  </s-select>
                 </div>
                 <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
                   <s-text>Border Radius</s-text>
@@ -376,7 +341,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   />
                 </div>
                 <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
-                  <s-text>Border Padding</s-text>
+                  <s-text>Padding</s-text>
                   <input
                     type="number"
                     value={settings.border.padding}
@@ -394,7 +359,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   />
                 </div>
                 <div style={{ flex: '0 0 auto' }}>
-                  <s-text>Border Color</s-text>
+                  <s-text>Shadow Color</s-text>
                   <CompactColorSwatch
                     value={settings.border.color || '#9ca3af'}
                     onChange={(color) => updateBorder({ color })}

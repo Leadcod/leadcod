@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { X, AlignLeft, AlignCenter, AlignRight, Bold, Italic, ChevronDown, ChevronUp } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { FormField, GRADIENT_PRESETS } from '@/app/types/form';
-import { AVAILABLE_ICONS } from '@/lib/constants/formBuilder';
+import { AVAILABLE_ICONS, BUY_NOW_ICONS } from '@/lib/constants/formBuilder';
 import CompactColorSwatch from '@/app/components/ui/compact-color-swatch';
 
 interface FieldSettingsPanelProps {
@@ -54,41 +54,13 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
           </div>
         ) : (
           <div>
-            <s-text>Label</s-text>
-            <div style={{ flex: 1 }}>
-              <s-text-field
-                value={field.label}
-                onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
-                disabled={!field.showLabel}
-              />
-            </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                <input
-                  type="checkbox"
-                  checked={field.showLabel}
-                  onChange={(e) => onUpdate(field.id, { showLabel: e.target.checked })}
-                  style={{
-                    width: '18px',
-                    height: '18px',
-                    cursor: 'pointer',
-                    accentColor: '#000000'
-                  }}
-                />
+            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+              <s-text>Label</s-text>
+              <s-stack direction="inline" gap="small" alignItems="center">
                 <s-text>Show</s-text>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                <input
-                  type="checkbox"
-                  checked={field.required}
-                  onChange={(e) => onUpdate(field.id, { required: e.target.checked })}
-                  disabled={isAlwaysRequired(field.type)}
-                  style={{
-                    width: '18px',
-                    height: '18px',
-                    cursor: isAlwaysRequired(field.type) ? 'not-allowed' : 'pointer',
-                    accentColor: '#000000',
-                    opacity: isAlwaysRequired(field.type) ? 0.5 : 1
-                  }}
+                <s-switch
+                  checked={field.showLabel}
+                  onInput={(e: any) => onUpdate(field.id, { showLabel: e.target?.checked ?? e.detail?.checked ?? !field.showLabel })}
                 />
                 <s-text>
                   Required
@@ -98,8 +70,19 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     </span>
                   )}
                 </s-text>
-              </div>
-            </div>
+                <s-switch
+                  checked={field.required}
+                  onInput={(e: any) => onUpdate(field.id, { required: e.target?.checked ?? e.detail?.checked ?? !field.required })}
+                  disabled={isAlwaysRequired(field.type)}
+                />
+              </s-stack>
+            </s-stack>
+            <s-text-field
+              value={field.label}
+              onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
+              disabled={!field.showLabel}
+            />
+          </div>
         )}
 
         {/* Placeholder Section - Grouped together */}
@@ -130,7 +113,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
             onChange={(e: any) => onUpdate(field.id, { icon: e.target.value || e.detail?.value || field.icon })}
           >
             <s-option value="none">None</s-option>
-            {AVAILABLE_ICONS.map((iconName) => (
+            {(field.type === 'buyButton' ? BUY_NOW_ICONS : AVAILABLE_ICONS).map((iconName) => (
               <s-option key={iconName} value={iconName}>
                 {iconName}
               </s-option>
@@ -142,7 +125,12 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                 return <span style={{ fontSize: '14px', opacity: 0.5 }}>No icon</span>;
               }
               const IconComp = (Icons as any)[field.icon];
-              return IconComp ? <IconComp size={24} /> : null;
+              if (!IconComp) return null;
+              // Apply solid styling for buy button icons
+              if (field.type === 'buyButton') {
+                return <IconComp size={24} style={{ fill: 'currentColor', strokeWidth: 1.5 }} />;
+              }
+              return <IconComp size={24} />;
             })()}
             <span style={{ fontSize: '14px', opacity: 0.7 }}>Preview</span>
           </div>
@@ -307,6 +295,54 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                 </s-select>
               </div>
             </s-stack>
+            <s-divider />
+            <div>
+              <s-text>Button Text & Icon Sizes</s-text>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
+                <div style={{ flex: '1 1 120px', minWidth: '100px' }}>
+                  <s-text>Text Size (px)</s-text>
+                  <input
+                    type="number"
+                    value={parseInt((field.buttonFontSize || '16px').replace('px', '')) || 16}
+                    onChange={(e: any) => {
+                      const numValue = parseInt(e.target.value) || 16;
+                      onUpdate(field.id, { buttonFontSize: `${numValue}px` });
+                    }}
+                    placeholder="16"
+                    min="8"
+                    max="72"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #e5e5e5',
+                      borderRadius: '4px',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+                <div style={{ flex: '1 1 120px', minWidth: '100px' }}>
+                  <s-text>Icon Size (px)</s-text>
+                  <input
+                    type="number"
+                    value={field.buttonIconSize || 20}
+                    onChange={(e: any) => {
+                      const numValue = parseInt(e.target.value) || 20;
+                      onUpdate(field.id, { buttonIconSize: numValue });
+                    }}
+                    placeholder="20"
+                    min="8"
+                    max="72"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #e5e5e5',
+                      borderRadius: '4px',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
           </>
         ) : (
           <s-stack direction="inline" gap="small" alignItems="end">

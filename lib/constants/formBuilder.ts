@@ -7,3 +7,8 @@ export const AVAILABLE_ICONS = [
   'Search', 'Filter', 'Check', 'X', 'Plus', 'Minus'
 ];
 
+// Buy Now related icons (solid versions)
+export const BUY_NOW_ICONS = [
+  'ShoppingCart', 'Zap', 'DollarSign', 'Tag', 'ArrowRight'
+];
+

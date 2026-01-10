@@ -41,6 +41,8 @@ export interface FormField {
   gradientBackground?: string; // CSS gradient string
   animation?: 'none' | 'background-shift' | 'shake' | 'bounce' | 'pulse' | 'glow';
   buttonSize?: 'small' | 'base' | 'large' | 'extra-large';
+  buttonFontSize?: string; // Font size for button text
+  buttonIconSize?: number; // Icon size in pixels
 }
 
 export interface GlobalFormSettings {
@@ -49,7 +51,6 @@ export interface GlobalFormSettings {
   fontSize: string;
   fontWeight: 'normal' | 'bold' | '600' | '700';
   fontStyle: 'normal' | 'italic';
-  direction: 'ltr' | 'rtl';
   inputPadding: {
     vertical: number;
     horizontal: number;
@@ -334,7 +335,9 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     backgroundType: 'solid',
     gradientBackground: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     animation: 'none',
-    buttonSize: 'base'
+    buttonSize: 'base',
+    buttonFontSize: '16px',
+    buttonIconSize: 20
   }
 ];
 
@@ -420,7 +423,6 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalFormSettings = {
   fontSize: '16px',
   fontWeight: 'normal',
   fontStyle: 'normal',
-  direction: 'ltr',
   inputPadding: {
     vertical: 8,
     horizontal: 12
