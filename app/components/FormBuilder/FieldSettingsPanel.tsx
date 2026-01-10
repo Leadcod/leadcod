@@ -86,7 +86,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
         )}
 
         {/* Placeholder Section - Grouped together */}
-        {field.type !== 'buyButton' && (
+        {field.type !== 'buyButton' && field.type !== 'shippingOption' && (
           <div>
             <s-stack direction="inline" justifyContent="space-between" alignItems="center">
               <s-text>Placeholder</s-text>
@@ -416,8 +416,8 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
               </>
             )}
 
-            {/* Input Alignment - Only for non-buyButton fields */}
-            {field.type !== 'buyButton' && (
+            {/* Input Alignment - Only for non-buyButton and non-shippingOption fields */}
+            {field.type !== 'buyButton' && field.type !== 'shippingOption' && (
               <>
                 <s-divider />
                 <h4>Input Alignment</h4>
@@ -451,6 +451,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                 </div>
               </>
             )}
+
           </s-stack>
         )}
 

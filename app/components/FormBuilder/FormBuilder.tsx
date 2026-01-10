@@ -47,6 +47,27 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
     lastSavedGlobalSettingsRef.current = JSON.parse(JSON.stringify(initialGlobalSettings || DEFAULT_GLOBAL_SETTINGS));
   }, []);
 
+  // Sync fields when initialFields prop changes (e.g., when new fields are merged in)
+  // Use a ref to track the last synced initialFields to avoid unnecessary updates
+  const lastInitialFieldsRef = useRef<FormField[]>(initialFieldsValue);
+  
+  useEffect(() => {
+    if (initialFields && initialFields.length > 0) {
+      // Check if initialFields has changed (by comparing field IDs)
+      const currentIds = new Set(lastInitialFieldsRef.current.map(f => f.id));
+      const newIds = new Set(initialFields.map(f => f.id));
+      
+      // Check if there are new fields or if the structure changed
+      const hasNewFields = initialFields.some(f => !currentIds.has(f.id));
+      const hasRemovedFields = lastInitialFieldsRef.current.some(f => !newIds.has(f.id));
+      
+      if (hasNewFields || hasRemovedFields || initialFields.length !== lastInitialFieldsRef.current.length) {
+        setFields(initialFields);
+        lastInitialFieldsRef.current = initialFields;
+      }
+    }
+  }, [initialFields]);
+
   useEffect(() => {
     if (onFieldsChange) {
       onFieldsChange(fields);

@@ -8,6 +8,7 @@ export type FormFieldType =
   | 'quantity'
   | 'coupon'
   | 'summary'
+  | 'shippingOption'
   | 'buyButton';
 
 export interface FormField {
@@ -36,6 +37,15 @@ export interface FormField {
   inputFontSize?: string;
   inputFontWeight?: 'normal' | 'bold' | '600' | '700';
   inputFontStyle?: 'normal' | 'italic';
+  // Shadow settings (for shippingOption)
+  shadow?: {
+    enabled: boolean;
+    color: string;
+    blur: number; // blur radius in px
+    spread: number; // spread radius in px
+    offsetX: number; // horizontal offset in px
+    offsetY: number; // vertical offset in px
+  };
   // Buy button specific
   backgroundType?: 'solid' | 'gradient';
   gradientBackground?: string; // CSS gradient string
@@ -307,6 +317,38 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     inputFontSize: '16px',
     inputFontWeight: 'normal',
     inputFontStyle: 'normal'
+  },
+  {
+    id: 'shippingOption',
+    type: 'shippingOption',
+    label: 'Shipping Option',
+    showLabel: true,
+    placeholder: '',
+    showPlaceholder: false,
+    icon: 'Truck',
+    required: false,
+    visible: false,
+    order: 8.5,
+    category: 'order',
+    inputTextColor: '#000000',
+    inputBackgroundColor: '#ffffff',
+    fontFamily: 'nunito',
+    labelColor: '#000000',
+    labelAlignment: 'left',
+    labelFontSize: '14px',
+    labelFontWeight: 'normal',
+    labelFontStyle: 'normal',
+    inputFontSize: '16px',
+    inputFontWeight: 'normal',
+    inputFontStyle: 'normal',
+    shadow: {
+      enabled: false,
+      color: '#000000',
+      blur: 4,
+      spread: 0,
+      offsetX: 0,
+      offsetY: 2
+    }
   },
   {
     id: 'buyButton',

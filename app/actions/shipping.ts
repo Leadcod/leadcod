@@ -56,6 +56,8 @@ export async function getShippingSettings(shopUrl: string) {
         data: {
           method: 'free' as const,
           stopDeskEnabled: false,
+          codLabel: 'Cash on Delivery',
+          stopDeskLabel: 'Stop Desk',
           fees: {}
         }
       };
@@ -90,6 +92,8 @@ export async function getShippingSettings(shopUrl: string) {
       data: {
         method: settings?.method || 'free',
         stopDeskEnabled: settings?.stopDeskEnabled || false,
+        codLabel: settings?.codLabel || 'Cash on Delivery',
+        stopDeskLabel: settings?.stopDeskLabel || 'Stop Desk',
         fees: feesRecord
       }
     };
@@ -103,11 +107,61 @@ export async function getShippingSettings(shopUrl: string) {
   }
 }
 
+export async function getShippingFeesForState(shopUrl: string, stateId: string) {
+  try {
+    // Find shop
+    const shop = await prisma.shop.findFirst({
+      where: { url: shopUrl }
+    });
+
+    if (!shop) {
+      return {
+        success: true,
+        data: {
+          cashOnDelivery: null,
+          stopDesk: null
+        }
+      };
+    }
+
+    // Get shipping fee for this state
+    const fee = await prisma.shippingFee.findUnique({
+      where: {
+        shopId_stateId: {
+          shopId: shop.id,
+          stateId: stateId
+        }
+      },
+      select: {
+        cashOnDelivery: true,
+        stopDesk: true,
+      }
+    });
+
+    return {
+      success: true,
+      data: {
+        cashOnDelivery: fee?.cashOnDelivery || null,
+        stopDesk: fee?.stopDesk || null
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching shipping fees for state:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      data: null
+    };
+  }
+}
+
 export async function saveShippingSettings(
   shopUrl: string,
   method: 'free' | 'per-province',
   stopDeskEnabled: boolean,
-  fees: Record<string, { cashOnDelivery: string; stopDesk: string }>
+  fees: Record<string, { cashOnDelivery: string; stopDesk: string }>,
+  codLabel?: string,
+  stopDeskLabel?: string
 ) {
   try {
     // Find or create shop
@@ -129,12 +183,16 @@ export async function saveShippingSettings(
       update: {
         method,
         stopDeskEnabled,
+        codLabel: codLabel || null,
+        stopDeskLabel: stopDeskLabel || null,
         updatedAt: new Date()
       },
       create: {
         shopId: shop.id,
         method,
-        stopDeskEnabled
+        stopDeskEnabled,
+        codLabel: codLabel || null,
+        stopDeskLabel: stopDeskLabel || null
       }
     });
 

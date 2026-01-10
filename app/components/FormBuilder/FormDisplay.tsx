@@ -28,6 +28,9 @@ interface FormDisplayProps {
   onFieldClick?: (fieldId: string) => void;
   mode?: 'preview' | 'production';
   onSubmit?: (formData: Record<string, any>) => void;
+  shippingMethod?: 'free' | 'per-province';
+  stopDeskEnabled?: boolean;
+  shopUrl?: string;
 }
 
 export default function FormDisplay({ 
@@ -35,7 +38,10 @@ export default function FormDisplay({
   globalSettings, 
   onFieldClick, 
   mode = 'preview',
-  onSubmit 
+  onSubmit,
+  shippingMethod = 'free',
+  stopDeskEnabled = false,
+  shopUrl
 }: FormDisplayProps) {
   const isPreview = mode === 'preview';
   const [formData, setFormData] = useState<Record<string, any>>({});
@@ -44,6 +50,8 @@ export default function FormDisplay({
   const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
   const [loadingStates, setLoadingStates] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
+  const [shippingFees, setShippingFees] = useState<{ cashOnDelivery: number | null; stopDesk: number | null } | null>(null);
+  const [loadingShippingFees, setLoadingShippingFees] = useState(false);
 
   // Fetch states on mount
   useEffect(() => {
@@ -87,6 +95,32 @@ export default function FormDisplay({
     fetchCities();
   }, [selectedStateId]);
 
+  // Fetch shipping fees when state is selected and shipping method is per-province
+  useEffect(() => {
+    const fetchShippingFees = async () => {
+      if (!selectedStateId || !shopUrl || shippingMethod !== 'per-province') {
+        setShippingFees(null);
+        return;
+      }
+      setLoadingShippingFees(true);
+      try {
+        const response = await fetch(`/api/shipping-fees?shopUrl=${encodeURIComponent(shopUrl)}&stateId=${selectedStateId}`);
+        const result = await response.json();
+        if (result.success && result.data) {
+          setShippingFees(result.data);
+        } else {
+          setShippingFees(null);
+        }
+      } catch (error) {
+        console.error('Error fetching shipping fees:', error);
+        setShippingFees(null);
+      } finally {
+        setLoadingShippingFees(false);
+      }
+    };
+    fetchShippingFees();
+  }, [selectedStateId, shopUrl, shippingMethod]);
+
   // Sync selectedStateId with formData
   useEffect(() => {
     const provinceField = fields.find(f => f.type === 'province');
@@ -116,8 +150,16 @@ export default function FormDisplay({
   };
 
   // Filter only visible fields and sort by order
+  // Also filter out shippingOption if shipping method is 'free'
   const visibleFields = fields
-    .filter((field) => field.visible)
+    .filter((field) => {
+      if (!field.visible) return false;
+      // Hide shippingOption if shipping method is 'free'
+      if (field.type === 'shippingOption' && shippingMethod === 'free') {
+        return false;
+      }
+      return true;
+    })
     .sort((a, b) => a.order - b.order);
 
   const getFontFamily = (fontFamily?: string) => {
@@ -693,6 +735,145 @@ export default function FormDisplay({
             </CardContent>
           </Card>
         );
+
+      case 'shippingOption': {
+        const ShippingIconComponent = field.icon === 'none' ? null : ((Icons as any)[field.icon] || Icons.Truck);
+        const iconSize = getIconSize(globalFontSize, 16);
+        
+        // Format price with DZD currency
+        // In preview mode, show example prices (400 for COD, 300 for Stop Desk)
+        // Only show "Free" if shipping method is 'free'
+        const formatPrice = (price: number | null, isCOD: boolean): string => {
+          if (shippingMethod === 'free') {
+            return 'Free';
+          }
+          if (isPreview) {
+            // Show example prices in builder preview
+            return isCOD ? '400 DZD' : '300 DZD';
+          }
+          if (price === null || price === undefined) return 'Free';
+          return `${price.toLocaleString('en-US')} DZD`;
+        };
+
+        const codPrice = shippingFees?.cashOnDelivery ?? null;
+        const stopDeskPrice = shippingFees?.stopDesk ?? null;
+
+        const optionItemStyle = {
+          fontFamily: getFontFamily(),
+          fontSize: field.inputFontSize || globalFontSize,
+          fontWeight: field.inputFontWeight || globalFontWeight,
+          fontStyle: field.inputFontStyle || globalFontStyle,
+          color: field.inputTextColor,
+        };
+
+        // Label style with vertical centering and horizontal alignment from settings
+        const labelStyleWithIcon = {
+          ...labelStyle,
+          display: 'flex',
+          alignItems: 'center', // Vertically center
+          gap: '8px',
+          justifyContent: labelAlignment === 'center' ? 'center' : labelAlignment === 'right' ? 'flex-end' : 'flex-start', // Horizontal alignment from settings
+        };
+
+        return (
+          <div key={field.id} className="space-y-2">
+            {field.showLabel && (
+              <Label style={labelStyleWithIcon}>
+                {ShippingIconComponent && (
+                  <ShippingIconComponent size={iconSize} style={{ color: primaryColor }} />
+                )}
+                {field.label}
+                {field.required && <span className="text-red-500">*</span>}
+              </Label>
+            )}
+            {!field.showLabel && ShippingIconComponent && (
+              <div 
+                className="flex items-center"
+                style={{ 
+                  justifyContent: labelAlignment === 'center' ? 'center' : labelAlignment === 'right' ? 'flex-end' : 'flex-start' 
+                }}
+              >
+                <ShippingIconComponent size={iconSize} style={{ color: primaryColor }} />
+              </div>
+            )}
+            <div 
+              className={`bg-muted/50 rounded-lg p-4 space-y-3 ${cursorClass}`}
+              style={{
+                backgroundColor: field.inputBackgroundColor || '#f9fafb',
+                borderRadius: '0.5rem',
+                padding: '16px',
+                boxShadow: '0px 0px 0px 1px rgba(0, 0, 0, 0.08)'
+              }}
+              onClick={handleFieldClick}
+            >
+              <div className="space-y-2">
+                <label 
+                  className="flex items-center justify-between cursor-pointer hover:bg-muted/30 rounded p-2 transition-colors"
+                  style={optionItemStyle}
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name={`shipping-option-${field.id}`}
+                      value="cod"
+                      checked={!isPreview && formData[field.id] === 'cod'}
+                      onChange={(e) => handleInputChange(field.id, e.target.value)}
+                      disabled={isPreview}
+                      className="w-4 h-4"
+                      required={field.required}
+                      style={{ cursor: isPreview ? 'default' : 'pointer' }}
+                    />
+                    <span style={optionItemStyle}>
+                      Cash on Delivery (COD)
+                    </span>
+                  </div>
+                  <span 
+                    style={{
+                      ...optionItemStyle,
+                      fontWeight: 'bold',
+                      color: primaryColor,
+                    }}
+                  >
+                    {loadingShippingFees ? '...' : formatPrice(codPrice, true)}
+                  </span>
+                </label>
+                {stopDeskEnabled && (
+                  <label 
+                    className="flex items-center justify-between cursor-pointer hover:bg-muted/30 rounded p-2 transition-colors"
+                    style={optionItemStyle}
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        name={`shipping-option-${field.id}`}
+                        value="stopDesk"
+                        checked={!isPreview && formData[field.id] === 'stopDesk'}
+                        onChange={(e) => handleInputChange(field.id, e.target.value)}
+                        disabled={isPreview}
+                        className="w-4 h-4"
+                        required={field.required}
+                        style={{ cursor: isPreview ? 'default' : 'pointer' }}
+                      />
+                      <span style={optionItemStyle}>
+                        Stop Desk
+                      </span>
+                    </div>
+                    <span 
+                      style={{
+                        ...optionItemStyle,
+                        fontWeight: 'bold',
+                        color: primaryColor,
+                      }}
+                    >
+                      {loadingShippingFees ? '...' : formatPrice(stopDeskPrice, false)}
+                    </span>
+                  </label>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
 
       case 'buyButton': {
         // Map animation type to CSS class

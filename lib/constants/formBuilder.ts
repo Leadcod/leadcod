@@ -4,7 +4,7 @@ export const AVAILABLE_ICONS = [
   'Hash', 'FileText', 'Calendar', 'Clock', 'CreditCard',
   'DollarSign', 'Heart', 'Star', 'Bookmark', 'MessageSquare',
   'Send', 'Globe', 'Link', 'Image', 'File', 'Folder',
-  'Search', 'Filter', 'Check', 'X', 'Plus', 'Minus'
+  'Search', 'Filter', 'Check', 'X', 'Plus', 'Minus', 'Truck'
 ];
 
 // Buy Now related icons (solid versions)

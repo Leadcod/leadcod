@@ -29,21 +29,29 @@
         return;
       }
 
-      const { fields, settings } = result.data;
-      renderForm(container, fields, settings);
+      const { fields, settings, shippingSettings } = result.data;
+      renderForm(container, fields, settings, shippingSettings);
     })
     .catch(error => {
       console.error('Error loading form:', error);
       container.innerHTML = `<div class="leadcod-form-error">Error loading form: ${error.message}. Please check your API URL configuration.</div>`;
     });
 
-  function renderForm(container, fields, settings) {
+  function renderForm(container, fields, settings, shippingSettings) {
     const Utils = window.LeadcodFormUtils;
     const Fields = window.LeadcodFormFields;
     
     // Filter visible fields and sort by order
+    // Also filter out shippingOption if shipping method is 'free'
     const visibleFields = fields
-      .filter(field => field.visible)
+      .filter(field => {
+        if (!field.visible) return false;
+        // Hide shippingOption if shipping method is 'free'
+        if (field.type === 'shippingOption' && shippingSettings && shippingSettings.method === 'free') {
+          return false;
+        }
+        return true;
+      })
       .sort((a, b) => (a.order || 0) - (b.order || 0));
 
     const borderStyle = Utils.getBorderStyle(settings);
@@ -79,7 +87,7 @@
       formHTML += '<div style="text-align: center; padding: 32px; color: #6b7280;">No visible fields</div>';
     } else {
       visibleFields.forEach(field => {
-        formHTML += Fields.renderField(field, settings);
+        formHTML += Fields.renderField(field, settings, shippingSettings);
       });
     }
 
@@ -113,8 +121,158 @@
     const baseApiUrl = apiUrl.replace('/form', '');
     const provinceSelect = container.querySelector('.leadcod-province-select');
     const cityField = container.querySelector('.leadcod-city-select');
+    const shippingSection = container.querySelector('.leadcod-shipping-section');
     
     if (!provinceSelect) return;
+
+    // Track if this is the initial render
+    let isInitialRender = true;
+
+    // Function to check if shipping section should be shown
+    function updateShippingSectionVisibility() {
+      const selectedProvince = provinceSelect.value;
+      const selectedCity = cityField ? cityField.value : '';
+      
+      if (shippingSection) {
+        if (selectedProvince && selectedCity) {
+          // Show the section
+          shippingSection.style.display = 'block';
+          
+          // Only animate on initial render (first time both are selected)
+          if (isInitialRender) {
+            // Set initial animation state
+            shippingSection.style.opacity = '0';
+            shippingSection.style.transform = 'translateY(-10px)';
+            shippingSection.style.maxHeight = '0';
+            shippingSection.style.marginBottom = '0';
+            // Force reflow
+            void shippingSection.offsetWidth;
+            // Remove any existing animation class first
+            shippingSection.classList.remove('show');
+            // Force reflow again to restart animation
+            void shippingSection.offsetWidth;
+            // Add show class with animation
+            shippingSection.classList.add('show');
+            isInitialRender = false;
+          } else {
+            // Just show without animation (subsequent changes)
+            shippingSection.style.opacity = '1';
+            shippingSection.style.transform = 'translateY(0)';
+            shippingSection.style.maxHeight = '';
+            shippingSection.style.marginBottom = '';
+            shippingSection.classList.add('show');
+          }
+        } else {
+          shippingSection.classList.remove('show');
+          // Reset styles and hide after animation
+          setTimeout(() => {
+            if (!shippingSection.classList.contains('show')) {
+              shippingSection.style.display = 'none';
+              shippingSection.style.opacity = '';
+              shippingSection.style.transform = '';
+              shippingSection.style.maxHeight = '';
+              shippingSection.style.marginBottom = '';
+            }
+          }, 400);
+        }
+      }
+    }
+
+    // Function to create loader element
+    function createLoader() {
+      const loader = document.createElement('span');
+      loader.className = 'leadcod-price-loader';
+      loader.innerHTML = `
+        <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-left: 4px;">
+          <circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="8 4" opacity="0.6">
+            <animateTransform attributeName="transform" type="rotate" from="0 6 6" to="360 6 6" dur="0.8s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      `;
+      loader.style.display = 'inline-block';
+      loader.style.verticalAlign = 'middle';
+      loader.style.marginLeft = '4px';
+      loader.style.color = '#6b7280';
+      return loader;
+    }
+
+    // Function to fetch and update shipping prices
+    function updateShippingPrices(stateId, showLoader = false) {
+      if (!shippingSection || !stateId) {
+        return;
+      }
+
+      const codPriceElement = shippingSection.querySelector('.leadcod-shipping-price-cod');
+      const stopDeskPriceElement = shippingSection.querySelector('.leadcod-shipping-price-stopdesk');
+
+      // Remove existing loaders
+      const existingCodLoader = shippingSection.querySelector('.leadcod-price-loader-cod');
+      const existingStopDeskLoader = shippingSection.querySelector('.leadcod-price-loader-stopdesk');
+      if (existingCodLoader) existingCodLoader.remove();
+      if (existingStopDeskLoader) existingStopDeskLoader.remove();
+
+      // Show loader next to price elements only if requested
+      if (showLoader) {
+        if (codPriceElement) {
+          const codLoader = createLoader();
+          codLoader.className = 'leadcod-price-loader leadcod-price-loader-cod';
+          codPriceElement.appendChild(codLoader);
+        }
+        if (stopDeskPriceElement) {
+          const stopDeskLoader = createLoader();
+          stopDeskLoader.className = 'leadcod-price-loader leadcod-price-loader-stopdesk';
+          stopDeskPriceElement.appendChild(stopDeskLoader);
+        }
+      }
+
+      // Fetch shipping fees
+      fetch(`${baseApiUrl}/shipping-fees?shopUrl=${encodeURIComponent(shopUrl)}&stateId=${encodeURIComponent(stateId)}`)
+        .then(response => response.json())
+        .then(result => {
+          // Remove loaders (only if they were shown)
+          const codLoader = shippingSection.querySelector('.leadcod-price-loader-cod');
+          const stopDeskLoader = shippingSection.querySelector('.leadcod-price-loader-stopdesk');
+          if (codLoader) codLoader.remove();
+          if (stopDeskLoader) stopDeskLoader.remove();
+
+          if (result.success && result.data) {
+            // Update COD price
+            if (codPriceElement) {
+              const codPrice = result.data.cashOnDelivery;
+              if (codPrice !== null && codPrice !== undefined) {
+                codPriceElement.textContent = codPrice + ' DZD';
+              } else {
+                codPriceElement.textContent = 'Free';
+              }
+            }
+
+            // Update Stop Desk price
+            if (stopDeskPriceElement) {
+              const stopDeskPrice = result.data.stopDesk;
+              if (stopDeskPrice !== null && stopDeskPrice !== undefined) {
+                stopDeskPriceElement.textContent = stopDeskPrice + ' DZD';
+              } else {
+                stopDeskPriceElement.textContent = 'Free';
+              }
+            }
+          } else {
+            // Set default prices on error
+            if (codPriceElement) codPriceElement.textContent = '-';
+            if (stopDeskPriceElement) stopDeskPriceElement.textContent = '-';
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching shipping fees:', error);
+          // Remove loaders on error (only if they were shown)
+          const codLoader = shippingSection.querySelector('.leadcod-price-loader-cod');
+          const stopDeskLoader = shippingSection.querySelector('.leadcod-price-loader-stopdesk');
+          if (codLoader) codLoader.remove();
+          if (stopDeskLoader) stopDeskLoader.remove();
+          
+          if (codPriceElement) codPriceElement.textContent = '-';
+          if (stopDeskPriceElement) stopDeskPriceElement.textContent = '-';
+        });
+    }
 
     // Fetch states
     fetch(`${baseApiUrl}/states`)
@@ -142,6 +300,10 @@
           // Add change listener to province select
           provinceSelect.addEventListener('change', function() {
             const selectedStateId = this.value;
+            
+            // Hide shipping section when province changes
+            updateShippingSectionVisibility();
+            
             if (cityField) {
               if (selectedStateId) {
                 // Fetch cities for selected state
@@ -151,6 +313,9 @@
                 cityField.style.backgroundColor = '#f9fafb';
                 const placeholder = cityField.getAttribute('data-placeholder') || 'Select city';
                 cityField.innerHTML = `<option value="">${placeholder}</option>`;
+                
+                // Fetch shipping prices for the selected province (show loader)
+                updateShippingPrices(selectedStateId, true);
                 
                 fetch(`${baseApiUrl}/cities?stateId=${selectedStateId}`)
                   .then(response => response.json())
@@ -184,9 +349,24 @@
                 cityField.style.opacity = '0.6';
                 cityField.style.cursor = 'not-allowed';
                 cityField.style.backgroundColor = '#f9fafb';
+                updateShippingSectionVisibility();
               }
             }
           });
+
+          // Add change listener to city select
+          if (cityField) {
+            cityField.addEventListener('change', function() {
+              const selectedStateId = provinceSelect.value;
+              const selectedCity = this.value;
+              
+              // Show/hide shipping section (will animate only on initial render)
+              updateShippingSectionVisibility();
+              
+              // Note: Prices don't need to be refetched when city changes since they're based on state
+              // The prices are already loaded when the state was selected
+            });
+          }
         } else {
           provinceSelect.innerHTML = '<option value="">Error loading provinces</option>';
         }
@@ -198,4 +378,5 @@
   }
 })();
 </script>
+
 

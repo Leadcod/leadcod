@@ -140,6 +140,8 @@ export const ShippingSettingsScalarFieldEnum = {
   shopId: 'shopId',
   method: 'method',
   stopDeskEnabled: 'stopDeskEnabled',
+  codLabel: 'codLabel',
+  stopDeskLabel: 'stopDeskLabel',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

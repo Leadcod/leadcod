@@ -8,6 +8,7 @@ const app = new Elysia({ prefix: '/api' })
   .get('/form', FormController.getForm, FormController.getFormSchema)
   .get('/states', LocationController.getStates, LocationController.getStatesSchema)
   .get('/cities', LocationController.getCities, LocationController.getCitiesSchema)
+  .get('/shipping-fees', LocationController.getShippingFees, LocationController.getShippingFeesSchema)
 
 export const GET = app.fetch 
 export const POST = app.fetch 

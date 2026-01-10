@@ -10,7 +10,7 @@
 
   const Utils = window.LeadcodFormUtils;
 
-  window.LeadcodFormFields.renderField = function(field, settings) {
+  window.LeadcodFormFields.renderField = function(field, settings, shippingSettings) {
     const globalFontSize = Utils.getGlobalFontSize(settings);
     const globalFontWeight = Utils.getGlobalFontWeight(settings);
     const globalFontStyle = Utils.getGlobalFontStyle(settings);
@@ -81,9 +81,12 @@
     };
 
     const labelStyle = `
-      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle}; text-align: ${labelAlignment};
+      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle};
       color: ${primaryColor};
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: ${labelAlignment === 'center' ? 'center' : labelAlignment === 'right' ? 'flex-end' : 'flex-start'};
       margin-bottom: 4px;
     `;
 
@@ -329,6 +332,89 @@
                 </div>
               </div>
             </div>
+          </div>
+        `;
+        return fieldHTML;
+
+      case 'shippingOption':
+        const shippingOptionStyle = `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: ${globalFontWeight};
+          font-style: ${globalFontStyle};
+          color: ${primaryColor};
+          background-color: #f9fafb;
+          border-radius: 0.375rem;
+          padding: 16px;
+          box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.08);
+        `;
+        const shippingOptionTitleStyle = `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: bold;
+          font-style: ${globalFontStyle};
+          color: ${primaryColor};
+          margin: 0 0 12px 0;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        `;
+        const shippingOptionItemStyle = `
+          font-family: ${Utils.getFontFamily(settings)};
+          font-size: ${globalFontSize};
+          font-weight: ${globalFontWeight};
+          font-style: ${globalFontStyle};
+          color: ${primaryColor};
+        `;
+        const stopDeskEnabled = shippingSettings && shippingSettings.stopDeskEnabled;
+        const codLabel = shippingSettings && shippingSettings.codLabel ? shippingSettings.codLabel : 'Cash on Delivery';
+        const stopDeskLabel = shippingSettings && shippingSettings.stopDeskLabel ? shippingSettings.stopDeskLabel : 'Stop Desk';
+        
+        // Build title HTML with label and icon inside the shipping section
+        const iconHTML = Utils.renderIcon(field.icon, iconSize) ? Utils.renderIcon(field.icon, iconSize) : '';
+        const titleText = field.showLabel ? field.label : (field.label || 'Shipping Option');
+        const requiredIndicator = field.required ? ' <span style="color: #ef4444;">*</span>' : '';
+        
+        // Build complete field HTML with shipping section
+        fieldHTML = `
+          <div class="leadcod-field" style="margin-bottom: 4px;">
+            <div class="leadcod-shipping-section" style="display: none; --leadcod-primary-color: ${primaryColor};">
+              <div style="${shippingOptionStyle}">
+                <h3 style="${shippingOptionTitleStyle}">
+                  ${iconHTML}<span>${titleText}${requiredIndicator}</span>
+                </h3>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; ${shippingOptionItemStyle}">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <input 
+                      type="radio" 
+                      name="${field.id}" 
+                      value="cod"
+                      ${field.required ? 'required' : ''}
+                      style="width: 16px; height: 16px; cursor: pointer; accent-color: ${primaryColor};"
+                    />
+                    <span>${codLabel}</span>
+                  </div>
+                  <span class="leadcod-shipping-price-cod" style="font-weight: 600;">-</span>
+                </label>
+                ${stopDeskEnabled ? `
+                <label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; ${shippingOptionItemStyle}">
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <input 
+                      type="radio" 
+                      name="${field.id}" 
+                      value="stopDesk"
+                      ${field.required ? 'required' : ''}
+                      style="width: 16px; height: 16px; cursor: pointer; accent-color: ${primaryColor};"
+                    />
+                    <span>${stopDeskLabel}</span>
+                  </div>
+                  <span class="leadcod-shipping-price-stopdesk" style="font-weight: 600;">-</span>
+                </label>
+                ` : ''}
+              </div>
+            </div>
+          </div>
           </div>
         `;
         return fieldHTML;

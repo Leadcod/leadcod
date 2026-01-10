@@ -83,8 +83,44 @@ export class LocationController {
     })
   }
 
+  static async getShippingFees({ query }: { query: { shopUrl: string; stateId: string } }) {
+    const { shopUrl, stateId } = query;
+    
+    if (!shopUrl || !stateId) {
+      return {
+        success: false,
+        error: 'shopUrl and stateId parameters are required'
+      };
+    }
+
+    try {
+      const { getShippingFeesForState } = await import('@/app/actions/shipping');
+      const result = await getShippingFeesForState(shopUrl, stateId);
+      return result;
+    } catch (error) {
+      console.error('Error fetching shipping fees:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  static getStatesSchema = {
+    query: t.Object({
+      countryId: t.Optional(t.String())
+    })
+  }
+
   static getCitiesSchema = {
     query: t.Object({
+      stateId: t.String()
+    })
+  }
+
+  static getShippingFeesSchema = {
+    query: t.Object({
+      shopUrl: t.String(),
       stateId: t.String()
     })
   }
