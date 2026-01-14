@@ -27,6 +27,7 @@ export type AggregateShop = {
 export type ShopMinAggregateOutputType = {
   id: string | null
   url: string | null
+  accessToken: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -34,6 +35,7 @@ export type ShopMinAggregateOutputType = {
 export type ShopMaxAggregateOutputType = {
   id: string | null
   url: string | null
+  accessToken: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -41,6 +43,7 @@ export type ShopMaxAggregateOutputType = {
 export type ShopCountAggregateOutputType = {
   id: number
   url: number
+  accessToken: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -50,6 +53,7 @@ export type ShopCountAggregateOutputType = {
 export type ShopMinAggregateInputType = {
   id?: true
   url?: true
+  accessToken?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -57,6 +61,7 @@ export type ShopMinAggregateInputType = {
 export type ShopMaxAggregateInputType = {
   id?: true
   url?: true
+  accessToken?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -64,6 +69,7 @@ export type ShopMaxAggregateInputType = {
 export type ShopCountAggregateInputType = {
   id?: true
   url?: true
+  accessToken?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -144,6 +150,7 @@ export type ShopGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type ShopGroupByOutputType = {
   id: string
   url: string
+  accessToken: string | null
   createdAt: Date
   updatedAt: Date
   _count: ShopCountAggregateOutputType | null
@@ -172,6 +179,7 @@ export type ShopWhereInput = {
   NOT?: Prisma.ShopWhereInput | Prisma.ShopWhereInput[]
   id?: Prisma.StringFilter<"Shop"> | string
   url?: Prisma.StringFilter<"Shop"> | string
+  accessToken?: Prisma.StringNullableFilter<"Shop"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Shop"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Shop"> | Date | string
   Form?: Prisma.FormListRelationFilter
@@ -182,6 +190,7 @@ export type ShopWhereInput = {
 export type ShopOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  accessToken?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   Form?: Prisma.FormOrderByRelationAggregateInput
@@ -195,6 +204,7 @@ export type ShopWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ShopWhereInput[]
   NOT?: Prisma.ShopWhereInput | Prisma.ShopWhereInput[]
   url?: Prisma.StringFilter<"Shop"> | string
+  accessToken?: Prisma.StringNullableFilter<"Shop"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Shop"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Shop"> | Date | string
   Form?: Prisma.FormListRelationFilter
@@ -205,6 +215,7 @@ export type ShopWhereUniqueInput = Prisma.AtLeast<{
 export type ShopOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  accessToken?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ShopCountOrderByAggregateInput
@@ -218,6 +229,7 @@ export type ShopScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ShopScalarWhereWithAggregatesInput | Prisma.ShopScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Shop"> | string
   url?: Prisma.StringWithAggregatesFilter<"Shop"> | string
+  accessToken?: Prisma.StringNullableWithAggregatesFilter<"Shop"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Shop"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Shop"> | Date | string
 }
@@ -225,6 +237,7 @@ export type ShopScalarWhereWithAggregatesInput = {
 export type ShopCreateInput = {
   id?: string
   url: string
+  accessToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormCreateNestedManyWithoutShopInput
@@ -235,6 +248,7 @@ export type ShopCreateInput = {
 export type ShopUncheckedCreateInput = {
   id?: string
   url: string
+  accessToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
@@ -245,6 +259,7 @@ export type ShopUncheckedCreateInput = {
 export type ShopUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUpdateManyWithoutShopNestedInput
@@ -255,6 +270,7 @@ export type ShopUpdateInput = {
 export type ShopUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
@@ -265,6 +281,7 @@ export type ShopUncheckedUpdateInput = {
 export type ShopCreateManyInput = {
   id?: string
   url: string
+  accessToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -272,6 +289,7 @@ export type ShopCreateManyInput = {
 export type ShopUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -279,6 +297,7 @@ export type ShopUpdateManyMutationInput = {
 export type ShopUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -286,6 +305,7 @@ export type ShopUncheckedUpdateManyInput = {
 export type ShopCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  accessToken?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -293,6 +313,7 @@ export type ShopCountOrderByAggregateInput = {
 export type ShopMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  accessToken?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -300,6 +321,7 @@ export type ShopMaxOrderByAggregateInput = {
 export type ShopMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  accessToken?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -311,6 +333,10 @@ export type ShopScalarRelationFilter = {
 
 export type StringFieldUpdateOperationsInput = {
   set?: string
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -362,6 +388,7 @@ export type ShopUpdateOneRequiredWithoutShippingFeesNestedInput = {
 export type ShopCreateWithoutFormInput = {
   id?: string
   url: string
+  accessToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
@@ -371,6 +398,7 @@ export type ShopCreateWithoutFormInput = {
 export type ShopUncheckedCreateWithoutFormInput = {
   id?: string
   url: string
+  accessToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
@@ -396,6 +424,7 @@ export type ShopUpdateToOneWithWhereWithoutFormInput = {
 export type ShopUpdateWithoutFormInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
@@ -405,6 +434,7 @@ export type ShopUpdateWithoutFormInput = {
 export type ShopUncheckedUpdateWithoutFormInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
@@ -414,6 +444,7 @@ export type ShopUncheckedUpdateWithoutFormInput = {
 export type ShopCreateWithoutShippingSettingsInput = {
   id?: string
   url: string
+  accessToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormCreateNestedManyWithoutShopInput
@@ -423,6 +454,7 @@ export type ShopCreateWithoutShippingSettingsInput = {
 export type ShopUncheckedCreateWithoutShippingSettingsInput = {
   id?: string
   url: string
+  accessToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
@@ -448,6 +480,7 @@ export type ShopUpdateToOneWithWhereWithoutShippingSettingsInput = {
 export type ShopUpdateWithoutShippingSettingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUpdateManyWithoutShopNestedInput
@@ -457,6 +490,7 @@ export type ShopUpdateWithoutShippingSettingsInput = {
 export type ShopUncheckedUpdateWithoutShippingSettingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
@@ -466,6 +500,7 @@ export type ShopUncheckedUpdateWithoutShippingSettingsInput = {
 export type ShopCreateWithoutShippingFeesInput = {
   id?: string
   url: string
+  accessToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormCreateNestedManyWithoutShopInput
@@ -475,6 +510,7 @@ export type ShopCreateWithoutShippingFeesInput = {
 export type ShopUncheckedCreateWithoutShippingFeesInput = {
   id?: string
   url: string
+  accessToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
@@ -500,6 +536,7 @@ export type ShopUpdateToOneWithWhereWithoutShippingFeesInput = {
 export type ShopUpdateWithoutShippingFeesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUpdateManyWithoutShopNestedInput
@@ -509,6 +546,7 @@ export type ShopUpdateWithoutShippingFeesInput = {
 export type ShopUncheckedUpdateWithoutShippingFeesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
@@ -558,6 +596,7 @@ export type ShopCountOutputTypeCountShippingFeesArgs<ExtArgs extends runtime.Typ
 export type ShopSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   url?: boolean
+  accessToken?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   Form?: boolean | Prisma.Shop$FormArgs<ExtArgs>
@@ -569,6 +608,7 @@ export type ShopSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type ShopSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   url?: boolean
+  accessToken?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["shop"]>
@@ -576,6 +616,7 @@ export type ShopSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type ShopSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   url?: boolean
+  accessToken?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["shop"]>
@@ -583,11 +624,12 @@ export type ShopSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type ShopSelectScalar = {
   id?: boolean
   url?: boolean
+  accessToken?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ShopOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "url" | "createdAt" | "updatedAt", ExtArgs["result"]["shop"]>
+export type ShopOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "url" | "accessToken" | "createdAt" | "updatedAt", ExtArgs["result"]["shop"]>
 export type ShopInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   Form?: boolean | Prisma.Shop$FormArgs<ExtArgs>
   shippingSettings?: boolean | Prisma.Shop$shippingSettingsArgs<ExtArgs>
@@ -607,6 +649,7 @@ export type $ShopPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     url: string
+    accessToken: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["shop"]>
@@ -1037,6 +1080,7 @@ export interface Prisma__ShopClient<T, Null = never, ExtArgs extends runtime.Typ
 export interface ShopFieldRefs {
   readonly id: Prisma.FieldRef<"Shop", 'String'>
   readonly url: Prisma.FieldRef<"Shop", 'String'>
+  readonly accessToken: Prisma.FieldRef<"Shop", 'String'>
   readonly createdAt: Prisma.FieldRef<"Shop", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Shop", 'DateTime'>
 }

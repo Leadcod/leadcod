@@ -9,7 +9,8 @@ export type FormFieldType =
   | 'coupon'
   | 'summary'
   | 'shippingOption'
-  | 'buyButton';
+  | 'buyButton'
+  | 'whatsappButton';
 
 export interface FormField {
   id: string;
@@ -53,6 +54,9 @@ export interface FormField {
   buttonSize?: 'small' | 'base' | 'large' | 'extra-large';
   buttonFontSize?: string; // Font size for button text
   buttonIconSize?: number; // Icon size in pixels
+  showQuantity?: boolean; // Show/hide quantity selector in buy button
+  // WhatsApp button specific
+  whatsappNumber?: string; // WhatsApp number (e.g., "213000000000")
 }
 
 export interface GlobalFormSettings {
@@ -379,7 +383,40 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     animation: 'none',
     buttonSize: 'base',
     buttonFontSize: '16px',
-    buttonIconSize: 20
+    buttonIconSize: 20,
+    showQuantity: true
+  },
+  {
+    id: 'whatsappButton',
+    type: 'whatsappButton',
+    label: 'Order via WhatsApp',
+    showLabel: false,
+    placeholder: '',
+    showPlaceholder: false,
+    icon: 'MessageCircle',
+    required: false,
+    visible: true,
+    order: 10,
+    category: 'order',
+    inputTextColor: '#ffffff',
+    inputBackgroundColor: '#25D366',
+    fontFamily: 'nunito',
+    labelColor: '#000000',
+    labelAlignment: 'left',
+    labelFontSize: '14px',
+    labelFontWeight: 'normal',
+    labelFontStyle: 'normal',
+    inputAlignment: 'center',
+    inputFontSize: '16px',
+    inputFontWeight: 'bold',
+    inputFontStyle: 'normal',
+    backgroundType: 'solid',
+    gradientBackground: 'linear-gradient(135deg, #25D366 0%, #20ba5a 100%)',
+    animation: 'none',
+    buttonSize: 'base',
+    buttonFontSize: '16px',
+    buttonIconSize: 20,
+    whatsappNumber: '213000000000'
   }
 ];
 

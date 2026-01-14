@@ -414,10 +414,6 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type ShippingSettingsCreateWithoutShopInput = {
   id?: string
   method: string

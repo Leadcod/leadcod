@@ -1,287 +1,377 @@
 {% comment %}
   Leadcod Form - Field Rendering Functions
-  Functions to render different field types
+  Functions to render different field types (text, email, phone, select, etc.)
 {% endcomment %}
 <script>
 (function() {
+  'use strict';
+
   if (!window.LeadcodFormFields) {
     window.LeadcodFormFields = {};
   }
 
   const Utils = window.LeadcodFormUtils;
 
+  /**
+   * Render a form field based on its type
+   * @param {Object} field - Field configuration object
+   * @param {Object} settings - Global form settings
+   * @param {Object} shippingSettings - Shipping settings
+   * @returns {string} HTML string for the field
+   */
   window.LeadcodFormFields.renderField = function(field, settings, shippingSettings) {
     const globalFontSize = Utils.getGlobalFontSize(settings);
     const globalFontWeight = Utils.getGlobalFontWeight(settings);
     const globalFontStyle = Utils.getGlobalFontStyle(settings);
     const primaryColor = Utils.getPrimaryColor(settings);
-    const iconSize = Utils.calculateIconSize(globalFontSize, settings);
     
+    // Use field-specific font properties if available, otherwise use global
+    const fieldFontSize = field.inputFontSize || globalFontSize;
+    const fieldFontWeight = field.inputFontWeight || globalFontWeight;
+    const fieldFontStyle = field.inputFontStyle || globalFontStyle;
+    const fieldFontFamily = field.fontFamily ? Utils.getFontFamily(settings, field.fontFamily) : Utils.getFontFamily(settings);
+    
+    const iconSize = Utils.calculateIconSize(fieldFontSize, settings);
     const inputAlignment = field.inputAlignment || 'left';
 
     const inputStyle = `
-      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; text-align: ${inputAlignment};
+      font-family: ${fieldFontFamily};
+      font-size: ${fieldFontSize};
+      font-weight: ${fieldFontWeight};
+      font-style: ${fieldFontStyle};
+      text-align: ${inputAlignment};
       color: ${field.inputTextColor || '#000000'};
       background-color: ${field.inputBackgroundColor || '#ffffff'};
-      padding: ${Utils.calculatePadding(globalFontSize, settings)};
-      height: ${Utils.calculateHeight(globalFontSize, settings)};
-      min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+      padding: ${Utils.calculatePadding(fieldFontSize, settings)};
+      height: ${Utils.calculateHeight(fieldFontSize, settings)};
+      min-height: ${Utils.calculateHeight(fieldFontSize, settings)};
       border: 1px solid #e5e7eb;
-      border-radius: 0.375rem;
+      border-radius: 8px;
       width: 100%;
       box-sizing: border-box;
+      position: relative;
     `;
 
     const labelAlignment = field.labelAlignment || 'left';
     
+    // Use field-specific label font properties if available
+    const labelFontSize = field.labelFontSize || globalFontSize;
+    const labelFontWeight = field.labelFontWeight || '500';
+    const labelFontStyle = field.labelFontStyle || globalFontStyle;
+    const labelFontFamily = field.fontFamily ? Utils.getFontFamily(settings, field.fontFamily) : Utils.getFontFamily(settings);
+
     // Determine icon position based on label alignment
     // left -> icon on left, right -> icon on right, center -> icon on right (default)
     const iconOnLeft = labelAlignment === 'left';
     const iconOnRight = labelAlignment === 'right' || labelAlignment === 'center';
-    
-    // Icon style function - border radius depends on position (left or right)
+
+    /**
+     * Get icon wrapper style based on position
+     * @param {boolean} onLeft - Whether icon is on the left side
+     * @returns {string} CSS style string
+     */
     const getIconStyle = function(onLeft) {
       if (onLeft) {
         return `
-          font-family: ${Utils.getFontFamily(settings)};
-          font-size: ${globalFontSize};
-          font-weight: ${globalFontWeight};
-          font-style: ${globalFontStyle};
+          font-family: ${labelFontFamily};
+          font-size: ${labelFontSize};
+          font-weight: ${labelFontWeight};
+          font-style: ${labelFontStyle};
           color: ${primaryColor};
-          height: ${Utils.calculateHeight(globalFontSize, settings)};
-          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+          height: ${Utils.calculateHeight(fieldFontSize, settings)};
+          min-height: ${Utils.calculateHeight(fieldFontSize, settings)};
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 0 12px;
           border: 1px solid #e5e7eb;
           border-right: none;
-          border-radius: 0.375rem 0 0 0.375rem;
+          border-radius: 8px 0 0 8px;
           background-color: #f3f4f6;
         `;
       } else {
         return `
-          font-family: ${Utils.getFontFamily(settings)};
-          font-size: ${globalFontSize};
-          font-weight: ${globalFontWeight};
-          font-style: ${globalFontStyle};
+          font-family: ${labelFontFamily};
+          font-size: ${labelFontSize};
+          font-weight: ${labelFontWeight};
+          font-style: ${labelFontStyle};
           color: ${primaryColor};
-          height: ${Utils.calculateHeight(globalFontSize, settings)};
-          min-height: ${Utils.calculateHeight(globalFontSize, settings)};
+          height: ${Utils.calculateHeight(fieldFontSize, settings)};
+          min-height: ${Utils.calculateHeight(fieldFontSize, settings)};
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 0 12px;
           border: 1px solid #e5e7eb;
           border-left: none;
-          border-radius: 0 0.375rem 0.375rem 0;
+          border-radius: 0 8px 8px 0;
           background-color: #f3f4f6;
         `;
       }
     };
 
     const labelStyle = `
-      font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: ${globalFontWeight}; font-style: ${globalFontStyle};
-      color: ${primaryColor};
+      font-family: ${labelFontFamily};
+      font-size: ${labelFontSize};
+      font-weight: ${labelFontWeight};
+      font-style: ${labelFontStyle};
+      color: ${field.labelColor || primaryColor || '#1f2937'};
       display: flex;
       align-items: center;
       gap: 8px;
       justify-content: ${labelAlignment === 'center' ? 'center' : labelAlignment === 'right' ? 'flex-end' : 'flex-start'};
-      margin-bottom: 4px;
+      margin-bottom: 2px;
+      margin-top: 0;
     `;
 
-    let fieldHTML = '<div class="leadcod-field" style="margin-bottom: 4px;">';
+    let fieldHTML = '<div class="leadcod-field">';
 
-    // Label
+    // Render label if enabled
     if (field.showLabel) {
-      fieldHTML += `<label style="${labelStyle}">${field.label}${field.required ? ' <span style="color: #ef4444;">*</span>' : ''}</label>`;
+      const requiredIndicator = field.required ? ' <span style="color: #ef4444;">*</span>' : '';
+      fieldHTML += `<label style="${labelStyle}">${field.label}${requiredIndicator}</label>`;
     }
 
-    // Input wrapper
-    fieldHTML += `<div style="display: flex; align-items: stretch;">`;
+    // Input wrapper - full width
+    fieldHTML += '<div class="leadcod-input-wrapper" style="width: 100%; position: relative;">';
 
+    // Render field based on type
     switch (field.type) {
       case 'name':
-      case 'email':
-        // Input border radius - depends on icon position
-        const inputBorderRadius = Utils.renderIcon(field.icon, iconSize) 
-          ? (iconOnLeft 
-              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
-              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
-          : 'border-radius: 0.375rem;';
+      case 'email': {
+        // Icon position based on label alignment
+        const hasIcon = Utils.renderIcon(field.icon, iconSize);
+        const inputType = field.type === 'email' ? 'email' : 'text';
+        const placeholder = field.showPlaceholder ? field.placeholder : '';
+        const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
+        const basePadding = Utils.calculatePadding(fieldFontSize, settings);
+        const paddingParts = basePadding.split(' ');
+        const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
+        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding.
+        const paddingRight = hasIcon && iconOnRight ? '40px' : horizontalPadding;
+        const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : horizontalPadding;
+
         fieldHTML += `
-          ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && iconOnLeft ? `<div style="${getIconStyle(true)}">${iconHTML}</div>` : ''}
           <input 
-            type="${field.type === 'email' ? 'email' : 'text'}" 
-            placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
-            style="${inputStyle} ${inputBorderRadius}"
+            type="${inputType}" 
+            placeholder="${placeholder}" 
+            style="${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0' : hasIcon && iconOnRight ? '8px 0 0 8px' : '8px'};"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
           />
-          ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${horizontalPadding}; left: auto;">${iconHTML}</div>` : ''}
         `;
         break;
+      }
 
-      case 'city':
-        // Select border radius - depends on icon position
-        const citySelectBorder = Utils.renderIcon(field.icon, iconSize) 
-          ? (iconOnLeft 
-              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
-              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
-          : 'border-radius: 0.375rem;';
-        const citySelectArrowPos = 'right 12px';
-        // Get base padding and ensure right padding accounts for arrow
-        const cityBasePadding = Utils.calculatePadding(globalFontSize, settings);
-        const citySelectPadding = cityBasePadding.replace(/padding-right:\s*[^;]+/, 'padding-right: 32px');
-        const citySelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: ${citySelectArrowPos} center; ${citySelectPadding} -webkit-appearance: none; -moz-appearance: none; appearance: none; ${citySelectBorder}`;
+      case 'city': {
+        // Icon position based on label alignment
+        const hasIcon = Utils.renderIcon(field.icon, iconSize);
+        const basePadding = Utils.calculatePadding(fieldFontSize, settings);
+        const paddingParts = basePadding.split(' ');
+        const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
+        // Arrow position: opposite side of icon (if icon on right, arrow on left; if icon on left, arrow on right)
+        const arrowOnLeft = hasIcon && iconOnRight;
+        const arrowOnRight = !hasIcon || iconOnLeft;
+        const iconRight = hasIcon && iconOnRight ? horizontalPadding : 'auto';
+        const iconLeft = hasIcon && iconOnLeft ? horizontalPadding : 'auto';
+        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding for arrow + icon.
+        const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : (arrowOnLeft ? '32px' : horizontalPadding);
+        const paddingRight = hasIcon && iconOnRight ? '40px' : (arrowOnRight ? '32px' : horizontalPadding);
+        const arrowClass = arrowOnLeft ? 'leadcod-select-arrow-left' : 'leadcod-select-arrow-right';
+        const citySelectStyle = `${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none !important' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none !important' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0 !important' : hasIcon && iconOnRight ? '8px 0 0 8px !important' : '8px'};`;
+        const placeholder = field.showPlaceholder ? field.placeholder : 'Select';
+        const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
+
         fieldHTML += `
-          ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && iconOnLeft ? `<div style="${getIconStyle(true)}">${iconHTML}</div>` : ''}
           <select 
             style="${citySelectStyle} opacity: 0.6; cursor: not-allowed; background-color: #f9fafb;"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
-            class="leadcod-city-select"
-            data-placeholder="${field.showPlaceholder ? field.placeholder : 'Select'}"
+            class="leadcod-city-select ${arrowClass}${hasIcon && iconOnLeft ? ' leadcod-select-icon-left' : ''}${hasIcon && iconOnRight ? ' leadcod-select-icon-right' : ''}"
+            data-placeholder="${placeholder}"
             disabled
           >
             <option value="">Select province first</option>
           </select>
-          ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${iconRight}; left: auto;">${iconHTML}</div>` : ''}
         `;
         break;
+      }
 
-      case 'phone':
-        // Phone field is special: +213 follows label position, icon is opposite
+      case 'phone': {
+        // Phone field: +213 follows label position, icon is opposite
+        const placeholder = field.showPlaceholder ? field.placeholder : '';
+        const hasIcon = Utils.renderIcon(field.icon, iconSize);
+        const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
         const phoneCodeOnLeft = labelAlignment === 'left';
         const phoneCodeOnRight = labelAlignment === 'right' || labelAlignment === 'center';
-        const phoneIconOnLeft = !phoneCodeOnLeft; // Opposite of code position
-        const phoneIconOnRight = !phoneCodeOnRight; // Opposite of code position
-        
-        const phoneInputBorder = 'border-left: none; border-right: none; border-radius: 0;';
+        const phoneIconOnLeft = !phoneCodeOnLeft;
+        const phoneIconOnRight = !phoneCodeOnRight;
+        const basePadding = Utils.calculatePadding(fieldFontSize, settings);
+        const paddingParts = basePadding.split(' ');
+        const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
+        // When wrapper is on left (phone code or icon), reduce left padding. When absolutely positioned on right, add right padding.
+        const paddingRight = hasIcon && phoneIconOnRight ? '40px' : (phoneCodeOnRight ? horizontalPadding : horizontalPadding);
+        const paddingLeft = (phoneCodeOnLeft || (hasIcon && phoneIconOnLeft)) ? horizontalPadding : horizontalPadding;
+
         fieldHTML += `
           ${phoneCodeOnLeft ? `<div style="${getIconStyle(true)}">+213</div>` : ''}
-          ${Utils.renderIcon(field.icon, iconSize) && phoneIconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && phoneIconOnLeft ? `<div style="${getIconStyle(true)}">${iconHTML}</div>` : ''}
           <input 
             type="tel" 
-            placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
-            style="${inputStyle} ${phoneInputBorder}"
+            placeholder="${placeholder}" 
+            style="${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; border-left: ${phoneCodeOnLeft || phoneIconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${phoneCodeOnRight || phoneIconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${phoneCodeOnLeft || phoneIconOnLeft ? '0 8px 8px 0' : phoneCodeOnRight || phoneIconOnRight ? '8px 0 0 8px' : '8px'}; width: 100%;"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
           />
-          ${Utils.renderIcon(field.icon, iconSize) && phoneIconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && phoneIconOnRight ? `<div class="leadcod-input-icon" style="right: ${horizontalPadding}; left: auto;">${iconHTML}</div>` : ''}
           ${phoneCodeOnRight ? `<div style="${getIconStyle(false)}">+213</div>` : ''}
         `;
         break;
+      }
 
-      case 'province':
-        // Select border radius - depends on icon position
-        const provinceSelectBorder = Utils.renderIcon(field.icon, iconSize) 
-          ? (iconOnLeft 
-              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
-              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
-          : 'border-radius: 0.375rem;';
-        const provinceSelectArrowPos = 'right 12px';
-        // Get base padding and ensure right padding accounts for arrow
-        const basePadding = Utils.calculatePadding(globalFontSize, settings);
-        const provinceSelectPadding = basePadding.replace(/padding-right:\s*[^;]+/, 'padding-right: 32px');
-        const provinceSelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: ${provinceSelectArrowPos} center; ${provinceSelectPadding} -webkit-appearance: none; -moz-appearance: none; appearance: none; ${provinceSelectBorder}`;
+      case 'province': {
+        // Icon position based on label alignment
+        const hasIcon = Utils.renderIcon(field.icon, iconSize);
+        const basePadding = Utils.calculatePadding(fieldFontSize, settings);
+        const paddingParts = basePadding.split(' ');
+        const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
+        // Arrow position: opposite side of icon (if icon on right, arrow on left; if icon on left, arrow on right)
+        const arrowOnLeft = hasIcon && iconOnRight;
+        const arrowOnRight = !hasIcon || iconOnLeft;
+        const iconRight = hasIcon && iconOnRight ? horizontalPadding : 'auto';
+        const iconLeft = hasIcon && iconOnLeft ? horizontalPadding : 'auto';
+        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding for arrow + icon.
+        const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : (arrowOnLeft ? '32px' : horizontalPadding);
+        const paddingRight = hasIcon && iconOnRight ? '40px' : (arrowOnRight ? '32px' : horizontalPadding);
+        const arrowClass = arrowOnLeft ? 'leadcod-select-arrow-left' : 'leadcod-select-arrow-right';
+        const provinceSelectStyle = `${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none !important' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none !important' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0 !important' : hasIcon && iconOnRight ? '8px 0 0 8px !important' : '8px'};`;
+        const placeholder = field.showPlaceholder ? field.placeholder : 'Select';
+        const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
+
         fieldHTML += `
-          ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && iconOnLeft ? `<div style="${getIconStyle(true)}">${iconHTML}</div>` : ''}
           <select 
             style="${provinceSelectStyle} opacity: 0.6; cursor: not-allowed; background-color: #f9fafb;"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
-            class="leadcod-province-select"
-            data-placeholder="${field.showPlaceholder ? field.placeholder : 'Select'}"
+            class="leadcod-province-select ${arrowClass}${hasIcon && iconOnLeft ? ' leadcod-select-icon-left' : ''}${hasIcon && iconOnRight ? ' leadcod-select-icon-right' : ''}"
+            data-placeholder="${placeholder}"
             disabled
           >
-            <option value="">${field.showPlaceholder ? field.placeholder : 'Select'}</option>
+            <option value="">${placeholder}</option>
           </select>
-          ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${iconRight}; left: auto;">${iconHTML}</div>` : ''}
         `;
         break;
+      }
 
-      case 'variants':
-        // Select border radius - depends on icon position
-        const variantsSelectBorder = Utils.renderIcon(field.icon, iconSize) 
-          ? (iconOnLeft 
-              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
-              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
-          : 'border-radius: 0.375rem;';
-        const variantsSelectArrowPos = 'right 12px';
-        const variantsSelectPadding = 'padding-right: 32px;';
-        const variantsSelectStyle = `${inputStyle} background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: ${variantsSelectArrowPos} center; ${variantsSelectPadding} -webkit-appearance: none; -moz-appearance: none; appearance: none; ${variantsSelectBorder}`;
+      case 'variants': {
+        // Icon position based on label alignment
+        const hasIcon = Utils.renderIcon(field.icon, iconSize);
+        const basePadding = Utils.calculatePadding(fieldFontSize, settings);
+        const paddingParts = basePadding.split(' ');
+        const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
+        // Arrow position: opposite side of icon (if icon on right, arrow on left; if icon on left, arrow on right)
+        const arrowOnLeft = hasIcon && iconOnRight;
+        const arrowOnRight = !hasIcon || iconOnLeft;
+        const iconRight = hasIcon && iconOnRight ? horizontalPadding : 'auto';
+        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding for arrow + icon.
+        const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : (arrowOnLeft ? '32px' : horizontalPadding);
+        const paddingRight = hasIcon && iconOnRight ? '40px' : (arrowOnRight ? '32px' : horizontalPadding);
+        const arrowClass = arrowOnLeft ? 'leadcod-select-arrow-left' : 'leadcod-select-arrow-right';
+        const variantsSelectStyle = `${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none !important' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none !important' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0 !important' : hasIcon && iconOnRight ? '8px 0 0 8px !important' : '8px'};`;
+        const placeholder = field.showPlaceholder ? field.placeholder : 'Select';
+        const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
+
         fieldHTML += `
-          ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && iconOnLeft ? `<div style="${getIconStyle(true)}">${iconHTML}</div>` : ''}
           <select 
             style="${variantsSelectStyle}"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
+            class="${arrowClass}${hasIcon && iconOnLeft ? ' leadcod-select-icon-left' : ''}${hasIcon && iconOnRight ? ' leadcod-select-icon-right' : ''}"
           >
-            <option value="">${field.showPlaceholder ? field.placeholder : 'Select'}</option>
+            <option value="">${placeholder}</option>
             <option value="small">Size: Small</option>
             <option value="medium">Size: Medium</option>
             <option value="large">Size: Large</option>
           </select>
-          ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${iconRight}; left: auto;">${iconHTML}</div>` : ''}
         `;
         break;
+      }
 
-      case 'quantity':
-        // Input border radius - depends on icon position
-        const quantityBorderRadius = Utils.renderIcon(field.icon, iconSize) 
-          ? (iconOnLeft 
-              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
-              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
-          : 'border-radius: 0.375rem;';
+      case 'quantity': {
+        // Icon position based on label alignment
+        const hasIcon = Utils.renderIcon(field.icon, iconSize);
+        const basePadding = Utils.calculatePadding(fieldFontSize, settings);
+        const paddingParts = basePadding.split(' ');
+        const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
+        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding.
+        const paddingRight = hasIcon && iconOnRight ? '40px' : horizontalPadding;
+        const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : horizontalPadding;
+        const placeholder = field.showPlaceholder ? field.placeholder : '';
+        const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
+
         fieldHTML += `
-          ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && iconOnLeft ? `<div style="${getIconStyle(true)}">${iconHTML}</div>` : ''}
           <input 
             type="number" 
             min="1" 
             value="1"
-            placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
-            style="${inputStyle} ${quantityBorderRadius}"
+            placeholder="${placeholder}" 
+            style="${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0' : hasIcon && iconOnRight ? '8px 0 0 8px' : '8px'};"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
           />
-          ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+          ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${horizontalPadding}; left: auto;">${iconHTML}</div>` : ''}
         `;
         break;
+      }
 
-      case 'coupon':
-        // Input border radius - depends on icon position
-        const couponInputBorder = Utils.renderIcon(field.icon, iconSize) 
-          ? (iconOnLeft 
-              ? 'border-left: none; border-radius: 0 0.375rem 0.375rem 0;'
-              : 'border-right: none; border-radius: 0.375rem 0 0 0.375rem;')
-          : 'border-radius: 0.375rem;';
+      case 'coupon': {
+        // Icon position based on label alignment
+        const hasIcon = Utils.renderIcon(field.icon, iconSize);
+        const basePadding = Utils.calculatePadding(fieldFontSize, settings);
+        const paddingParts = basePadding.split(' ');
+        const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
+        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding.
+        const paddingRight = hasIcon && iconOnRight ? '40px' : horizontalPadding;
+        const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : horizontalPadding;
+        const placeholder = field.showPlaceholder ? field.placeholder : '';
+        const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
+
         fieldHTML += `
           <div style="display: flex; gap: 8px; width: 100%;">
-            <div style="display: flex; flex: 1;">
-              ${Utils.renderIcon(field.icon, iconSize) && iconOnLeft ? `<div style="${getIconStyle(true)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+            <div style="display: flex; flex: 1; position: relative;">
+              ${hasIcon && iconOnLeft ? `<div style="${getIconStyle(true)}">${iconHTML}</div>` : ''}
               <input 
                 type="text" 
-                placeholder="${field.showPlaceholder ? field.placeholder : ''}" 
-                style="${inputStyle} ${couponInputBorder}"
+                placeholder="${placeholder}" 
+                style="${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0' : hasIcon && iconOnRight ? '8px 0 0 8px' : '8px'};"
                 ${field.required ? 'required' : ''}
                 name="${field.id}"
                 id="field-${field.id}"
               />
-              ${Utils.renderIcon(field.icon, iconSize) && iconOnRight ? `<div style="${getIconStyle(false)}">${Utils.renderIcon(field.icon, iconSize)}</div>` : ''}
+              ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${horizontalPadding}; left: auto;">${iconHTML}</div>` : ''}
             </div>
-            <button type="button" style="padding: 0 20px; border: 1px solid #e5e7eb; border-radius: 0.375rem; background: #f9fafb; cursor: pointer;">Apply</button>
+            <button type="button" style="padding: 0 20px; border: 1px solid #e5e7eb; border-radius: 8px; background: #f9fafb; cursor: pointer; font-family: ${fieldFontFamily}; font-size: ${fieldFontSize}; font-weight: ${fieldFontWeight}; white-space: nowrap;">Apply</button>
           </div>
         `;
         break;
+      }
 
-      case 'summary':
+      case 'summary': {
         const summaryStyle = `
           font-family: ${Utils.getFontFamily(settings)};
           font-size: ${globalFontSize};
@@ -291,7 +381,7 @@
           background-color: #f9fafb;
           border: 2px solid #e5e7eb;
           border-radius: 0.375rem;
-          padding: 16px;
+          padding: 12px;
         `;
         const summaryTitleStyle = `
           font-family: ${Utils.getFontFamily(settings)};
@@ -299,7 +389,7 @@
           font-weight: bold;
           font-style: ${globalFontStyle};
           color: ${primaryColor};
-          margin: 0 0 12px 0;
+          margin: 0 0 6px 0;
         `;
         const summaryItemStyle = `
           font-family: ${Utils.getFontFamily(settings)};
@@ -307,46 +397,60 @@
           font-weight: ${globalFontWeight};
           font-style: ${globalFontStyle};
         `;
+        const titleText = field.showLabel ? field.label : 'ملخص الطلب';
+        const cartIcon = Utils.renderIcon('ShoppingCart', 20);
+        const chevronIcon = '<i data-lucide="chevron-down" style="width: 20px; height: 20px;"></i>';
+
         fieldHTML = `
-          <div class="leadcod-field" style="margin-bottom: 4px;">
-            <div style="${summaryStyle}">
-              <h3 style="${summaryTitleStyle}">
-                ${field.showLabel ? field.label : 'Summary'}
-              </h3>
-              <div style="display: flex; justify-content: space-between; margin-bottom: 8px; ${summaryItemStyle}">
-                <span style="color: #6b7280;">Subtotal:</span>
-                <span style="font-weight: 500;">$99.99</span>
+          <div class="leadcod-field" style="margin-bottom: 0;">
+            <div class="leadcod-summary-section">
+              <div class="leadcod-summary-header" onclick="const content = this.nextElementSibling; const toggle = this.querySelector('.leadcod-summary-toggle'); content.style.display = content.style.display === 'none' ? 'block' : 'none'; toggle.classList.toggle('expanded');">
+                <h3 class="leadcod-summary-title">
+                  ${cartIcon}
+                  <span>${titleText}</span>
+                </h3>
+                <div class="leadcod-summary-toggle">${chevronIcon}</div>
               </div>
-              <div style="display: flex; justify-content: space-between; margin-bottom: 8px; ${summaryItemStyle}">
-                <span style="color: #6b7280;">Shipping:</span>
-                <span style="font-weight: 500;">$10.00</span>
-              </div>
-              <div style="display: flex; justify-content: space-between; margin-bottom: 12px; ${summaryItemStyle}">
-                <span style="color: #6b7280;">Tax:</span>
-                <span style="font-weight: 500;">$14.00</span>
-              </div>
-              <div style="border-top: 1px solid #e5e7eb; padding-top: 12px; margin-top: 12px;">
-                <div style="display: flex; justify-content: space-between;">
-                  <span style="font-family: ${Utils.getFontFamily(settings)}; font-size: ${globalFontSize}; font-weight: 600; font-style: ${globalFontStyle}; color: ${primaryColor};">Total:</span>
-                  <span style="font-family: ${Utils.getFontFamily(settings)}; font-size: ${parseInt(globalFontSize.replace('px', '')) + 4}px; font-weight: 700; font-style: ${globalFontStyle}; color: ${primaryColor};">$123.99</span>
+              <div class="leadcod-summary-content" style="display: block;">
+                <div class="leadcod-summary-item">
+                  <span class="leadcod-summary-item-label leadcod-product-name">-</span>
+                  <span class="leadcod-summary-item-value leadcod-product-price">-</span>
+                </div>
+                <div class="leadcod-summary-item">
+                  <div>
+                    <div class="leadcod-summary-item-label leadcod-shipping-label">-</div>
+                    <div class="leadcod-shipping-hint" style="color: #6b7280; font-size: 12px; margin-top: 2px; display: flex; align-items: center; gap: 4px;">
+                      ${Utils.renderIcon('Globe', 14)}
+                      <span class="leadcod-shipping-hint-text">Choose province</span>
+                    </div>
+                  </div>
+                  <span class="leadcod-summary-item-value leadcod-shipping-price">-</span>
+                </div>
+                <div class="leadcod-dotted-separator"></div>
+                <div class="leadcod-summary-total">
+                  <div>
+                    <div class="leadcod-summary-total-label">Total</div>
+                  </div>
+                  <span class="leadcod-summary-total-value leadcod-total-price">-</span>
                 </div>
               </div>
             </div>
           </div>
         `;
         return fieldHTML;
+      }
 
-      case 'shippingOption':
+      case 'shippingOption': {
+        // Calculate smaller font size for shipping labels and prices (85% of global size, min 12px)
+        const fontSizeNum = parseInt(globalFontSize.replace('px', '')) || 16;
+        const smallerFontSize = Math.max(12, Math.round(fontSizeNum * 0.85)) + 'px';
+        
         const shippingOptionStyle = `
           font-family: ${Utils.getFontFamily(settings)};
           font-size: ${globalFontSize};
           font-weight: ${globalFontWeight};
           font-style: ${globalFontStyle};
           color: ${primaryColor};
-          background-color: #f9fafb;
-          border-radius: 0.375rem;
-          padding: 16px;
-          box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.08);
         `;
         const shippingOptionTitleStyle = `
           font-family: ${Utils.getFontFamily(settings)};
@@ -361,7 +465,7 @@
         `;
         const shippingOptionItemStyle = `
           font-family: ${Utils.getFontFamily(settings)};
-          font-size: ${globalFontSize};
+          font-size: ${smallerFontSize};
           font-weight: ${globalFontWeight};
           font-style: ${globalFontStyle};
           color: ${primaryColor};
@@ -369,13 +473,10 @@
         const stopDeskEnabled = shippingSettings && shippingSettings.stopDeskEnabled;
         const codLabel = shippingSettings && shippingSettings.codLabel ? shippingSettings.codLabel : 'Cash on Delivery';
         const stopDeskLabel = shippingSettings && shippingSettings.stopDeskLabel ? shippingSettings.stopDeskLabel : 'Stop Desk';
-        
-        // Build title HTML with label and icon inside the shipping section
-        const iconHTML = Utils.renderIcon(field.icon, iconSize) ? Utils.renderIcon(field.icon, iconSize) : '';
+        const iconHTML = Utils.renderIcon(field.icon, iconSize) || '';
         const titleText = field.showLabel ? field.label : (field.label || 'Shipping Option');
         const requiredIndicator = field.required ? ' <span style="color: #ef4444;">*</span>' : '';
-        
-        // Build complete field HTML with shipping section
+
         fieldHTML = `
           <div class="leadcod-field" style="margin-bottom: 4px;">
             <div class="leadcod-shipping-section" style="display: none; --leadcod-primary-color: ${primaryColor};">
@@ -383,58 +484,72 @@
                 <h3 style="${shippingOptionTitleStyle}">
                   ${iconHTML}<span>${titleText}${requiredIndicator}</span>
                 </h3>
-              <div style="display: flex; flex-direction: column; gap: 12px;">
-                <label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; ${shippingOptionItemStyle}">
-                  <div style="display: flex; align-items: center; gap: 12px;">
-                    <input 
-                      type="radio" 
-                      name="${field.id}" 
-                      value="cod"
-                      ${field.required ? 'required' : ''}
-                      style="width: 16px; height: 16px; cursor: pointer; accent-color: ${primaryColor};"
-                    />
-                    <span>${codLabel}</span>
-                  </div>
-                  <span class="leadcod-shipping-price-cod" style="font-weight: 600;">-</span>
-                </label>
-                ${stopDeskEnabled ? `
-                <label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; ${shippingOptionItemStyle}">
-                  <div style="display: flex; align-items: center; gap: 12px;">
-                    <input 
-                      type="radio" 
-                      name="${field.id}" 
-                      value="stopDesk"
-                      ${field.required ? 'required' : ''}
-                      style="width: 16px; height: 16px; cursor: pointer; accent-color: ${primaryColor};"
-                    />
-                    <span>${stopDeskLabel}</span>
-                  </div>
-                  <span class="leadcod-shipping-price-stopdesk" style="font-weight: 600;">-</span>
-                </label>
-                ` : ''}
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                  <label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; ${shippingOptionItemStyle}">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <input 
+                        type="radio" 
+                        name="${field.id}" 
+                        value="cod"
+                        ${field.required ? 'required' : ''}
+                        style="width: 16px; height: 16px; cursor: pointer; accent-color: ${primaryColor};"
+                      />
+                      <span>${codLabel}</span>
+                    </div>
+                    <span class="leadcod-shipping-price-cod" style="font-weight: 600; font-size: ${smallerFontSize};" data-price="0">-</span>
+                  </label>
+                  ${stopDeskEnabled ? `
+                  <label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; ${shippingOptionItemStyle}">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <input 
+                        type="radio" 
+                        name="${field.id}" 
+                        value="stopDesk"
+                        ${field.required ? 'required' : ''}
+                        style="width: 16px; height: 16px; cursor: pointer; accent-color: ${primaryColor};"
+                      />
+                      <span>${stopDeskLabel}</span>
+                    </div>
+                    <span class="leadcod-shipping-price-stopdesk" style="font-weight: 600; font-size: ${smallerFontSize};" data-price="0">-</span>
+                  </label>
+                  ` : ''}
+                </div>
               </div>
             </div>
           </div>
-          </div>
         `;
         return fieldHTML;
+      }
 
       case 'buyButton':
-        return window.LeadcodFormFields.renderBuyButton(field, settings);
+        return window.LeadcodFormFields.renderBuyButton(field, settings, shippingSettings);
+
+      case 'whatsappButton':
+        return window.LeadcodFormFields.renderWhatsAppButton(field, settings, shippingSettings);
+
+      default:
+        // Unknown field type
+        return '<div class="leadcod-field" style="margin-bottom: 4px;"><div style="color: #ef4444;">Unknown field type: ' + field.type + '</div></div>';
     }
 
     fieldHTML += '</div></div>';
     return fieldHTML;
   };
 
-  window.LeadcodFormFields.renderBuyButton = function(field, settings) {
+  /**
+   * Render buy button with animations and styling
+   * @param {Object} field - Button field configuration
+   * @param {Object} settings - Global form settings
+   * @param {Object} shippingSettings - Shipping settings
+   * @returns {string} HTML string for the button
+   */
+  window.LeadcodFormFields.renderBuyButton = function(field, settings, shippingSettings) {
     const Utils = window.LeadcodFormUtils;
     const buttonGlobalFontSize = Utils.getGlobalFontSize(settings);
     const buttonGlobalFontStyle = Utils.getGlobalFontStyle(settings);
-    
-    // Use button-specific font size if available, otherwise fall back to global
     const buttonFontSize = field.buttonFontSize || buttonGlobalFontSize;
-    
+
+    // Calculate button padding based on font size
     const buttonPadding = (() => {
       const fontSizeNum = parseInt(buttonFontSize.replace('px', '')) || 16;
       const verticalPadding = Math.max(10, Math.round(fontSizeNum * 0.625));
@@ -442,17 +557,25 @@
       return `${verticalPadding}px ${horizontalPadding}px`;
     })();
 
-    const buttonSize = field.buttonSize === 'extra-large' ? '56px' : 
-                      field.buttonSize === 'large' ? '48px' : 
-                      field.buttonSize === 'small' ? '32px' : '40px';
-    
+    // Determine button size
+    const buttonSize = field.buttonSize === 'extra-large' ? '56px'
+      : field.buttonSize === 'large' ? '48px'
+      : field.buttonSize === 'small' ? '32px'
+      : '40px';
+
     const buttonHeightNum = parseInt(buttonSize.replace('px', '')) || 40;
-    // Use button-specific icon size if available, otherwise calculate from button height
     const buttonIconSize = field.buttonIconSize || Math.round(buttonHeightNum * 0.6);
 
+    const textAlign = Utils.getTextAlign(field.inputAlignment || 'center');
+    const textColor = field.inputTextColor || '#ffffff';
+
     let buttonStyle = `
-      font-family: ${Utils.getFontFamily(settings)}; font-size: ${buttonFontSize}; font-weight: bold; font-style: ${buttonGlobalFontStyle}; text-align: ${Utils.getTextAlign(field.inputAlignment || 'center')};
-      color: ${field.inputTextColor || '#ffffff'};
+      font-family: ${Utils.getFontFamily(settings)};
+      font-size: ${buttonFontSize};
+      font-weight: bold;
+      font-style: ${buttonGlobalFontStyle};
+      text-align: ${textAlign};
+      color: ${textColor};
       padding: ${buttonPadding};
       height: ${buttonSize};
       border: none;
@@ -493,23 +616,23 @@
       }
     } else {
       const solidColor = field.inputBackgroundColor || '#000000';
-      // For background-shift animation with solid colors, convert to gradient with transparency
+
+      // For background-shift animation with solid colors, convert to gradient
       if (field.animation === 'background-shift') {
-        // Check if color is black or very dark (to handle black specifically)
         const hex = solidColor.replace('#', '');
         const r = parseInt(hex.substring(0, 2), 16);
         const g = parseInt(hex.substring(2, 4), 16);
         const b = parseInt(hex.substring(4, 6), 16);
         const isDark = r < 30 && g < 30 && b < 30;
-        
+
         if (isDark) {
-          // For black/dark colors, use visible gray variations that keep black as base
+          // For black/dark colors, use visible gray variations
           const rgbaBase = Utils.colorToRgba(solidColor, 1);
           const rgbaMid = Utils.colorToRgba('#404040', 1);
           const rgbaLight = Utils.colorToRgba('#606060', 1);
           buttonStyle += `background-image: linear-gradient(135deg, ${rgbaBase} 0%, ${rgbaMid} 25%, ${rgbaLight} 50%, ${rgbaMid} 75%, ${rgbaBase} 100%); background-size: 200% 200% !important;`;
         } else {
-          // For lighter colors, make base color more prominent with less aggressive shift
+          // For lighter colors, make base color more prominent
           const lighterColor = Utils.lightenColor(solidColor, 25);
           const rgbaBase = Utils.colorToRgba(solidColor, 1);
           const rgbaLight = Utils.colorToRgba(lighterColor, 0.8);
@@ -522,23 +645,182 @@
     }
 
     // Add animation classes with proper priority and performance optimizations
-    if (field.animation === 'background-shift') {
-      buttonStyle += `animation: backgroundShift 4s ease infinite !important; will-change: background-position;`;
-    } else if (field.animation === 'shake') {
-      buttonStyle += `animation: shake 0.6s ease-in-out infinite !important; will-change: transform; transform-origin: center;`;
-    } else if (field.animation === 'bounce') {
-      buttonStyle += `animation: bounce 1s ease-in-out infinite !important; will-change: transform; transform-origin: center;`;
-    } else if (field.animation === 'pulse') {
-      buttonStyle += `animation: pulse 2s ease-in-out infinite !important; will-change: transform, opacity; transform-origin: center;`;
-    } else if (field.animation === 'glow') {
-      buttonStyle += `animation: glow 2s ease-in-out infinite !important; will-change: box-shadow;`;
+    const animations = {
+      'background-shift': 'animation: backgroundShift 4s ease infinite !important; will-change: background-position;',
+      'shake': 'animation: shake 0.6s ease-in-out infinite !important; will-change: transform; transform-origin: center;',
+      'bounce': 'animation: bounce 1s ease-in-out infinite !important; will-change: transform; transform-origin: center;',
+      'pulse': 'animation: pulse 2s ease-in-out infinite !important; will-change: transform, opacity; transform-origin: center;',
+      'glow': 'animation: glow 2s ease-in-out infinite !important; will-change: box-shadow;'
+    };
+
+    if (field.animation && animations[field.animation]) {
+      buttonStyle += animations[field.animation];
     }
 
+    // Use field.icon if available, otherwise default to ArrowRight
+    const buttonIcon = field.icon && field.icon !== 'none' ? field.icon : 'ArrowRight';
+    const buttonIconHTML = Utils.renderIcon(buttonIcon, buttonIconSize);
+
+    const showQuantity = field.showQuantity !== false; // Default to true if not specified
+    
+    let quantityHTML = '';
+    if (showQuantity) {
+      quantityHTML = `
+        <div class="leadcod-quantity-selector" style="width: 100%; margin-bottom: 12px;">
+          <button type="button" class="leadcod-quantity-button" data-action="decrease">-</button>
+          <input type="number" name="quantity" value="1" min="1" class="leadcod-quantity-value" readonly style="border: none; background: transparent; text-align: center; min-width: 60px; font-weight: 600; font-size: 18px;">
+          <button type="button" class="leadcod-quantity-button" data-action="increase">+</button>
+        </div>
+      `;
+    } else {
+      // If quantity is hidden, add a hidden input with default value of 1
+      quantityHTML = '<input type="hidden" name="quantity" value="1">';
+    }
+    
     return `
-      <div class="leadcod-field" style="margin-bottom: 4px;">
-        <button type="submit" style="${buttonStyle}">
-          ${Utils.renderIcon(field.icon, buttonIconSize, true)}
+      <div class="leadcod-field" style="margin-bottom: 0;">
+        ${quantityHTML}
+        <button type="submit" class="leadcod-confirm-button" style="${buttonStyle}">
           ${field.label}
+          ${buttonIconHTML}
+        </button>
+      </div>
+    `;
+  };
+
+  /**
+   * Render WhatsApp button with animations and styling
+   * @param {Object} field - Button field configuration
+   * @param {Object} settings - Global form settings
+   * @param {Object} shippingSettings - Shipping settings
+   * @returns {string} HTML string for the button
+   */
+  window.LeadcodFormFields.renderWhatsAppButton = function(field, settings, shippingSettings) {
+    const Utils = window.LeadcodFormUtils;
+    const buttonGlobalFontSize = Utils.getGlobalFontSize(settings);
+    const buttonGlobalFontStyle = Utils.getGlobalFontStyle(settings);
+    const buttonFontSize = field.buttonFontSize || buttonGlobalFontSize;
+
+    // Calculate button padding based on font size
+    const buttonPadding = (() => {
+      const fontSizeNum = parseInt(buttonFontSize.replace('px', '')) || 16;
+      const verticalPadding = Math.max(10, Math.round(fontSizeNum * 0.625));
+      const horizontalPadding = Math.max(20, Math.round(fontSizeNum * 1.5));
+      return `${verticalPadding}px ${horizontalPadding}px`;
+    })();
+
+    // Determine button size
+    const buttonSize = field.buttonSize === 'extra-large' ? '56px'
+      : field.buttonSize === 'large' ? '48px'
+      : field.buttonSize === 'small' ? '32px'
+      : '40px';
+
+    const buttonHeightNum = parseInt(buttonSize.replace('px', '')) || 40;
+    const buttonIconSize = field.buttonIconSize || Math.round(buttonHeightNum * 0.6);
+
+    const textAlign = Utils.getTextAlign(field.inputAlignment || 'center');
+    const textColor = field.inputTextColor || '#ffffff';
+
+    let buttonStyle = `
+      font-family: ${Utils.getFontFamily(settings)};
+      font-size: ${buttonFontSize};
+      font-weight: bold;
+      font-style: ${buttonGlobalFontStyle};
+      text-align: ${textAlign};
+      color: ${textColor};
+      padding: ${buttonPadding};
+      height: ${buttonSize};
+      border: none;
+      border-radius: 0.375rem;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    `;
+
+    // Set glow color CSS variable if glow animation is active
+    if (field.animation === 'glow') {
+      const glowColor = Utils.extractGlowColor(field);
+      let rgbaColor = glowColor;
+      if (glowColor.startsWith('#')) {
+        const hex = glowColor.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        rgbaColor = `rgba(${r}, ${g}, ${b}, 0.6)`;
+      } else if (glowColor.startsWith('rgb(')) {
+        rgbaColor = glowColor.replace('rgb(', 'rgba(').replace(')', ', 0.6)');
+      } else if (!glowColor.startsWith('rgba(')) {
+        rgbaColor = `rgba(0, 0, 0, 0.3)`;
+      }
+      buttonStyle += `--glow-color: ${rgbaColor};`;
+    }
+
+    // Set background properties
+    if (field.backgroundType === 'gradient' && field.gradientBackground) {
+      // For gradients with background-shift, use the gradient directly without overlay
+      if (field.animation === 'background-shift') {
+        buttonStyle += `background-image: ${field.gradientBackground}; background-size: 200% 200% !important;`;
+      } else {
+        buttonStyle += `background-image: ${field.gradientBackground};`;
+      }
+    } else {
+      const solidColor = field.inputBackgroundColor || '#25D366';
+
+      // For background-shift animation with solid colors, convert to gradient
+      if (field.animation === 'background-shift') {
+        const hex = solidColor.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        const isDark = r < 30 && g < 30 && b < 30;
+
+        if (isDark) {
+          // For black/dark colors, use visible gray variations
+          const rgbaBase = Utils.colorToRgba(solidColor, 1);
+          const rgbaMid = Utils.colorToRgba('#404040', 1);
+          const rgbaLight = Utils.colorToRgba('#606060', 1);
+          buttonStyle += `background-image: linear-gradient(135deg, ${rgbaBase} 0%, ${rgbaMid} 25%, ${rgbaLight} 50%, ${rgbaMid} 75%, ${rgbaBase} 100%); background-size: 200% 200% !important;`;
+        } else {
+          // For lighter colors, make base color more prominent
+          const lighterColor = Utils.lightenColor(solidColor, 25);
+          const rgbaBase = Utils.colorToRgba(solidColor, 1);
+          const rgbaLight = Utils.colorToRgba(lighterColor, 0.8);
+          const rgbaSemiTransparent = Utils.colorToRgba(solidColor, 0.7);
+          buttonStyle += `background-image: linear-gradient(135deg, ${rgbaBase} 0%, ${rgbaSemiTransparent} 25%, ${rgbaLight} 50%, ${rgbaSemiTransparent} 75%, ${rgbaBase} 100%); background-size: 200% 200% !important;`;
+        }
+      } else {
+        buttonStyle += `background-color: ${solidColor};`;
+      }
+    }
+
+    // Add animation classes with proper priority and performance optimizations
+    const animations = {
+      'background-shift': 'animation: backgroundShift 4s ease infinite !important; will-change: background-position;',
+      'shake': 'animation: shake 0.6s ease-in-out infinite !important; will-change: transform; transform-origin: center;',
+      'bounce': 'animation: bounce 1s ease-in-out infinite !important; will-change: transform; transform-origin: center;',
+      'pulse': 'animation: pulse 2s ease-in-out infinite !important; will-change: transform, opacity; transform-origin: center;',
+      'glow': 'animation: glow 2s ease-in-out infinite !important; will-change: box-shadow;'
+    };
+
+    if (field.animation && animations[field.animation]) {
+      buttonStyle += animations[field.animation];
+    }
+
+    // Use field.icon if available, otherwise default to WhatsApp
+    const buttonIcon = field.icon && field.icon !== 'none' ? field.icon : 'WhatsApp';
+    const buttonIconHTML = Utils.renderIcon(buttonIcon, buttonIconSize);
+    
+    // Get WhatsApp number from field
+    const whatsappNumber = field.whatsappNumber || '213000000000';
+    
+    return `
+      <div class="leadcod-field" style="margin-bottom: 0;">
+        <button type="button" class="leadcod-whatsapp-button" onclick="const form = this.closest('form'); if(form) { const formData = new FormData(form); const data = Object.fromEntries(formData); const message = encodeURIComponent('طلب جديد: ' + JSON.stringify(data)); window.open('https://wa.me/${whatsappNumber}?text=' + message, '_blank'); }" style="${buttonStyle}">
+          ${field.label}
+          ${buttonIconHTML}
         </button>
       </div>
     `;

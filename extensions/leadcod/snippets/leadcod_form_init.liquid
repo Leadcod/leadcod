@@ -1,28 +1,20 @@
 {% comment %}
   Leadcod Form - Initialization Script
-  Main script to fetch form data and render the form
+  Loads form configuration and handles form submission
 {% endcomment %}
-{% render 'leadcod_config' %}
-{% comment %} Ensure API URL is set, fallback to config value if not available {% endcomment %}
-{% unless LEADCOD_API_URL %}
-  {% assign LEADCOD_API_URL = "https://9b1a587349e8.ngrok-free.app/api/form" %}
-{% endunless %}
+
+{% assign LEADCOD_API_URL = 'https://08f92c39ba3b.ngrok-free.app/api/form' %}
 <script>
 (function() {
+  'use strict';
+
   const container = document.getElementById('leadcod-form-{{ block.id }}');
   if (!container) return;
 
   const shopUrl = '{{ shop.domain }}';
   const apiUrl = '{{ LEADCOD_API_URL }}';
-  
-  console.log(`${apiUrl}?shop=${encodeURIComponent(shopUrl)}`);
-  
-  // Fetch form data
   fetch(`${apiUrl}?shop=${encodeURIComponent(shopUrl)}`)
-    .then(async response => {
-      console.log(response);
-      return response.json();
-    })
+    .then(response => response.json())
     .then(result => {
       if (!result.success || !result.data) {
         container.innerHTML = `<div class="leadcod-form-error">Form not found. Please configure your form in the app.${result.error ? ' (' + result.error + ')' : ''}</div>`;
@@ -37,57 +29,116 @@
       container.innerHTML = `<div class="leadcod-form-error">Error loading form: ${error.message}. Please check your API URL configuration.</div>`;
     });
 
+  /**
+   * Render the form with fields, settings, and shipping options
+   * @param {HTMLElement} container - Container element for the form
+   * @param {Array} fields - Array of field configurations
+   * @param {Object} settings - Global form settings
+   * @param {Object} shippingSettings - Shipping settings
+   */
   function renderForm(container, fields, settings, shippingSettings) {
     const Utils = window.LeadcodFormUtils;
     const Fields = window.LeadcodFormFields;
-    
-    // Filter visible fields and sort by order
-    // Also filter out shippingOption if shipping method is 'free'
+
+    // Filter and sort visible fields
     const visibleFields = fields
       .filter(field => {
         if (!field.visible) return false;
-        // Hide shippingOption if shipping method is 'free'
-        if (field.type === 'shippingOption' && shippingSettings && shippingSettings.method === 'free') {
-          return false;
-        }
+        if (field.type === 'shippingOption' && shippingSettings?.method === 'free') return false;
+        // Exclude quantity fields - quantity is handled in the buy button
+        if (field.type === 'quantity') return false;
         return true;
       })
       .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-    const borderStyle = Utils.getBorderStyle(settings);
-    let formHTML = `<form class="leadcod-form" style="max-width: 100%;${borderStyle}">`;
+    let formHTML = `<form class="leadcod-form" style="max-width: 100%;">`;
 
-    // Global settings - headline and subtitle
+    // Render headline and subtitle if enabled
     if (settings) {
       const primaryColor = Utils.getPrimaryColor(settings);
+
+      formHTML += '<div class="leadcod-form-header">';
+
       if (settings.headline && settings.headline.enabled) {
+        const headlineText = settings.headline.text || 'أضف معلوماتك في الأسفل للطلب';
+        const headlineAlign = Utils.getTextAlign(settings.headline.alignment || 'center');
+        const handIcon = Utils.renderIcon('Hand', 24) || '<span style="color: #fbbf24; font-size: 24px;">👇</span>';
         formHTML += `
           <h2 style="
-            font-family: ${Utils.getFontFamily(settings)}; font-size: 24px; font-weight: bold; font-style: ${Utils.getGlobalFontStyle(settings)}; text-align: ${Utils.getTextAlign(settings.headline.alignment || 'center')};
+            font-family: ${Utils.getFontFamily(settings)};
+            font-size: 24px;
+            font-weight: bold;
+            font-style: ${Utils.getGlobalFontStyle(settings)};
+            text-align: ${headlineAlign};
             color: ${primaryColor};
-            margin: 0 0 4px 0;
-          ">${settings.headline.text || 'Order Form'}</h2>
+            margin: 0 0 6px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+          ">${headlineText} ${handIcon}</h2>
         `;
       }
 
       if (settings.subtitle && settings.subtitle.enabled) {
+        const subtitleText = settings.subtitle.text || 'Please fill out the form below';
+        const subtitleAlign = Utils.getTextAlign(settings.subtitle.alignment || 'center');
         formHTML += `
           <p style="
-            font-family: ${Utils.getFontFamily(settings)}; font-size: ${Utils.getGlobalFontSize(settings)}; font-weight: ${Utils.getGlobalFontWeight(settings)}; font-style: ${Utils.getGlobalFontStyle(settings)}; text-align: ${Utils.getTextAlign(settings.subtitle.alignment || 'center')};
+            font-family: ${Utils.getFontFamily(settings)};
+            font-size: ${Utils.getGlobalFontSize(settings)};
+            font-weight: ${Utils.getGlobalFontWeight(settings)};
+            font-style: ${Utils.getGlobalFontStyle(settings)};
+            text-align: ${subtitleAlign};
             color: ${primaryColor};
             opacity: 0.7;
-            margin: 0 0 8px 0;
-          ">${settings.subtitle.text || 'Please fill out the form below'}</p>
+            margin: 0 0 0 0;
+          ">${subtitleText}</p>
         `;
       }
+
+      formHTML += '</div>';
     }
 
-    // Render fields
     if (visibleFields.length === 0) {
       formHTML += '<div style="text-align: center; padding: 32px; color: #6b7280;">No visible fields</div>';
     } else {
+      // Separate fields into grid fields and full-width fields
+      const gridFields = [];
+      const fullWidthFields = [];
+      
       visibleFields.forEach(field => {
-        formHTML += Fields.renderField(field, settings, shippingSettings);
+        if (field.type === 'summary' || field.type === 'buyButton' || field.type === 'whatsappButton' || field.type === 'shippingOption') {
+          fullWidthFields.push(field);
+        } else {
+          gridFields.push(field);
+        }
+      });
+      
+      // Render grid fields in single column (Inputs section)
+      if (gridFields.length > 0) {
+        formHTML += '<div class="leadcod-form-section">';
+        formHTML += '<div class="leadcod-fields-grid">';
+        gridFields.forEach(field => {
+          formHTML += Fields.renderField(field, settings, shippingSettings);
+        });
+        formHTML += '</div>';
+        formHTML += '</div>';
+      }
+      
+      // Render full-width fields (Shipping and Summary sections)
+      fullWidthFields.forEach(field => {
+        if (field.type === 'shippingOption') {
+          formHTML += '<div class="leadcod-form-section" style="display: none;">';
+          formHTML += Fields.renderField(field, settings, shippingSettings);
+          formHTML += '</div>';
+        } else if (field.type === 'summary') {
+          formHTML += '<div class="leadcod-form-section">';
+          formHTML += Fields.renderField(field, settings, shippingSettings);
+          formHTML += '</div>';
+        } else {
+          formHTML += Fields.renderField(field, settings, shippingSettings);
+        }
       });
     }
 
@@ -95,278 +146,605 @@
 
     container.innerHTML = formHTML;
 
-    // Initialize Lucide icons
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
     }
 
-    // Load states and cities
-    loadStatesAndCities(container, apiUrl);
+    // Initialize quantity selector buttons
+    initializeQuantitySelector(container);
 
-    // Add form submission handler
+    loadStatesAndCities(container, apiUrl);
+    initializeSummary(container);
+
+    // Set up form submission handler
     const form = container.querySelector('.leadcod-form');
     if (form) {
-      form.addEventListener('submit', function(e) {
+      form.addEventListener('submit', async function(e) {
         e.preventDefault();
+
         const formData = new FormData(form);
         const data = Object.fromEntries(formData);
-        console.log('Form submitted:', data);
-        // TODO: Handle form submission
-        alert('Form submitted! (This is a demo)');
+
+        // Get province and city names from selected options
+        const provinceSelect = container.querySelector('.leadcod-province-select');
+        const citySelect = container.querySelector('.leadcod-city-select');
+        if (provinceSelect && provinceSelect.selectedIndex >= 0) {
+          const selectedProvinceOption = provinceSelect.options[provinceSelect.selectedIndex];
+          data[provinceSelect.name] = selectedProvinceOption.getAttribute('data-name');
+        }
+        if (citySelect && citySelect.selectedIndex >= 0) {
+          const selectedCityOption = citySelect.options[citySelect.selectedIndex];
+          data[citySelect.name] = selectedCityOption.getAttribute('data-name');
+        }
+
+        // Get product variant ID
+        const productOrVariantId = new URLSearchParams(window.location.search).get('variant') || {{ product.selected_or_first_available_variant.id }};
+        const variants = {{ product.variants | json }};
+        const productData = variants.find(variant => variant.id === productOrVariantId);
+        if (productData) {
+          data.productId = productData.id;
+        }
+
+        // Get shipping information
+        let shippingPrice, shippingLabel, shippingType;
+        const shippingSection = container.querySelector('.leadcod-shipping-section');
+        const selectedShippingOption = shippingSection?.querySelector('input[type="radio"]:checked');
+        if (selectedShippingOption) {
+          shippingType = selectedShippingOption.value; // 'cod' or 'stopDesk'
+          const priceSelector = shippingType === 'cod'
+            ? '.leadcod-shipping-price-cod'
+            : '.leadcod-shipping-price-stopdesk';
+          const priceElement = shippingSection.querySelector(priceSelector);
+          if (priceElement) {
+            const priceAttr = priceElement.getAttribute('data-price');
+            if (priceAttr !== null) {
+              shippingPrice = parseInt(priceAttr, 10);
+            }
+            const labelSpan = selectedShippingOption.closest('label')?.querySelector('div span');
+            if (labelSpan) {
+              shippingLabel = labelSpan.textContent.trim();
+            }
+          }
+        }
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton?.innerHTML || '';
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.innerHTML = 'Processing...';
+        }
+
+        const baseApiUrl = apiUrl.replace('/form', '');
+        const orderPayload = {
+          shopUrl,
+          name: data.name || '',
+          phone: data.phone || '',
+          city: data.city || '',
+          province: data.province || '',
+          productId: String(data.productId),
+          ...(shippingPrice !== undefined && { shippingPrice }),
+          ...(shippingLabel && { shippingLabel }),
+          ...(shippingType && { shippingType })
+        };
+
+        try {
+          const response = await fetch(`${baseApiUrl}/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderPayload)
+          });
+
+          const result = await response.json();
+          alert(result.success 
+            ? 'Order created successfully!' 
+            : 'Error creating order: ' + (result.error || 'Unknown error'));
+          
+          if (result.success) form.reset();
+        } catch (error) {
+          console.error('Error submitting order:', error);
+          alert('Error submitting order: ' + error.message);
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+          }
+        }
       });
     }
   }
 
+  /**
+   * Initialize quantity selector buttons
+   * @param {HTMLElement} container - Container element
+   */
+  function initializeQuantitySelector(container) {
+    const quantitySelectors = container.querySelectorAll('.leadcod-quantity-selector');
+    
+    quantitySelectors.forEach(selector => {
+      const decreaseBtn = selector.querySelector('[data-action="decrease"]');
+      const increaseBtn = selector.querySelector('[data-action="increase"]');
+      const quantityInput = selector.querySelector('input[name="quantity"]');
+      
+      if (decreaseBtn && quantityInput) {
+        decreaseBtn.addEventListener('click', function() {
+          const currentValue = parseInt(quantityInput.value) || 1;
+          if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+            quantityInput.dispatchEvent(new Event('input', { bubbles: true }));
+            quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+      }
+      
+      if (increaseBtn && quantityInput) {
+        increaseBtn.addEventListener('click', function() {
+          const currentValue = parseInt(quantityInput.value) || 1;
+          quantityInput.value = currentValue + 1;
+          quantityInput.dispatchEvent(new Event('input', { bubbles: true }));
+          quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+      }
+    });
+  }
+
+  /**
+   * Initialize and update order summary dynamically
+   * @param {HTMLElement} container - Container element
+   */
+  function initializeSummary(container) {
+    // Get product data from Shopify
+    const productOrVariantId = new URLSearchParams(window.location.search).get('variant') || {{ product.selected_or_first_available_variant.id }};
+    const variants = {{ product.variants | json }};
+    const product = {{ product | json }};
+    
+    let currentVariant = variants.find(variant => variant.id === productOrVariantId) || variants[0];
+    let currentQuantity = 1;
+    let shippingPrice = 0;
+    let shippingLabel = '';
+    let shippingType = '';
+
+    // Get summary elements
+    const productNameEl = container.querySelector('.leadcod-product-name');
+    const productPriceEl = container.querySelector('.leadcod-product-price');
+    const shippingLabelEl = container.querySelector('.leadcod-shipping-label');
+    const shippingHintEl = container.querySelector('.leadcod-shipping-hint');
+    const shippingHintTextEl = container.querySelector('.leadcod-shipping-hint-text');
+    const shippingPriceEl = container.querySelector('.leadcod-shipping-price');
+    const totalPriceEl = container.querySelector('.leadcod-total-price');
+
+    /**
+     * Format price in DZD
+     * @param {number} price - Price in cents
+     * @returns {string} Formatted price string
+     */
+    function formatPrice(price) {
+      return (price / 100).toFixed(0) + ' د.ج';
+    }
+
+    /**
+     * Update the summary display
+     */
+    function updateSummary() {
+      // Update product name and price
+      if (productNameEl && currentVariant) {
+        productNameEl.textContent = product.title || currentVariant.title || '-';
+      }
+      if (productPriceEl && currentVariant) {
+        const price = currentVariant.price || 0;
+        productPriceEl.textContent = `${formatPrice(price)} x${currentQuantity}`;
+      }
+
+      // Update shipping
+      const provinceSelect = container.querySelector('.leadcod-province-select');
+      const citySelect = container.querySelector('.leadcod-city-select');
+      const shippingSection = container.querySelector('.leadcod-shipping-section');
+      const selectedShippingOption = shippingSection?.querySelector('input[type="radio"]:checked');
+
+      if (!provinceSelect || !provinceSelect.value) {
+        // No province selected
+        if (shippingLabelEl) shippingLabelEl.textContent = 'Shipping Price';
+        if (shippingHintEl) shippingHintEl.style.display = 'flex';
+        if (shippingHintTextEl) shippingHintTextEl.textContent = 'Choose province';
+        if (shippingPriceEl) shippingPriceEl.textContent = '-';
+        shippingPrice = 0;
+        shippingLabel = '';
+        shippingType = '';
+      } else if (!citySelect || !citySelect.value) {
+        // Province selected but no city - prices are shown in shipping section
+        if (shippingLabelEl) shippingLabelEl.textContent = 'Shipping Price';
+        if (shippingHintEl) shippingHintEl.style.display = 'flex';
+        if (shippingHintTextEl) shippingHintTextEl.textContent = 'Select shipping option';
+        if (shippingPriceEl) shippingPriceEl.textContent = '-';
+        shippingPrice = 0;
+        shippingLabel = '';
+        shippingType = '';
+      } else if (!selectedShippingOption) {
+        // City selected but no shipping option selected
+        if (shippingLabelEl) shippingLabelEl.textContent = 'Shipping Price';
+        if (shippingHintEl) shippingHintEl.style.display = 'flex';
+        if (shippingHintTextEl) shippingHintTextEl.textContent = 'Choose shipping option';
+        if (shippingPriceEl) shippingPriceEl.textContent = '-';
+        shippingPrice = 0;
+        shippingLabel = '';
+        shippingType = '';
+      } else {
+        // Shipping option selected
+        shippingType = selectedShippingOption.value; // 'cod' or 'stopDesk'
+        const priceSelector = shippingType === 'cod'
+          ? '.leadcod-shipping-price-cod'
+          : '.leadcod-shipping-price-stopdesk';
+        const priceElement = shippingSection.querySelector(priceSelector);
+        
+        if (priceElement) {
+          const priceAttr = priceElement.getAttribute('data-price');
+          if (priceAttr !== null) {
+            shippingPrice = parseInt(priceAttr, 10);
+          }
+          const labelSpan = selectedShippingOption.closest('label')?.querySelector('div span');
+          if (labelSpan) {
+            shippingLabel = labelSpan.textContent.trim();
+          }
+        }
+
+        if (shippingLabelEl) shippingLabelEl.textContent = shippingLabel || 'Shipping Price';
+        if (shippingHintEl) shippingHintEl.style.display = 'none';
+        if (shippingPriceEl) {
+          shippingPriceEl.textContent = shippingPrice > 0 ? shippingPrice + ' د.ج' : 'Free';
+        }
+      }
+
+      // Update total
+      if (totalPriceEl && currentVariant) {
+        const productPriceInCents = (currentVariant.price || 0) * currentQuantity;
+        const productPriceInDZD = productPriceInCents / 100;
+        const total = productPriceInDZD + shippingPrice;
+        totalPriceEl.textContent = total.toFixed(0) + ' د.ج';
+      }
+    }
+
+    // Listen for variant changes (if variant selector exists)
+    const variantSelect = container.querySelector('select[name*="variant"], select.leadcod-variant-select');
+    if (variantSelect) {
+      variantSelect.addEventListener('change', function() {
+        const selectedVariantId = this.value;
+        currentVariant = variants.find(v => String(v.id) === String(selectedVariantId)) || currentVariant;
+        updateSummary();
+      });
+    }
+
+    // Listen for URL parameter changes (variant in URL)
+    function checkVariantFromURL() {
+      const urlVariantId = new URLSearchParams(window.location.search).get('variant');
+      if (urlVariantId) {
+        const urlVariant = variants.find(v => String(v.id) === String(urlVariantId));
+        if (urlVariant) {
+          currentVariant = urlVariant;
+          updateSummary();
+        }
+      }
+    }
+    
+    // Check on load
+    checkVariantFromURL();
+    
+    // Listen for URL changes (for variant switching)
+    window.addEventListener('popstate', checkVariantFromURL);
+    
+    // Also check periodically for URL changes (some themes update URL without popstate)
+    let lastVariantId = productOrVariantId;
+    setInterval(() => {
+      const currentVariantId = new URLSearchParams(window.location.search).get('variant') || {{ product.selected_or_first_available_variant.id }};
+      if (String(currentVariantId) !== String(lastVariantId)) {
+        lastVariantId = currentVariantId;
+        const urlVariant = variants.find(v => String(v.id) === String(currentVariantId));
+        if (urlVariant) {
+          currentVariant = urlVariant;
+          updateSummary();
+        }
+      }
+    }, 500);
+
+    // Listen for quantity changes
+    const quantityInput = container.querySelector('input[name="quantity"]');
+    if (quantityInput) {
+      quantityInput.addEventListener('change', function() {
+        currentQuantity = parseInt(this.value) || 1;
+        updateSummary();
+      });
+      quantityInput.addEventListener('input', function() {
+        currentQuantity = parseInt(this.value) || 1;
+        updateSummary();
+      });
+    }
+
+    // Listen for shipping option changes
+    const shippingSection = container.querySelector('.leadcod-shipping-section');
+    if (shippingSection) {
+      const shippingRadios = shippingSection.querySelectorAll('input[type="radio"]');
+      shippingRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+          updateSummary();
+        });
+      });
+    }
+
+    // Listen for province/city changes (to update shipping hint)
+    const provinceSelect = container.querySelector('.leadcod-province-select');
+    const citySelect = container.querySelector('.leadcod-city-select');
+    if (provinceSelect) {
+      provinceSelect.addEventListener('change', function() {
+        setTimeout(updateSummary, 100); // Small delay to allow shipping prices to update
+      });
+    }
+    if (citySelect) {
+      citySelect.addEventListener('change', function() {
+        setTimeout(updateSummary, 100); // Small delay to allow shipping prices to update
+      });
+    }
+
+    // Store updateSummary on container so it can be called from other functions
+    container._updateSummary = updateSummary;
+
+    // Initial update
+    updateSummary();
+  }
+
+  /**
+   * Load states/provinces and cities, handle shipping section visibility
+   * @param {HTMLElement} container - Container element
+   * @param {string} apiUrl - Base API URL
+   */
   function loadStatesAndCities(container, apiUrl) {
     const baseApiUrl = apiUrl.replace('/form', '');
     const provinceSelect = container.querySelector('.leadcod-province-select');
     const cityField = container.querySelector('.leadcod-city-select');
     const shippingSection = container.querySelector('.leadcod-shipping-section');
-    
+    // Find the parent form section wrapper
+    const shippingFormSection = shippingSection?.closest('.leadcod-form-section');
+
     if (!provinceSelect) return;
 
-    // Track if this is the initial render
     let isInitialRender = true;
 
-    // Function to check if shipping section should be shown
+    /**
+     * Update shipping section visibility based on province and city selection
+     */
     function updateShippingSectionVisibility() {
-      const selectedProvince = provinceSelect.value;
-      const selectedCity = cityField ? cityField.value : '';
-      
-      if (shippingSection) {
-        if (selectedProvince && selectedCity) {
-          // Show the section
-          shippingSection.style.display = 'block';
-          
-          // Only animate on initial render (first time both are selected)
-          if (isInitialRender) {
-            // Set initial animation state
-            shippingSection.style.opacity = '0';
-            shippingSection.style.transform = 'translateY(-10px)';
-            shippingSection.style.maxHeight = '0';
-            shippingSection.style.marginBottom = '0';
-            // Force reflow
-            void shippingSection.offsetWidth;
-            // Remove any existing animation class first
-            shippingSection.classList.remove('show');
-            // Force reflow again to restart animation
-            void shippingSection.offsetWidth;
-            // Add show class with animation
-            shippingSection.classList.add('show');
-            isInitialRender = false;
-          } else {
-            // Just show without animation (subsequent changes)
-            shippingSection.style.opacity = '1';
-            shippingSection.style.transform = 'translateY(0)';
+      if (!shippingSection) return;
+
+      // Show shipping section when province is selected (prices are available at province level)
+      const shouldShow = provinceSelect.value;
+
+      if (shouldShow) {
+        // Show the form section wrapper first
+        if (shippingFormSection) {
+          shippingFormSection.style.display = 'block';
+        }
+        // Show the inner shipping section
+        shippingSection.style.display = 'block';
+        if (isInitialRender) {
+          // Initial animation setup
+          shippingSection.style.opacity = '0';
+          shippingSection.style.transform = 'translateY(-10px)';
+          shippingSection.style.maxHeight = '0';
+          shippingSection.style.marginBottom = '0';
+          void shippingSection.offsetWidth; // Force reflow
+          shippingSection.classList.remove('show');
+          void shippingSection.offsetWidth; // Force reflow
+          shippingSection.classList.add('show');
+          isInitialRender = false;
+        } else {
+          // Subsequent shows
+          shippingSection.style.opacity = '1';
+          shippingSection.style.transform = 'translateY(0)';
+          shippingSection.style.maxHeight = '';
+          shippingSection.style.marginBottom = '';
+          shippingSection.classList.add('show');
+        }
+      } else {
+        // Hide with animation
+        shippingSection.classList.remove('show');
+        // Hide the form section wrapper immediately
+        if (shippingFormSection) {
+          shippingFormSection.style.display = 'none';
+        }
+        setTimeout(() => {
+          if (!shippingSection.classList.contains('show')) {
+            shippingSection.style.display = 'none';
+            shippingSection.style.opacity = '';
+            shippingSection.style.transform = '';
             shippingSection.style.maxHeight = '';
             shippingSection.style.marginBottom = '';
-            shippingSection.classList.add('show');
           }
-        } else {
-          shippingSection.classList.remove('show');
-          // Reset styles and hide after animation
-          setTimeout(() => {
-            if (!shippingSection.classList.contains('show')) {
-              shippingSection.style.display = 'none';
-              shippingSection.style.opacity = '';
-              shippingSection.style.transform = '';
-              shippingSection.style.maxHeight = '';
-              shippingSection.style.marginBottom = '';
-            }
-          }, 400);
-        }
+        }, 400);
       }
     }
 
-    // Function to create loader element
-    function createLoader() {
+    /**
+     * Remove all price loaders from shipping section
+     */
+    function removeLoaders() {
+      shippingSection?.querySelectorAll('.leadcod-price-loader').forEach(loader => loader.remove());
+    }
+
+    /**
+     * Create a loading spinner element
+     * @param {string} className - Additional CSS class name
+     * @returns {HTMLElement} Loader element
+     */
+    function createLoader(className) {
       const loader = document.createElement('span');
-      loader.className = 'leadcod-price-loader';
-      loader.innerHTML = `
-        <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-left: 4px;">
-          <circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="8 4" opacity="0.6">
-            <animateTransform attributeName="transform" type="rotate" from="0 6 6" to="360 6 6" dur="0.8s" repeatCount="indefinite"/>
-          </circle>
-        </svg>
-      `;
-      loader.style.display = 'inline-block';
-      loader.style.verticalAlign = 'middle';
-      loader.style.marginLeft = '4px';
-      loader.style.color = '#6b7280';
+      loader.className = `leadcod-price-loader ${className}`;
+      const svgHTML = '<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="display: inline-block; vertical-align: middle; margin-left: 4px;"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="8 4" opacity="0.6"><animateTransform attributeName="transform" type="rotate" from="0 6 6" to="360 6 6" dur="0.8s" repeatCount="indefinite"/></circle></svg>';
+      loader.innerHTML = svgHTML;
+      loader.style.cssText = 'display: inline-block; vertical-align: middle; margin-left: 4px; color: #6b7280;';
       return loader;
     }
 
-    // Function to fetch and update shipping prices
+    /**
+     * Update shipping prices based on selected state
+     * @param {string} stateId - Selected state/province ID
+     * @param {boolean} showLoader - Whether to show loading spinner
+     */
     function updateShippingPrices(stateId, showLoader = false) {
-      if (!shippingSection || !stateId) {
-        return;
-      }
+      if (!shippingSection || !stateId) return;
 
       const codPriceElement = shippingSection.querySelector('.leadcod-shipping-price-cod');
       const stopDeskPriceElement = shippingSection.querySelector('.leadcod-shipping-price-stopdesk');
 
-      // Remove existing loaders
-      const existingCodLoader = shippingSection.querySelector('.leadcod-price-loader-cod');
-      const existingStopDeskLoader = shippingSection.querySelector('.leadcod-price-loader-stopdesk');
-      if (existingCodLoader) existingCodLoader.remove();
-      if (existingStopDeskLoader) existingStopDeskLoader.remove();
+      removeLoaders();
 
-      // Show loader next to price elements only if requested
       if (showLoader) {
         if (codPriceElement) {
-          const codLoader = createLoader();
-          codLoader.className = 'leadcod-price-loader leadcod-price-loader-cod';
-          codPriceElement.appendChild(codLoader);
+          codPriceElement.appendChild(createLoader('leadcod-price-loader-cod'));
         }
         if (stopDeskPriceElement) {
-          const stopDeskLoader = createLoader();
-          stopDeskLoader.className = 'leadcod-price-loader leadcod-price-loader-stopdesk';
-          stopDeskPriceElement.appendChild(stopDeskLoader);
+          stopDeskPriceElement.appendChild(createLoader('leadcod-price-loader-stopdesk'));
         }
       }
 
-      // Fetch shipping fees
+      /**
+       * Update price element with price or "Free"
+       * @param {HTMLElement} element - Price element
+       * @param {number|null} price - Price value
+       */
+      function updatePriceElement(element, price) {
+        if (!element) return;
+        if (price !== null && price !== undefined) {
+          element.textContent = price + ' DZD';
+          element.setAttribute('data-price', price.toString());
+        } else {
+          element.textContent = 'Free';
+          element.setAttribute('data-price', '0');
+        }
+      }
+
+      /**
+       * Set error state on price element
+       * @param {HTMLElement} element - Price element
+       */
+      function setErrorPrice(element) {
+        if (element) {
+          element.textContent = '-';
+          element.setAttribute('data-price', '0');
+        }
+      }
+
       fetch(`${baseApiUrl}/shipping-fees?shopUrl=${encodeURIComponent(shopUrl)}&stateId=${encodeURIComponent(stateId)}`)
         .then(response => response.json())
         .then(result => {
-          // Remove loaders (only if they were shown)
-          const codLoader = shippingSection.querySelector('.leadcod-price-loader-cod');
-          const stopDeskLoader = shippingSection.querySelector('.leadcod-price-loader-stopdesk');
-          if (codLoader) codLoader.remove();
-          if (stopDeskLoader) stopDeskLoader.remove();
-
+          removeLoaders();
           if (result.success && result.data) {
-            // Update COD price
-            if (codPriceElement) {
-              const codPrice = result.data.cashOnDelivery;
-              if (codPrice !== null && codPrice !== undefined) {
-                codPriceElement.textContent = codPrice + ' DZD';
-              } else {
-                codPriceElement.textContent = 'Free';
-              }
-            }
-
-            // Update Stop Desk price
-            if (stopDeskPriceElement) {
-              const stopDeskPrice = result.data.stopDesk;
-              if (stopDeskPrice !== null && stopDeskPrice !== undefined) {
-                stopDeskPriceElement.textContent = stopDeskPrice + ' DZD';
-              } else {
-                stopDeskPriceElement.textContent = 'Free';
-              }
-            }
+            updatePriceElement(codPriceElement, result.data.cashOnDelivery);
+            updatePriceElement(stopDeskPriceElement, result.data.stopDesk);
           } else {
-            // Set default prices on error
-            if (codPriceElement) codPriceElement.textContent = '-';
-            if (stopDeskPriceElement) stopDeskPriceElement.textContent = '-';
+            setErrorPrice(codPriceElement);
+            setErrorPrice(stopDeskPriceElement);
+          }
+          // Update summary after shipping prices are loaded
+          if (container._updateSummary) {
+            setTimeout(() => container._updateSummary(), 100);
           }
         })
         .catch(error => {
           console.error('Error fetching shipping fees:', error);
-          // Remove loaders on error (only if they were shown)
-          const codLoader = shippingSection.querySelector('.leadcod-price-loader-cod');
-          const stopDeskLoader = shippingSection.querySelector('.leadcod-price-loader-stopdesk');
-          if (codLoader) codLoader.remove();
-          if (stopDeskLoader) stopDeskLoader.remove();
-          
-          if (codPriceElement) codPriceElement.textContent = '-';
-          if (stopDeskPriceElement) stopDeskPriceElement.textContent = '-';
+          removeLoaders();
+          setErrorPrice(codPriceElement);
+          setErrorPrice(stopDeskPriceElement);
+          // Update summary even on error
+          if (container._updateSummary) {
+            setTimeout(() => container._updateSummary(), 100);
+          }
         });
     }
 
-    // Fetch states
+    /**
+     * Set field state (enabled/disabled) and placeholder
+     * @param {HTMLElement} field - Select field element
+     * @param {boolean} disabled - Whether field should be disabled
+     * @param {string} placeholder - Placeholder text
+     */
+    function setFieldState(field, disabled, placeholder) {
+      field.disabled = disabled;
+      field.style.opacity = disabled ? '0.6' : '1';
+      field.style.cursor = disabled ? 'not-allowed' : 'pointer';
+      field.style.backgroundColor = disabled ? '#f9fafb' : '';
+      if (placeholder) {
+        field.innerHTML = `<option value="">${placeholder}</option>`;
+      }
+    }
+
     fetch(`${baseApiUrl}/states`)
       .then(response => response.json())
       .then(result => {
         if (result.success && result.data) {
-          // Clear loading option - use placeholder from field if available
           const placeholder = provinceSelect.getAttribute('data-placeholder') || 'Select province';
           provinceSelect.innerHTML = `<option value="">${placeholder}</option>`;
           
-          // Populate states
           result.data.forEach(state => {
             const option = document.createElement('option');
             option.value = state.id;
             option.textContent = `${state.name} - ${state.nameAr} (${state.code})`;
+            option.setAttribute('data-name', state.name);
             provinceSelect.appendChild(option);
           });
 
-          // Enable the select and restore normal styling
-          provinceSelect.disabled = false;
-          provinceSelect.style.opacity = '1';
-          provinceSelect.style.cursor = 'pointer';
-          provinceSelect.style.backgroundColor = '';
+          setFieldState(provinceSelect, false);
 
-          // Add change listener to province select
           provinceSelect.addEventListener('change', function() {
             const selectedStateId = this.value;
             
-            // Hide shipping section when province changes
-            updateShippingSectionVisibility();
-            
             if (cityField) {
+              // Reset city field value immediately when province changes
+              cityField.value = '';
+              
               if (selectedStateId) {
-                // Fetch cities for selected state
-                cityField.disabled = true;
-                cityField.style.opacity = '0.6';
-                cityField.style.cursor = 'not-allowed';
-                cityField.style.backgroundColor = '#f9fafb';
-                const placeholder = cityField.getAttribute('data-placeholder') || 'Select city';
-                cityField.innerHTML = `<option value="">${placeholder}</option>`;
-                
-                // Fetch shipping prices for the selected province (show loader)
+                setFieldState(cityField, true, cityField.getAttribute('data-placeholder') || 'Select city');
                 updateShippingPrices(selectedStateId, true);
                 
                 fetch(`${baseApiUrl}/cities?stateId=${selectedStateId}`)
                   .then(response => response.json())
                   .then(result => {
                     if (result.success && result.data) {
+                      const placeholder = cityField.getAttribute('data-placeholder') || 'Select city';
                       cityField.innerHTML = `<option value="">${placeholder}</option>`;
                       result.data.forEach(city => {
                         const option = document.createElement('option');
                         option.value = city.id;
                         option.textContent = `${city.name} - ${city.nameAr}`;
+                        option.setAttribute('data-name', city.name);
                         cityField.appendChild(option);
                       });
-                      cityField.disabled = false;
-                      cityField.style.opacity = '1';
-                      cityField.style.cursor = 'pointer';
-                      cityField.style.backgroundColor = '';
+                      setFieldState(cityField, false);
                     } else {
                       cityField.innerHTML = '<option value="">Error loading cities</option>';
                       cityField.style.opacity = '0.6';
                     }
+                    // Update shipping section visibility after cities are loaded
+                    updateShippingSectionVisibility();
                   })
                   .catch(error => {
                     console.error('Error fetching cities:', error);
                     cityField.innerHTML = '<option value="">Error loading cities</option>';
                     cityField.style.opacity = '0.6';
+                    updateShippingSectionVisibility();
                   });
               } else {
-                // Clear city dropdown
-                cityField.innerHTML = '<option value="">Select province first</option>';
-                cityField.disabled = true;
-                cityField.style.opacity = '0.6';
-                cityField.style.cursor = 'not-allowed';
-                cityField.style.backgroundColor = '#f9fafb';
+                setFieldState(cityField, true, 'Select province first');
                 updateShippingSectionVisibility();
               }
+            } else {
+              // If no city field, still update visibility based on province only
+              updateShippingSectionVisibility();
             }
           });
 
-          // Add change listener to city select
           if (cityField) {
-            cityField.addEventListener('change', function() {
-              const selectedStateId = provinceSelect.value;
-              const selectedCity = this.value;
-              
-              // Show/hide shipping section (will animate only on initial render)
-              updateShippingSectionVisibility();
-              
-              // Note: Prices don't need to be refetched when city changes since they're based on state
-              // The prices are already loaded when the state was selected
-            });
+            cityField.addEventListener('change', updateShippingSectionVisibility);
           }
+          
+          // Set initial visibility state
+          updateShippingSectionVisibility();
         } else {
           provinceSelect.innerHTML = '<option value="">Error loading provinces</option>';
         }
@@ -378,5 +756,4 @@
   }
 })();
 </script>
-
 

@@ -45,11 +45,32 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
   
   const initialFields = mergeFields(existingForm?.fields as FormField[] | undefined);
   
+  // Sync quantity field visibility with buy button's showQuantity on initial load
+  // The buy button's showQuantity is the source of truth (used by Liquid template)
+  const syncQuantityWithBuyButton = (fields: FormField[]): FormField[] => {
+    const quantityField = fields.find(f => f.type === 'quantity');
+    const buyButton = fields.find(f => f.type === 'buyButton');
+    
+    if (quantityField && buyButton) {
+      // Sync quantity field's visibility to match buy button's showQuantity
+      // This ensures consistency when loading existing forms
+      const showQuantity = buyButton.showQuantity !== false; // Default to true
+      return fields.map(f => 
+        f.type === 'quantity'
+          ? { ...f, visible: showQuantity }
+          : f
+      );
+    }
+    return fields;
+  };
+  
+  const syncedInitialFields = syncQuantityWithBuyButton(initialFields);
+  
   const initialGlobalSettings = existingForm?.settings 
     ? (existingForm.settings as GlobalFormSettings)
     : DEFAULT_GLOBAL_SETTINGS;
     
-  const [fields, setFields] = useState<FormField[]>(initialFields);
+  const [fields, setFields] = useState<FormField[]>(syncedInitialFields);
   const [globalSettings, setGlobalSettings] = useState<GlobalFormSettings>(initialGlobalSettings);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
   const [shippingMethod, setShippingMethod] = useState<'free' | 'per-province'>('free');

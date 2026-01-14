@@ -17,6 +17,7 @@ datasource db {
 model Shop {
   id String @id @default(uuid())
   url String
+  accessToken String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Form Form[]

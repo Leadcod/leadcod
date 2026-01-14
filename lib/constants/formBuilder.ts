@@ -12,3 +12,7 @@ export const BUY_NOW_ICONS = [
   'ShoppingCart', 'Zap', 'DollarSign', 'Tag', 'ArrowRight'
 ];
 
+// WhatsApp/Message related icons
+export const WHATSAPP_BUTTON_ICONS = [
+  'WhatsApp', 'MessageCircle', 'MessageSquare', 'Message', 'Send'
+];

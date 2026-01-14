@@ -121,11 +121,30 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
   };
 
   const toggleVisibility = (id: string) => {
-    setFields((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, visible: !item.visible } : item
-      )
-    );
+    setFields((items) => {
+      const fieldToToggle = items.find(item => item.id === id);
+      if (!fieldToToggle) return items;
+
+      const newVisible = !fieldToToggle.visible;
+      
+      // If toggling quantity field, also update buy button's showQuantity
+      if (fieldToToggle.type === 'quantity') {
+        return items.map((item) => {
+          if (item.id === id) {
+            return { ...item, visible: newVisible };
+          }
+          if (item.type === 'buyButton') {
+            return { ...item, showQuantity: newVisible };
+          }
+          return item;
+        });
+      }
+      
+      // For other fields, just toggle visibility
+      return items.map((item) =>
+        item.id === id ? { ...item, visible: newVisible } : item
+      );
+    });
     shopify.saveBar.show('form-builder-save-bar')
   };
 
@@ -149,8 +168,8 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
 
     setFields((items) =>
       items.map((item) => {
-        // Skip the source field itself and the buyButton
-        if (item.id === sourceFieldId || item.type === 'buyButton') {
+        // Skip the source field itself and the buyButton/whatsappButton
+        if (item.id === sourceFieldId || item.type === 'buyButton' || item.type === 'whatsappButton') {
           return item;
         }
         // Apply alignment settings from source field (colors and fonts are now global)
