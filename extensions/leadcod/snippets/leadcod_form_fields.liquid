@@ -147,21 +147,18 @@
         const basePadding = Utils.calculatePadding(fieldFontSize, settings);
         const paddingParts = basePadding.split(' ');
         const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
-        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding.
-        const paddingRight = hasIcon && iconOnRight ? '40px' : horizontalPadding;
-        const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : horizontalPadding;
 
         fieldHTML += `
           ${hasIcon && iconOnLeft ? `<div style="${getIconStyle(true)}">${iconHTML}</div>` : ''}
           <input 
             type="${inputType}" 
             placeholder="${placeholder}" 
-            style="${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0' : hasIcon && iconOnRight ? '8px 0 0 8px' : '8px'};"
+            style="${inputStyle} width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0' : hasIcon && iconOnRight ? '8px 0 0 8px' : '8px'};"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
           />
-          ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${horizontalPadding}; left: auto;">${iconHTML}</div>` : ''}
+          ${hasIcon && iconOnRight ? `<div style="${getIconStyle(false)}">${iconHTML}</div>` : ''}
         `;
         break;
       }
@@ -175,11 +172,9 @@
         // Arrow position: opposite side of icon (if icon on right, arrow on left; if icon on left, arrow on right)
         const arrowOnLeft = hasIcon && iconOnRight;
         const arrowOnRight = !hasIcon || iconOnLeft;
-        const iconRight = hasIcon && iconOnRight ? horizontalPadding : 'auto';
-        const iconLeft = hasIcon && iconOnLeft ? horizontalPadding : 'auto';
-        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding for arrow + icon.
+        // When icon wrapper is on left, reduce left padding. When icon wrapper is on right, add right padding for arrow.
         const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : (arrowOnLeft ? '32px' : horizontalPadding);
-        const paddingRight = hasIcon && iconOnRight ? '40px' : (arrowOnRight ? '32px' : horizontalPadding);
+        const paddingRight = hasIcon && iconOnRight ? horizontalPadding : (arrowOnRight ? '32px' : horizontalPadding);
         const arrowClass = arrowOnLeft ? 'leadcod-select-arrow-left' : 'leadcod-select-arrow-right';
         const citySelectStyle = `${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none !important' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none !important' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0 !important' : hasIcon && iconOnRight ? '8px 0 0 8px !important' : '8px'};`;
         const placeholder = field.showPlaceholder ? field.placeholder : 'Select';
@@ -198,7 +193,7 @@
           >
             <option value="">Select province first</option>
           </select>
-          ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${iconRight}; left: auto;">${iconHTML}</div>` : ''}
+          ${hasIcon && iconOnRight ? `<div style="${getIconStyle(false)}">${iconHTML}</div>` : ''}
         `;
         break;
       }
@@ -212,12 +207,6 @@
         const phoneCodeOnRight = labelAlignment === 'right' || labelAlignment === 'center';
         const phoneIconOnLeft = !phoneCodeOnLeft;
         const phoneIconOnRight = !phoneCodeOnRight;
-        const basePadding = Utils.calculatePadding(fieldFontSize, settings);
-        const paddingParts = basePadding.split(' ');
-        const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
-        // When wrapper is on left (phone code or icon), reduce left padding. When absolutely positioned on right, add right padding.
-        const paddingRight = hasIcon && phoneIconOnRight ? '40px' : (phoneCodeOnRight ? horizontalPadding : horizontalPadding);
-        const paddingLeft = (phoneCodeOnLeft || (hasIcon && phoneIconOnLeft)) ? horizontalPadding : horizontalPadding;
 
         fieldHTML += `
           ${phoneCodeOnLeft ? `<div style="${getIconStyle(true)}">+213</div>` : ''}
@@ -225,12 +214,12 @@
           <input 
             type="tel" 
             placeholder="${placeholder}" 
-            style="${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; border-left: ${phoneCodeOnLeft || phoneIconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${phoneCodeOnRight || phoneIconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${phoneCodeOnLeft || phoneIconOnLeft ? '0 8px 8px 0' : phoneCodeOnRight || phoneIconOnRight ? '8px 0 0 8px' : '8px'}; width: 100%;"
+            style="${inputStyle} width: 100%; border-left: ${phoneCodeOnLeft || phoneIconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${phoneCodeOnRight || phoneIconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${phoneCodeOnLeft || phoneIconOnLeft ? '0 8px 8px 0' : phoneCodeOnRight || phoneIconOnRight ? '8px 0 0 8px' : '8px'};"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
           />
-          ${hasIcon && phoneIconOnRight ? `<div class="leadcod-input-icon" style="right: ${horizontalPadding}; left: auto;">${iconHTML}</div>` : ''}
+          ${hasIcon && phoneIconOnRight ? `<div style="${getIconStyle(false)}">${iconHTML}</div>` : ''}
           ${phoneCodeOnRight ? `<div style="${getIconStyle(false)}">+213</div>` : ''}
         `;
         break;
@@ -245,11 +234,9 @@
         // Arrow position: opposite side of icon (if icon on right, arrow on left; if icon on left, arrow on right)
         const arrowOnLeft = hasIcon && iconOnRight;
         const arrowOnRight = !hasIcon || iconOnLeft;
-        const iconRight = hasIcon && iconOnRight ? horizontalPadding : 'auto';
-        const iconLeft = hasIcon && iconOnLeft ? horizontalPadding : 'auto';
-        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding for arrow + icon.
+        // When icon wrapper is on left, reduce left padding. When icon wrapper is on right, add right padding for arrow.
         const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : (arrowOnLeft ? '32px' : horizontalPadding);
-        const paddingRight = hasIcon && iconOnRight ? '40px' : (arrowOnRight ? '32px' : horizontalPadding);
+        const paddingRight = hasIcon && iconOnRight ? horizontalPadding : (arrowOnRight ? '32px' : horizontalPadding);
         const arrowClass = arrowOnLeft ? 'leadcod-select-arrow-left' : 'leadcod-select-arrow-right';
         const provinceSelectStyle = `${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none !important' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none !important' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0 !important' : hasIcon && iconOnRight ? '8px 0 0 8px !important' : '8px'};`;
         const placeholder = field.showPlaceholder ? field.placeholder : 'Select';
@@ -268,7 +255,7 @@
           >
             <option value="">${placeholder}</option>
           </select>
-          ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${iconRight}; left: auto;">${iconHTML}</div>` : ''}
+          ${hasIcon && iconOnRight ? `<div style="${getIconStyle(false)}">${iconHTML}</div>` : ''}
         `;
         break;
       }
@@ -282,10 +269,9 @@
         // Arrow position: opposite side of icon (if icon on right, arrow on left; if icon on left, arrow on right)
         const arrowOnLeft = hasIcon && iconOnRight;
         const arrowOnRight = !hasIcon || iconOnLeft;
-        const iconRight = hasIcon && iconOnRight ? horizontalPadding : 'auto';
-        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding for arrow + icon.
+        // When icon wrapper is on left, reduce left padding. When icon wrapper is on right, add right padding for arrow.
         const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : (arrowOnLeft ? '32px' : horizontalPadding);
-        const paddingRight = hasIcon && iconOnRight ? '40px' : (arrowOnRight ? '32px' : horizontalPadding);
+        const paddingRight = hasIcon && iconOnRight ? horizontalPadding : (arrowOnRight ? '32px' : horizontalPadding);
         const arrowClass = arrowOnLeft ? 'leadcod-select-arrow-left' : 'leadcod-select-arrow-right';
         const variantsSelectStyle = `${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none !important' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none !important' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0 !important' : hasIcon && iconOnRight ? '8px 0 0 8px !important' : '8px'};`;
         const placeholder = field.showPlaceholder ? field.placeholder : 'Select';
@@ -305,7 +291,7 @@
             <option value="medium">Size: Medium</option>
             <option value="large">Size: Large</option>
           </select>
-          ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${iconRight}; left: auto;">${iconHTML}</div>` : ''}
+          ${hasIcon && iconOnRight ? `<div style="${getIconStyle(false)}">${iconHTML}</div>` : ''}
         `;
         break;
       }
@@ -313,12 +299,6 @@
       case 'quantity': {
         // Icon position based on label alignment
         const hasIcon = Utils.renderIcon(field.icon, iconSize);
-        const basePadding = Utils.calculatePadding(fieldFontSize, settings);
-        const paddingParts = basePadding.split(' ');
-        const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
-        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding.
-        const paddingRight = hasIcon && iconOnRight ? '40px' : horizontalPadding;
-        const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : horizontalPadding;
         const placeholder = field.showPlaceholder ? field.placeholder : '';
         const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
 
@@ -329,12 +309,12 @@
             min="1" 
             value="1"
             placeholder="${placeholder}" 
-            style="${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0' : hasIcon && iconOnRight ? '8px 0 0 8px' : '8px'};"
+            style="${inputStyle} width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0' : hasIcon && iconOnRight ? '8px 0 0 8px' : '8px'};"
             ${field.required ? 'required' : ''}
             name="${field.id}"
             id="field-${field.id}"
           />
-          ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${horizontalPadding}; left: auto;">${iconHTML}</div>` : ''}
+          ${hasIcon && iconOnRight ? `<div style="${getIconStyle(false)}">${iconHTML}</div>` : ''}
         `;
         break;
       }
@@ -342,12 +322,6 @@
       case 'coupon': {
         // Icon position based on label alignment
         const hasIcon = Utils.renderIcon(field.icon, iconSize);
-        const basePadding = Utils.calculatePadding(fieldFontSize, settings);
-        const paddingParts = basePadding.split(' ');
-        const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
-        // When icon wrapper is on left, reduce left padding. When absolutely positioned on right, add right padding.
-        const paddingRight = hasIcon && iconOnRight ? '40px' : horizontalPadding;
-        const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : horizontalPadding;
         const placeholder = field.showPlaceholder ? field.placeholder : '';
         const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
 
@@ -358,12 +332,12 @@
               <input 
                 type="text" 
                 placeholder="${placeholder}" 
-                style="${inputStyle} padding-left: ${paddingLeft}; padding-right: ${paddingRight}; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0' : hasIcon && iconOnRight ? '8px 0 0 8px' : '8px'};"
+                style="${inputStyle} width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0' : hasIcon && iconOnRight ? '8px 0 0 8px' : '8px'};"
                 ${field.required ? 'required' : ''}
                 name="${field.id}"
                 id="field-${field.id}"
               />
-              ${hasIcon && iconOnRight ? `<div class="leadcod-input-icon" style="right: ${horizontalPadding}; left: auto;">${iconHTML}</div>` : ''}
+              ${hasIcon && iconOnRight ? `<div style="${getIconStyle(false)}">${iconHTML}</div>` : ''}
             </div>
             <button type="button" style="padding: 0 20px; border: 1px solid #e5e7eb; border-radius: 8px; background: #f9fafb; cursor: pointer; font-family: ${fieldFontFamily}; font-size: ${fieldFontSize}; font-weight: ${fieldFontWeight}; white-space: nowrap;">Apply</button>
           </div>

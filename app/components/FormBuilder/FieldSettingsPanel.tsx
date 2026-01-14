@@ -65,299 +65,346 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
 
         <s-divider />
 
-        {/* Label Section - Grouped together */}
-        {field.type === 'buyButton' ? (
-          <s-stack gap="small">
-            <div>
-              <s-text>Text</s-text>
-              <s-text-field
-                value={field.label}
-                onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
-              />
-            </div>
-            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-              <s-text>Show Quantity Selector</s-text>
-              <s-switch
-                checked={field.showQuantity !== false}
-                onInput={(e: any) => onUpdate(field.id, { showQuantity: e.target?.checked ?? e.detail?.checked ?? field.showQuantity !== false })}
-              />
-            </s-stack>
-          </s-stack>
-        ) : field.type === 'whatsappButton' ? (
-          <s-stack gap="small">
-            <div>
-              <s-text>Text</s-text>
-              <s-text-field
-                value={field.label}
-                onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
-              />
-            </div>
-            <div>
-              <s-text>WhatsApp Number</s-text>
-              <s-text-field
-                value={field.whatsappNumber || ''}
-                onChange={(e: any) => onUpdate(field.id, { whatsappNumber: e.target.value })}
-                placeholder="213000000000"
-              />
-              <s-text variant="subdued" tone="subdued">
-                Enter number without + or spaces (e.g., 213000000000)
-              </s-text>
-            </div>
-          </s-stack>
-        ) : (
-          <div>
-            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-              <s-text>Label</s-text>
-              <s-stack direction="inline" gap="small" alignItems="center">
-                <s-text>Show</s-text>
-                <s-switch
-                  checked={field.showLabel}
-                  onInput={(e: any) => onUpdate(field.id, { showLabel: e.target?.checked ?? e.detail?.checked ?? !field.showLabel })}
+        {/* ========== BASIC SETTINGS ========== */}
+        <s-stack gap="small">
+          <h4 style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>Basic Settings</h4>
+          
+          {/* Button Text Settings */}
+          {field.type === 'buyButton' ? (
+            <s-stack gap="small">
+              <div>
+                <s-text>Button Text</s-text>
+                <s-text-field
+                  value={field.label}
+                  onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
                 />
-                <s-text>
-                  Required
-                  {isAlwaysRequired(field.type) && (
-                    <span style={{ fontSize: '11px', opacity: 0.6, marginLeft: '4px' }}>
-                      (Always)
-                    </span>
-                  )}
-                </s-text>
+              </div>
+              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                <s-text>Show Quantity Selector</s-text>
                 <s-switch
-                  checked={field.required}
-                  onInput={(e: any) => onUpdate(field.id, { required: e.target?.checked ?? e.detail?.checked ?? !field.required })}
-                  disabled={isAlwaysRequired(field.type)}
+                  checked={field.showQuantity !== false}
+                  onInput={(e: any) => onUpdate(field.id, { showQuantity: e.target?.checked ?? e.detail?.checked ?? field.showQuantity !== false })}
                 />
               </s-stack>
             </s-stack>
-            <s-text-field
-              value={field.label}
-              onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
-              disabled={!field.showLabel}
-            />
-          </div>
-        )}
-
-        {/* Placeholder Section - Grouped together */}
-        {field.type !== 'buyButton' && field.type !== 'whatsappButton' && field.type !== 'shippingOption' && (
-          <div>
-            <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-              <s-text>Placeholder</s-text>
-              <s-switch
-                checked={field.showPlaceholder}
-                onInput={(e: any) => onUpdate(field.id, { showPlaceholder: e.target?.checked ?? e.detail?.checked ?? !field.showPlaceholder })}
-              />
+          ) : field.type === 'whatsappButton' ? (
+            <s-stack gap="small">
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+                <div style={{ flex: '1 1 60%', minWidth: 0 }}>
+                  <s-text>Button Text</s-text>
+                  <s-text-field
+                    value={field.label}
+                    onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
+                  />
+                </div>
+                <div style={{ flex: '1 1 40%', minWidth: 0 }}>
+                  <s-text>WhatsApp Number</s-text>
+                  <s-text-field
+                    value={field.whatsappNumber || ''}
+                    onChange={(e: any) => onUpdate(field.id, { whatsappNumber: e.target.value })}
+                    placeholder="213000000000"
+                  />
+                </div>
+              </div>
+              <s-text variant="subdued" tone="subdued">
+                Enter number without + or spaces (e.g., 213000000000)
+              </s-text>
             </s-stack>
-            <s-text-field
-              value={field.placeholder}
-              onInput={(e: any) => onUpdate(field.id, { placeholder: e.target.value })}
-              disabled={!field.showPlaceholder}
-            />
-          </div>
-        )}
+          ) : (
+            /* Input Label Settings */
+            <s-stack gap="small">
+              <div>
+                <div style={{ marginBottom: '6px' }}>
+                  <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                    <s-text>Label</s-text>
+                    <s-stack direction="inline" gap="small" alignItems="center">
+                      <s-text>Show</s-text>
+                      <s-switch
+                        checked={field.showLabel}
+                        onInput={(e: any) => onUpdate(field.id, { showLabel: e.target?.checked ?? e.detail?.checked ?? !field.showLabel })}
+                      />
+                      <s-text>
+                        Required
+                        {isAlwaysRequired(field.type) && (
+                          <span style={{ fontSize: '11px', opacity: 0.6, marginLeft: '4px' }}>
+                            (Always)
+                          </span>
+                        )}
+                      </s-text>
+                      <s-switch
+                        checked={field.required}
+                        onInput={(e: any) => onUpdate(field.id, { required: e.target?.checked ?? e.detail?.checked ?? !field.required })}
+                        disabled={isAlwaysRequired(field.type)}
+                      />
+                    </s-stack>
+                  </s-stack>
+                </div>
+                <s-text-field
+                  value={field.label}
+                  onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
+                  disabled={!field.showLabel}
+                />
+              </div>
+              
+              {/* Placeholder - Only for input fields (not summary, shippingOption, or buttons) */}
+              {field.type !== 'summary' && field.type !== 'shippingOption' && (
+                <div>
+                  <div style={{ marginBottom: '6px' }}>
+                    <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                      <s-text>Placeholder</s-text>
+                      <s-switch
+                        checked={field.showPlaceholder}
+                        onInput={(e: any) => onUpdate(field.id, { showPlaceholder: e.target?.checked ?? e.detail?.checked ?? !field.showPlaceholder })}
+                      />
+                    </s-stack>
+                  </div>
+                  <s-text-field
+                    value={field.placeholder}
+                    onInput={(e: any) => onUpdate(field.id, { placeholder: e.target.value })}
+                    disabled={!field.showPlaceholder}
+                  />
+                </div>
+              )}
+            </s-stack>
+          )}
+        </s-stack>
 
         <s-divider />
 
-        {/* Icon Section */}
-        <div>
-          <s-select
-            label="Input Prefix Icon"
-            value={field.icon}
-            onChange={(e: any) => onUpdate(field.id, { icon: e.target.value || e.detail?.value || field.icon })}
-          >
-            <s-option value="none">None</s-option>
-            {(field.type === 'whatsappButton' ? WHATSAPP_BUTTON_ICONS : (field.type === 'buyButton' ? BUY_NOW_ICONS : AVAILABLE_ICONS)).map((iconName) => (
-              <s-option key={iconName} value={iconName}>
-                {iconName}
-              </s-option>
-            ))}
-          </s-select>
-          <s-stack direction="inline" gap="small" alignItems="center">
-            {(() => {
-              if (field.icon === 'none') {
-                return <s-text variant="subdued" tone="subdued">No icon</s-text>;
-              }
-              const IconComp = getIconComponent(field.icon);
-              if (!IconComp) return null;
-              // Apply solid styling for buy button and whatsapp button icons
-              if (field.type === 'buyButton' || field.type === 'whatsappButton') {
-                return <IconComp size={24} fill="currentColor" strokeWidth={1.5} />;
-              }
-              return <IconComp size={24} />;
-            })()}
-            <s-text variant="subdued" tone="subdued">Preview</s-text>
-          </s-stack>
-        </div>
+        {/* ========== VISUAL SETTINGS ========== */}
+        <s-stack gap="small">
+          <h4 style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>Visual Settings</h4>
+          
+          {/* Icon Section */}
+          <div>
+            <s-select
+              label={field.type === 'buyButton' || field.type === 'whatsappButton' ? 'Button Icon' : 'Input Icon'}
+              value={field.icon}
+              onChange={(e: any) => onUpdate(field.id, { icon: e.target.value || e.detail?.value || field.icon })}
+            >
+              <s-option value="none">None</s-option>
+              {(field.type === 'whatsappButton' ? WHATSAPP_BUTTON_ICONS : (field.type === 'buyButton' ? BUY_NOW_ICONS : AVAILABLE_ICONS)).map((iconName) => (
+                <s-option key={iconName} value={iconName}>
+                  {iconName}
+                </s-option>
+              ))}
+            </s-select>
+            <div style={{ marginTop: '8px' }}>
+              <s-stack direction="inline" gap="base" alignItems="center">
+                {(() => {
+                  if (field.icon === 'none') {
+                    return <s-text variant="subdued" tone="subdued">No icon</s-text>;
+                  }
+                  const IconComp = getIconComponent(field.icon);
+                  if (!IconComp) return null;
+                  // Apply solid styling for buy button and whatsapp button icons
+                  if (field.type === 'buyButton' || field.type === 'whatsappButton') {
+                    return <IconComp size={24} fill="currentColor" strokeWidth={1.5} />;
+                  }
+                  return <IconComp size={24} />;
+                })()}
+                <s-text variant="subdued" tone="subdued">Preview</s-text>
+              </s-stack>
+            </div>
+          </div>
 
-        {/* Input Colors - Only for buyButton and whatsappButton */}
-        {field.type === 'buyButton' || field.type === 'whatsappButton' ? (
-          <s-stack gap="small">
-            <s-stack direction="inline" gap="small" alignItems="end">
-              <s-box inlineSize="50%">
+          {/* Colors Section */}
+          {field.type === 'buyButton' || field.type === 'whatsappButton' ? (
+            /* Button Colors */
+            <s-stack gap="small">
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+                <div style={{ flex: '1 1 50%', minWidth: 0 }}>
+                  <s-text>Text Color</s-text>
+                  <CompactColorSwatch
+                    value={field.inputTextColor}
+                    onChange={(color) => onUpdate(field.id, { inputTextColor: color })}
+                  />
+                </div>
+                <div style={{ flex: '1 1 50%', minWidth: 0, position: 'relative' }}>
+                  <s-text>Background</s-text>
+                  <s-button
+                    variant="tertiary"
+                    onClick={() => setShowBackgroundSettings(!showBackgroundSettings)}
+                  >
+                    <s-box
+                      inlineSize="32px"
+                      blockSize="32px"
+                      background={field.backgroundType === 'gradient' && field.gradientBackground
+                        ? field.gradientBackground
+                        : field.inputBackgroundColor || '#000000'}
+                      border="base"
+                      borderRadius="base"
+                    />
+                  </s-button>
+                  {showBackgroundSettings && (
+                    <>
+                      <div 
+                        style={{
+                          position: 'fixed',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          zIndex: 99
+                        }}
+                        onClick={() => setShowBackgroundSettings(false)}
+                      />
+                      <div style={{ 
+                        position: 'absolute', 
+                        zIndex: 100,
+                        top: '100%',
+                        left: 0,
+                        marginTop: '8px',
+                        background: '#ffffff',
+                        border: '1px solid #e5e5e5',
+                        borderRadius: '8px',
+                        padding: '16px',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                        minWidth: '280px'
+                      }}>
+                        <s-stack gap="small">
+                          <div>
+                            <s-text>Background Type</s-text>
+                            <s-select
+                              value={field.backgroundType || 'solid'}
+                              onChange={(e: any) => {
+                                const bgType = e.target.value || e.detail?.value || 'solid';
+                                onUpdate(field.id, { 
+                                  backgroundType: bgType,
+                                  ...(bgType === 'gradient' && !field.gradientBackground ? {
+                                    gradientBackground: GRADIENT_PRESETS[0].value,
+                                    inputTextColor: GRADIENT_PRESETS[0].textColor || '#ffffff'
+                                  } : {})
+                                });
+                              }}
+                            >
+                              <s-option value="solid">Solid</s-option>
+                              <s-option value="gradient">Gradient</s-option>
+                            </s-select>
+                          </div>
+
+                          {field.backgroundType === 'gradient' ? (
+                            <s-stack gap="small">
+                              <s-text>Gradient Presets</s-text>
+                              <div style={{ 
+                                display: 'grid', 
+                                gridTemplateColumns: 'repeat(4, 1fr)', 
+                                gap: '8px'
+                              }}>
+                                {GRADIENT_PRESETS.map((preset) => (
+                                  <div
+                                    key={preset.name}
+                                    onClick={() => onUpdate(field.id, { 
+                                      gradientBackground: preset.value,
+                                      inputTextColor: preset.textColor || '#ffffff'
+                                    })}
+                                    style={{
+                                      width: '100%',
+                                      height: '40px',
+                                      background: preset.preview,
+                                      borderRadius: '4px',
+                                      cursor: 'pointer',
+                                      border: field.gradientBackground === preset.value 
+                                        ? '2px solid #000' 
+                                        : '1px solid #e5e5e5',
+                                      position: 'relative'
+                                    }}
+                                    title={preset.name}
+                                  />
+                                ))}
+                              </div>
+                              <s-text variant="subdued" tone="subdued">
+                                Selected: {GRADIENT_PRESETS.find(p => p.value === field.gradientBackground)?.name || 'Custom'}
+                              </s-text>
+                            </s-stack>
+                          ) : (
+                            <s-stack gap="small">
+                              <s-text>Solid Color</s-text>
+                              <s-color-picker 
+                                value={field.inputBackgroundColor || '#000000'} 
+                                alpha 
+                                onChange={(e: any) => {
+                                  onUpdate(field.id, { 
+                                    inputBackgroundColor: e.target.value || e.detail?.value || field.inputBackgroundColor 
+                                  });
+                                }}
+                              />
+                            </s-stack>
+                          )}
+                        </s-stack>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </s-stack>
+          ) : field.type !== 'summary' && field.type !== 'shippingOption' ? (
+            /* Input Colors - Only for actual input fields */
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+              <div style={{ flex: '1 1 50%', minWidth: 0 }}>
                 <s-text>Text Color</s-text>
                 <CompactColorSwatch
                   value={field.inputTextColor}
                   onChange={(color) => onUpdate(field.id, { inputTextColor: color })}
                 />
-              </s-box>
-              <s-box inlineSize="50%" position="relative">
-                <s-text>Button Background</s-text>
-                <s-button
-                  variant="tertiary"
-                  onClick={() => setShowBackgroundSettings(!showBackgroundSettings)}
-                >
-                  <s-box
-                    inlineSize="32px"
-                    blockSize="32px"
-                    background={field.backgroundType === 'gradient' && field.gradientBackground
-                      ? field.gradientBackground
-                      : field.inputBackgroundColor || '#000000'}
-                    border="base"
-                    borderRadius="base"
-                  />
-                </s-button>
-                {showBackgroundSettings && (
-                  <>
-                    <div 
-                      style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 99
-                      }}
-                      onClick={() => setShowBackgroundSettings(false)}
-                    />
-                    <div style={{ 
-                      position: 'absolute', 
-                      zIndex: 100,
-                      top: '100%',
-                      left: 0,
-                      marginTop: '8px',
-                      background: '#ffffff',
-                      border: '1px solid #e5e5e5',
-                      borderRadius: '8px',
-                      padding: '16px',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                      minWidth: '280px'
-                    }}>
-                      <s-stack gap="small">
-                        <div>
-                          <s-text>Background Type</s-text>
-                        <s-select
-                          value={field.backgroundType || 'solid'}
-                          onChange={(e: any) => {
-                            const bgType = e.target.value || e.detail?.value || 'solid';
-                            onUpdate(field.id, { 
-                              backgroundType: bgType,
-                              ...(bgType === 'gradient' && !field.gradientBackground ? {
-                                gradientBackground: GRADIENT_PRESETS[0].value,
-                                inputTextColor: GRADIENT_PRESETS[0].textColor || '#ffffff'
-                              } : {})
-                            });
-                          }}
-                        >
-                          <s-option value="solid">Solid</s-option>
-                          <s-option value="gradient">Gradient</s-option>
-                        </s-select>
-                        </div>
+              </div>
+              <div style={{ flex: '1 1 50%', minWidth: 0 }}>
+                <s-text>Background Color</s-text>
+                <CompactColorSwatch
+                  value={field.inputBackgroundColor}
+                  onChange={(color) => onUpdate(field.id, { inputBackgroundColor: color })}
+                />
+              </div>
+            </div>
+          ) : null}
+        </s-stack>
 
-                      {field.backgroundType === 'gradient' ? (
-                        <s-stack gap="small">
-                          <s-text>Gradient Presets</s-text>
-                          <div style={{ 
-                            display: 'grid', 
-                            gridTemplateColumns: 'repeat(4, 1fr)', 
-                            gap: '8px'
-                          }}>
-                            {GRADIENT_PRESETS.map((preset) => (
-                              <div
-                                key={preset.name}
-                                onClick={() => onUpdate(field.id, { 
-                                  gradientBackground: preset.value,
-                                  inputTextColor: preset.textColor || '#ffffff'
-                                })}
-                                style={{
-                                  width: '100%',
-                                  height: '40px',
-                                  background: preset.preview,
-                                  borderRadius: '4px',
-                                  cursor: 'pointer',
-                                  border: field.gradientBackground === preset.value 
-                                    ? '2px solid #000' 
-                                    : '1px solid #e5e5e5',
-                                  position: 'relative'
-                                }}
-                                title={preset.name}
-                              />
-                            ))}
-                          </div>
-                          <s-text variant="subdued" tone="subdued">
-                            Selected: {GRADIENT_PRESETS.find(p => p.value === field.gradientBackground)?.name || 'Custom'}
-                          </s-text>
-                        </s-stack>
-                      ) : (
-                        <s-stack gap="small">
-                          <s-text>Solid Color</s-text>
-                          <s-color-picker 
-                            value={field.inputBackgroundColor || '#000000'} 
-                            alpha 
-                            onChange={(e: any) => {
-                              onUpdate(field.id, { 
-                                inputBackgroundColor: e.target.value || e.detail?.value || field.inputBackgroundColor 
-                              });
-                            }}
-                          />
-                        </s-stack>
-                      )}
-                      </s-stack>
-                    </div>
-                  </>
-                )}
-              </s-box>
-            </s-stack>
-            <s-stack direction="inline" gap="small" alignItems="end">
-              <s-box inlineSize="50%">
-                <s-text>Animation</s-text>
-                <s-select
-                  value={field.animation || 'none'}
-                  onChange={(e: any) => {
-                    const animation = e.target.value || e.detail?.value || 'none';
-                    onUpdate(field.id, { animation });
-                  }}
-                >
-                  <s-option value="none">None</s-option>
-                  <s-option value="background-shift">Background Shift</s-option>
-                  <s-option value="shake">Shake</s-option>
-                  <s-option value="bounce">Bounce</s-option>
-                  <s-option value="pulse">Pulse</s-option>
-                  <s-option value="glow">Glow</s-option>
-                </s-select>
-              </s-box>
-              <s-box inlineSize="50%">
-                <s-text>Button Size</s-text>
-                <s-select
-                  value={field.buttonSize || 'base'}
-                  onChange={(e: any) => {
-                    const buttonSize = e.target.value || e.detail?.value || 'base';
-                    onUpdate(field.id, { buttonSize });
-                  }}
-                >
-                  <s-option value="small">Small</s-option>
-                  <s-option value="base">Base</s-option>
-                  <s-option value="large">Large</s-option>
-                  <s-option value="extra-large">Extra Large</s-option>
-                </s-select>
-              </s-box>
-            </s-stack>
+        {/* ========== BUTTON SETTINGS ========== */}
+        {(field.type === 'buyButton' || field.type === 'whatsappButton') && (
+          <>
             <s-divider />
             <s-stack gap="small">
-              <s-text>Button Text & Icon Sizes</s-text>
-              <s-stack direction="inline" gap="small" alignItems="end">
-                <s-box inlineSize="50%">
+              <h4 style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>Button Settings</h4>
+              
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+                <div style={{ flex: '1 1 50%', minWidth: 0 }}>
+                  <s-text>Animation</s-text>
+                  <s-select
+                    value={field.animation || 'none'}
+                    onChange={(e: any) => {
+                      const animation = e.target.value || e.detail?.value || 'none';
+                      onUpdate(field.id, { animation });
+                    }}
+                  >
+                    <s-option value="none">None</s-option>
+                    <s-option value="background-shift">Background Shift</s-option>
+                    <s-option value="shake">Shake</s-option>
+                    <s-option value="bounce">Bounce</s-option>
+                    <s-option value="pulse">Pulse</s-option>
+                    <s-option value="glow">Glow</s-option>
+                  </s-select>
+                </div>
+                <div style={{ flex: '1 1 50%', minWidth: 0 }}>
+                  <s-text>Button Size</s-text>
+                  <s-select
+                    value={field.buttonSize || 'base'}
+                    onChange={(e: any) => {
+                      const buttonSize = e.target.value || e.detail?.value || 'base';
+                      onUpdate(field.id, { buttonSize });
+                    }}
+                  >
+                    <s-option value="small">Small</s-option>
+                    <s-option value="base">Base</s-option>
+                    <s-option value="large">Large</s-option>
+                    <s-option value="extra-large">Extra Large</s-option>
+                  </s-select>
+                </div>
+              </div>
+              
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+                <div style={{ flex: '1 1 50%', minWidth: 0 }}>
                   <s-text>Text Size (px)</s-text>
                   <s-text-field
-                    type="number"
                     value={String(parseInt((field.buttonFontSize || '16px').replace('px', '')) || 16)}
                     onChange={(e: any) => {
                       const numValue = parseInt(e.target.value) || 16;
@@ -365,11 +412,10 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     }}
                     placeholder="16"
                   />
-                </s-box>
-                <s-box inlineSize="50%">
+                </div>
+                <div style={{ flex: '1 1 50%', minWidth: 0 }}>
                   <s-text>Icon Size (px)</s-text>
                   <s-text-field
-                    type="number"
                     value={String(field.buttonIconSize || 20)}
                     onChange={(e: any) => {
                       const numValue = parseInt(e.target.value) || 20;
@@ -377,56 +423,38 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     }}
                     placeholder="20"
                   />
-                </s-box>
-              </s-stack>
+                </div>
+              </div>
             </s-stack>
-          </s-stack>
-        ) : (
-          <s-stack direction="inline" gap="small" alignItems="end">
-            <div style={{ flex: 1 }}>
-              <s-text>Input Text Color</s-text>
-              <CompactColorSwatch
-                value={field.inputTextColor}
-                onChange={(color) => onUpdate(field.id, { inputTextColor: color })}
-              />
-            </div>
-            <div style={{ flex: 1 }}>
-              <s-text>Input Background Color</s-text>
-              <CompactColorSwatch
-                value={field.inputBackgroundColor}
-                onChange={(color) => onUpdate(field.id, { inputBackgroundColor: color })}
-              />
-            </div>
-          </s-stack>
+          </>
         )}
 
         <s-divider />
 
-        {/* Advanced Settings Toggle */}
-        <div>
-          <s-button
-            variant="secondary"
-            
-            onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
-          >
-            <span>Advanced Settings</span>
-            {showAdvancedSettings ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-          </s-button>
-        </div>
+        {/* ========== ADVANCED SETTINGS ========== */}
+        {/* Only show Advanced Settings for input fields (not buttons, summary, or shippingOption) */}
+        {field.type !== 'buyButton' && field.type !== 'whatsappButton' && field.type !== 'summary' && field.type !== 'shippingOption' && (
+          <>
+            <div>
+              <s-button
+                variant="secondary"
+                onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+              >
+                <span>Advanced Settings</span>
+                {showAdvancedSettings ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              </s-button>
+            </div>
 
-        {/* Advanced Settings Content */}
-        {showAdvancedSettings && (
-          <s-stack gap="small">
-            {/* Label Alignment - Only for non-buyButton and non-whatsappButton fields */}
-            {field.type !== 'buyButton' && field.type !== 'whatsappButton' && (
-              <>
-                <s-divider />
-                <h4>Label Alignment</h4>
+            {/* Advanced Settings Content */}
+            {showAdvancedSettings && (
+              <s-stack gap="small">
                 <div>
+                  <div style={{ marginBottom: '6px' }}>
+                    <s-text>Label Alignment</s-text>
+                  </div>
                   <s-stack direction="inline" gap="small">
                     <s-button
                       variant={(field.labelAlignment || 'left') === 'left' ? 'primary' : 'secondary'}
-                      
                       onClick={() => onUpdate(field.id, { labelAlignment: 'left' })}
                       aria-label="Align left"
                     >
@@ -434,7 +462,6 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     </s-button>
                     <s-button
                       variant={(field.labelAlignment || 'left') === 'center' ? 'primary' : 'secondary'}
-                      
                       onClick={() => onUpdate(field.id, { labelAlignment: 'center' })}
                       aria-label="Align center"
                     >
@@ -442,7 +469,6 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     </s-button>
                     <s-button
                       variant={(field.labelAlignment || 'left') === 'right' ? 'primary' : 'secondary'}
-                      
                       onClick={() => onUpdate(field.id, { labelAlignment: 'right' })}
                       aria-label="Align right"
                     >
@@ -450,19 +476,14 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     </s-button>
                   </s-stack>
                 </div>
-              </>
-            )}
 
-            {/* Input Alignment - Only for non-buyButton, non-whatsappButton and non-shippingOption fields */}
-            {field.type !== 'buyButton' && field.type !== 'whatsappButton' && field.type !== 'shippingOption' && (
-              <>
-                <s-divider />
-                <h4>Input Alignment</h4>
                 <div>
+                  <div style={{ marginBottom: '6px' }}>
+                    <s-text>Input Alignment</s-text>
+                  </div>
                   <s-stack direction="inline" gap="small">
                     <s-button
                       variant={(field.inputAlignment || 'left') === 'left' ? 'primary' : 'secondary'}
-                      
                       onClick={() => onUpdate(field.id, { inputAlignment: 'left' })}
                       aria-label="Align left"
                     >
@@ -470,7 +491,6 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     </s-button>
                     <s-button
                       variant={(field.inputAlignment || 'left') === 'center' ? 'primary' : 'secondary'}
-                      
                       onClick={() => onUpdate(field.id, { inputAlignment: 'center' })}
                       aria-label="Align center"
                     >
@@ -478,7 +498,6 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     </s-button>
                     <s-button
                       variant={(field.inputAlignment || 'left') === 'right' ? 'primary' : 'secondary'}
-                      
                       onClick={() => onUpdate(field.id, { inputAlignment: 'right' })}
                       aria-label="Align right"
                     >
@@ -486,19 +505,13 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     </s-button>
                   </s-stack>
                 </div>
-              </>
+              </s-stack>
             )}
 
-          </s-stack>
-        )}
-
-        {/* Apply to all inputs button - Under Advanced Settings */}
-        {field.type !== 'buyButton' && field.type !== 'whatsappButton' && (
-          <>
+            {/* Apply to all inputs button - Only for input fields */}
             <s-divider />
             <s-button
               variant="secondary"
-              
               onClick={() => onApplyToAll(field.id)}
             >
               Apply to all inputs

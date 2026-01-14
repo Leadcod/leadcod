@@ -75,8 +75,10 @@ export default function FormDisplay({
   const [shippingFees, setShippingFees] = useState<{ cashOnDelivery: number | null; stopDesk: number | null } | null>(null);
   const [loadingShippingFees, setLoadingShippingFees] = useState(false);
 
-  // Fetch states on mount
+  // Fetch states on mount (skip in preview mode)
   useEffect(() => {
+    if (isPreview) return; // Skip API call in builder preview
+    
     const fetchStates = async () => {
       setLoadingStates(true);
       try {
@@ -92,10 +94,12 @@ export default function FormDisplay({
       }
     };
     fetchStates();
-  }, []);
+  }, [isPreview]);
 
-  // Fetch cities when state is selected
+  // Fetch cities when state is selected (skip in preview mode)
   useEffect(() => {
+    if (isPreview) return; // Skip API call in builder preview
+    
     const fetchCities = async () => {
       if (!selectedStateId) {
         setCities([]);
@@ -115,10 +119,12 @@ export default function FormDisplay({
       }
     };
     fetchCities();
-  }, [selectedStateId]);
+  }, [selectedStateId, isPreview]);
 
-  // Fetch shipping fees when state is selected and shipping method is per-province
+  // Fetch shipping fees when state is selected and shipping method is per-province (skip in preview mode)
   useEffect(() => {
+    if (isPreview) return; // Skip API call in builder preview
+    
     const fetchShippingFees = async () => {
       if (!selectedStateId || !shopUrl || shippingMethod !== 'per-province') {
         setShippingFees(null);
@@ -141,7 +147,7 @@ export default function FormDisplay({
       }
     };
     fetchShippingFees();
-  }, [selectedStateId, shopUrl, shippingMethod]);
+  }, [selectedStateId, shopUrl, shippingMethod, isPreview]);
 
   // Sync selectedStateId with formData
   useEffect(() => {
@@ -440,9 +446,11 @@ export default function FormDisplay({
                 >
                   <SelectValue 
                     placeholder={
-                      !selectedStateId 
-                        ? 'Select province first' 
-                        : (field.showPlaceholder ? field.placeholder : 'Select')
+                      isPreview 
+                        ? 'City Name'
+                        : (!selectedStateId 
+                          ? 'Select province first' 
+                          : (field.showPlaceholder ? field.placeholder : 'Select'))
                     }
                     style={{ textAlign: inputAlignment }}
                   />
@@ -571,7 +579,11 @@ export default function FormDisplay({
                   }}
                 >
                   <SelectValue 
-                    placeholder={field.showPlaceholder ? field.placeholder : 'Select'}
+                    placeholder={
+                      isPreview 
+                        ? 'State Name' 
+                        : (field.showPlaceholder ? field.placeholder : 'Select')
+                    }
                     style={{ textAlign: inputAlignment }}
                   />
                 </SelectTrigger>
@@ -706,47 +718,57 @@ export default function FormDisplay({
         const ChevronIcon = Icons.ChevronDown;
         
         return (
-          <div key={field.id} style={{ marginTop: '0' }}>
-            <div 
-              className="flex items-center justify-between cursor-pointer pb-2"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              <h3 className="flex items-center gap-2 font-semibold text-lg m-0" style={{ color: '#1f2937' }}>
-                <CartIcon size={20} />
-                <span>{field.showLabel ? field.label : 'ملخص الطلب'}</span>
-              </h3>
-              <ChevronIcon 
-                size={20} 
-                className="text-gray-500 transition-transform"
-                style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
-              />
-              </div>
-            {isExpanded && (
-              <div className="mt-3">
-                <div className="flex justify-between items-center py-3 border-b border-dotted border-gray-300">
-                  <span className="text-gray-600 text-sm">دمية ذكية تغني وترقص</span>
-                  <span className="font-semibold text-sm">1600 د.ج x1</span>
-              </div>
-                <div className="border-b border-dotted border-gray-300 my-3"></div>
-                <div className="flex justify-between items-center py-3">
-                  <div>
-                    <div className="text-gray-600 text-sm">Shipping Price</div>
-                    <div className="text-gray-500 text-xs mt-1 flex items-center gap-1">
-                      <Icons.Globe size={14} />
-                      <span>إختر الولاية</span>
-              </div>
+          <div key={field.id} className="leadcod-field" style={{ marginBottom: 0 }}>
+            <div className="leadcod-summary-section">
+              <div 
+                className="leadcod-summary-header"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                <h3 className="leadcod-summary-title">
+                  <CartIcon size={20} />
+                  <span>{field.showLabel ? field.label : 'ملخص الطلب'}</span>
+                </h3>
+                <div className={`leadcod-summary-toggle ${isExpanded ? 'expanded' : ''}`}>
+                  <ChevronIcon size={20} />
                 </div>
-                  <span className="font-semibold text-sm">-</span>
               </div>
-                <div className="border-b border-dotted border-gray-300 my-3"></div>
-                <div className="flex justify-between items-center pt-3 border-t-2 border-gray-200">
-                  <div>
-                    <div className="font-bold text-lg">Total</div>
+              {isExpanded && (
+                <div className="leadcod-summary-content" style={{ display: 'block' }}>
+                  <div className="leadcod-summary-item">
+                    <span className="leadcod-summary-item-label leadcod-product-name">
+                      {isPreview ? 'Product Name' : '-'}
+                    </span>
+                    <span className="leadcod-summary-item-value leadcod-product-price">
+                      {isPreview ? '1,600 DZD x1' : '-'}
+                    </span>
                   </div>
-                  <span className="font-bold text-xl">-</span>
+                  <div className="leadcod-summary-item">
+                    <div>
+                      <div className="leadcod-summary-item-label leadcod-shipping-label">
+                        {isPreview ? 'Shipping Price' : '-'}
+                      </div>
+                      {!isPreview && (
+                        <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Icons.Globe size={14} />
+                          <span className="leadcod-shipping-hint-text">Choose province</span>
+                        </div>
+                      )}
+                    </div>
+                    <span className="leadcod-summary-item-value leadcod-shipping-price">
+                      {isPreview ? '400 DZD' : '-'}
+                    </span>
+                  </div>
+                  <div className="leadcod-summary-total">
+                    <div>
+                      <div className="leadcod-summary-total-label">Total</div>
+                    </div>
+                    <span className="leadcod-summary-total-value leadcod-total-price">
+                      {isPreview ? '2,000 DZD' : '-'}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         );
       }
@@ -754,6 +776,10 @@ export default function FormDisplay({
       case 'shippingOption': {
         const ShippingIconComponent = field.icon === 'none' ? null : getIconComponent(field.icon) || Icons.Truck;
         const iconSize = getIconSize(globalFontSize, 16);
+        
+        // Calculate smaller font size for shipping labels and prices (85% of global size, min 12px)
+        const fontSizeNum = parseInt(globalFontSize.replace('px', '')) || 16;
+        const smallerFontSize = Math.max(12, Math.round(fontSizeNum * 0.85)) + 'px';
         
         // Format price with DZD currency
         // In preview mode (builder), always show placeholder prices (400 for COD, 300 for Stop Desk)
@@ -774,112 +800,118 @@ export default function FormDisplay({
         const codPrice = shippingFees?.cashOnDelivery ?? null;
         const stopDeskPrice = shippingFees?.stopDesk ?? null;
 
-        const optionItemStyle = {
+        const shippingOptionStyle = {
           fontFamily: getFontFamily(),
-          fontSize: field.inputFontSize || globalFontSize,
-          fontWeight: field.inputFontWeight || globalFontWeight,
-          fontStyle: field.inputFontStyle || globalFontStyle,
-          color: field.inputTextColor,
+          fontSize: globalFontSize,
+          fontWeight: globalFontWeight,
+          fontStyle: globalFontStyle,
+          color: primaryColor,
         };
 
-        // Label style with vertical centering and horizontal alignment from settings
-        const labelStyleWithIcon = {
-          ...labelStyle,
+        const shippingOptionTitleStyle = {
+          fontFamily: getFontFamily(),
+          fontSize: globalFontSize,
+          fontWeight: 'bold',
+          fontStyle: globalFontStyle,
+          color: primaryColor,
+          margin: '0 0 12px 0',
           display: 'flex',
-          alignItems: 'center', // Vertically center
+          alignItems: 'center',
           gap: '8px',
-          justifyContent: labelAlignment === 'center' ? 'center' : labelAlignment === 'right' ? 'flex-end' : 'flex-start', // Horizontal alignment from settings
         };
+
+        const shippingOptionItemStyle = {
+          fontFamily: getFontFamily(),
+          fontSize: smallerFontSize,
+          fontWeight: globalFontWeight,
+          fontStyle: globalFontStyle,
+          color: primaryColor,
+        };
+
+        const codLabel = 'Cash on Delivery';
+        const stopDeskLabel = 'Stop Desk';
+        const titleText = field.showLabel ? field.label : (field.label || 'Shipping Option');
 
         return (
-          <div key={field.id} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {field.showLabel && (
-              <Label style={labelStyleWithIcon}>
-                {ShippingIconComponent && (
-                  <ShippingIconComponent size={iconSize} style={{ color: primaryColor }} />
-                )}
-                {field.label}
-                {field.required && <span className="text-red-500">*</span>}
-              </Label>
-            )}
-            {!field.showLabel && ShippingIconComponent && (
-              <div 
-                className="flex items-center"
-                style={{ 
-                  justifyContent: labelAlignment === 'center' ? 'center' : labelAlignment === 'right' ? 'flex-end' : 'flex-start' 
-                }}
-              >
-                <ShippingIconComponent size={iconSize} style={{ color: primaryColor }} />
-              </div>
-            )}
+          <div key={field.id} className="leadcod-field" style={{ marginBottom: '4px' }}>
             <div 
-              className={`space-y-3 ${cursorClass}`}
-              onClick={handleFieldClick}
+              className="leadcod-shipping-section" 
+              style={{ display: isPreview ? 'block' : 'none', '--leadcod-primary-color': primaryColor } as React.CSSProperties}
             >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label 
-                  className="flex items-center justify-between cursor-pointer hover:bg-muted/30 rounded p-2 transition-colors"
-                  style={optionItemStyle}
-                >
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name={`shipping-option-${field.id}`}
-                      value="cod"
-                      checked={!isPreview && formData[field.id] === 'cod'}
-                      onChange={(e) => handleInputChange(field.id, e.target.value)}
-                      disabled={isPreview}
-                      className="w-4 h-4"
-                      required={field.required}
-                      style={{ cursor: isPreview ? 'default' : 'pointer' }}
-                    />
-                    <span style={optionItemStyle}>
-                      Cash on Delivery (COD)
-                    </span>
-                  </div>
-                  <span 
-                    style={{
-                      ...optionItemStyle,
-                      fontWeight: 'bold',
-                      color: primaryColor,
+              <div style={shippingOptionStyle}>
+                <h3 style={shippingOptionTitleStyle}>
+                  {ShippingIconComponent && <ShippingIconComponent size={iconSize} style={{ color: primaryColor }} />}
+                  <span>
+                    {titleText}
+                    {field.required && <span style={{ color: '#ef4444' }}> *</span>}
+                  </span>
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <label 
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'space-between', 
+                      gap: '12px', 
+                      cursor: 'pointer', 
+                      ...shippingOptionItemStyle 
                     }}
                   >
-                    {loadingShippingFees ? '...' : formatPrice(codPrice, true)}
-                  </span>
-                </label>
-                {/* In preview mode (builder), always show Stop Desk option with placeholder. In production, only show if enabled */}
-                {(isPreview || stopDeskEnabled) && (
-                  <label 
-                    className="flex items-center justify-between cursor-pointer hover:bg-muted/30 rounded p-2 transition-colors"
-                    style={optionItemStyle}
-                  >
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        name={`shipping-option-${field.id}`}
-                        value="stopDesk"
-                        checked={!isPreview && formData[field.id] === 'stopDesk'}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <input 
+                        type="radio" 
+                        name={field.id} 
+                        value="cod"
+                        checked={!isPreview && formData[field.id] === 'cod'}
                         onChange={(e) => handleInputChange(field.id, e.target.value)}
                         disabled={isPreview}
-                        className="w-4 h-4"
                         required={field.required}
-                        style={{ cursor: isPreview ? 'default' : 'pointer' }}
+                        style={{ width: '16px', height: '16px', cursor: 'pointer' }}
                       />
-                      <span style={optionItemStyle}>
-                        Stop Desk
-                      </span>
+                      <span>{codLabel}</span>
                     </div>
                     <span 
-                      style={{
-                        ...optionItemStyle,
-                        fontWeight: 'bold',
-                        color: primaryColor,
-                      }}
+                      className="leadcod-shipping-price-cod" 
+                      style={{ fontWeight: 600, fontSize: smallerFontSize }}
+                      data-price="0"
                     >
-                      {loadingShippingFees ? '...' : formatPrice(stopDeskPrice, false)}
+                      {loadingShippingFees ? '...' : formatPrice(codPrice, true)}
                     </span>
                   </label>
-                )}
+                  {(isPreview || stopDeskEnabled) && (
+                    <label 
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between', 
+                        gap: '12px', 
+                        cursor: 'pointer', 
+                        ...shippingOptionItemStyle 
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <input 
+                          type="radio" 
+                          name={field.id} 
+                          value="stopDesk"
+                          checked={!isPreview && formData[field.id] === 'stopDesk'}
+                          onChange={(e) => handleInputChange(field.id, e.target.value)}
+                          disabled={isPreview}
+                          required={field.required}
+                          style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                        />
+                        <span>{stopDeskLabel}</span>
+                      </div>
+                      <span 
+                        className="leadcod-shipping-price-stopdesk" 
+                        style={{ fontWeight: 600, fontSize: smallerFontSize }}
+                        data-price="0"
+                      >
+                        {loadingShippingFees ? '...' : formatPrice(stopDeskPrice, false)}
+                      </span>
+                    </label>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -1266,6 +1298,20 @@ export default function FormDisplay({
             box-shadow: 0 0 20px var(--glow-color, rgba(0, 0, 0, 0.5)), 0 0 35px var(--glow-color, rgba(0, 0, 0, 0.3));
           }
         }
+        @keyframes slideDownFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+            max-height: 0;
+            margin-bottom: 0;
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 500px;
+            margin-bottom: 4px;
+          }
+        }
         .leadcod-button-animation-background-shift {
           animation: backgroundShift 4s ease infinite !important;
           will-change: background-position;
@@ -1307,10 +1353,89 @@ export default function FormDisplay({
           padding: 16px;
           border-radius: 8px;
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-          margin-bottom: 16px;
+          margin-bottom: 4px;
         }
         .leadcod-form-section:last-child {
           margin-bottom: 0;
+        }
+        .leadcod-shipping-section {
+          overflow: hidden;
+        }
+        .leadcod-shipping-section.show {
+          display: block !important;
+          animation: slideDownFadeIn 0.4s ease-out forwards;
+        }
+        .leadcod-summary-section {
+          margin-top: 0;
+          margin-bottom: 0;
+        }
+        .leadcod-summary-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          cursor: pointer;
+          padding: 4px 0;
+        }
+        .leadcod-summary-title {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 600;
+          font-size: 18px;
+          color: #1f2937;
+          margin: 0;
+        }
+        .leadcod-summary-toggle {
+          color: #6b7280;
+          transition: transform 0.3s;
+        }
+        .leadcod-summary-toggle.expanded {
+          transform: rotate(180deg);
+        }
+        .leadcod-summary-content {
+          margin-top: 6px;
+        }
+        .leadcod-summary-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 6px 0;
+        }
+        .leadcod-summary-item-label {
+          color: #6b7280;
+          font-size: 14px;
+        }
+        .leadcod-summary-item-value {
+          font-weight: 600;
+          color: #1f2937;
+          font-size: 14px;
+        }
+        .leadcod-summary-total {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 6px;
+          margin-top: 0;
+        }
+        .leadcod-summary-total-label {
+          font-weight: 700;
+          font-size: 18px;
+          color: #1f2937;
+        }
+        .leadcod-summary-total-value {
+          font-weight: 700;
+          font-size: 20px;
+          color: #1f2937;
+        }
+        .leadcod-summary-currency {
+          font-size: 14px;
+          color: #6b7280;
+          margin-top: 2px;
+        }
+        .leadcod-dotted-separator {
+          border: none;
+          border-top: 1px dotted #d1d5db;
+          margin: 6px 0;
         }
       `}</style>
       {globalSettings && (
