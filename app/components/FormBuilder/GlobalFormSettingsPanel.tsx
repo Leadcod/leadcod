@@ -178,6 +178,61 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   </s-button>
                 </s-stack>
               </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
+                <div style={{ flex: '1 1 150px', minWidth: '120px' }}>
+                  <s-text>{t('textColor')}</s-text>
+                  <CompactColorSwatch
+                    value={settings.headline.color || settings.primaryColor}
+                    onChange={(color) => updateHeadline({ color })}
+                  />
+                </div>
+                <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
+                  <s-text>{t('fontSize')}</s-text>
+                  <input
+                    type="number"
+                    value={parseInt((settings.headline.fontSize || '24px').replace('px', '')) || 24}
+                    onChange={(e: any) => {
+                      const numValue = parseInt(e.target.value) || 24;
+                      updateHeadline({ fontSize: `${numValue}px` });
+                    }}
+                    placeholder="24"
+                    min="8"
+                    max="72"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #e5e5e5',
+                      borderRadius: '4px',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+                <div style={{ flex: '0 0 auto' }}>
+                  <s-text>{t('fontStyle')}</s-text>
+                  <s-stack direction="inline" gap="small">
+                    <s-button
+                      variant={settings.headline.fontWeight === 'bold' || settings.headline.fontWeight === '700' ? 'primary' : 'secondary'}
+                      onClick={() => {
+                        const currentWeight = settings.headline.fontWeight || 'bold';
+                        updateHeadline({ fontWeight: currentWeight === 'bold' || currentWeight === '700' ? 'normal' : 'bold' });
+                      }}
+                      aria-label="Bold"
+                    >
+                      <Bold size={18} />
+                    </s-button>
+                    <s-button
+                      variant={settings.headline.fontStyle === 'italic' ? 'primary' : 'secondary'}
+                      onClick={() => {
+                        const currentStyle = settings.headline.fontStyle || 'normal';
+                        updateHeadline({ fontStyle: currentStyle === 'italic' ? 'normal' : 'italic' });
+                      }}
+                      aria-label="Italic"
+                    >
+                      <Italic size={18} />
+                    </s-button>
+                  </s-stack>
+                </div>
+              </div>
             </s-stack>
           )}
         </div>
@@ -229,6 +284,61 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   </s-button>
                 </s-stack>
               </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
+                <div style={{ flex: '1 1 150px', minWidth: '120px' }}>
+                  <s-text>{t('textColor')}</s-text>
+                  <CompactColorSwatch
+                    value={settings.subtitle.color || settings.primaryColor}
+                    onChange={(color) => updateSubtitle({ color })}
+                  />
+                </div>
+                <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
+                  <s-text>{t('fontSize')}</s-text>
+                  <input
+                    type="number"
+                    value={parseInt((settings.subtitle.fontSize || settings.fontSize || '16px').replace('px', '')) || 16}
+                    onChange={(e: any) => {
+                      const numValue = parseInt(e.target.value) || 16;
+                      updateSubtitle({ fontSize: `${numValue}px` });
+                    }}
+                    placeholder="16"
+                    min="8"
+                    max="72"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #e5e5e5',
+                      borderRadius: '4px',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+                <div style={{ flex: '0 0 auto' }}>
+                  <s-text>{t('fontStyle')}</s-text>
+                  <s-stack direction="inline" gap="small">
+                    <s-button
+                      variant={settings.subtitle.fontWeight === 'bold' || settings.subtitle.fontWeight === '700' ? 'primary' : 'secondary'}
+                      onClick={() => {
+                        const currentWeight = settings.subtitle.fontWeight || 'normal';
+                        updateSubtitle({ fontWeight: currentWeight === 'bold' || currentWeight === '700' ? 'normal' : 'bold' });
+                      }}
+                      aria-label="Bold"
+                    >
+                      <Bold size={18} />
+                    </s-button>
+                    <s-button
+                      variant={settings.subtitle.fontStyle === 'italic' ? 'primary' : 'secondary'}
+                      onClick={() => {
+                        const currentStyle = settings.subtitle.fontStyle || 'normal';
+                        updateSubtitle({ fontStyle: currentStyle === 'italic' ? 'normal' : 'italic' });
+                      }}
+                      aria-label="Italic"
+                    >
+                      <Italic size={18} />
+                    </s-button>
+                  </s-stack>
+                </div>
+              </div>
             </s-stack>
           )}
         </div>
@@ -243,14 +353,14 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
               <s-text>{t('verticalPadding')}</s-text>
               <input
                 type="number"
-                value={settings.inputPadding?.vertical ?? 8}
+                value={settings.inputPadding?.vertical ?? 12}
                 onChange={(e: any) => onUpdate({ 
                   inputPadding: { 
-                    vertical: parseInt(e.target.value) || 8,
+                    vertical: parseInt(e.target.value) || 12,
                     horizontal: settings.inputPadding?.horizontal ?? 12
                   } 
                 })}
-                placeholder="8"
+                placeholder="12"
                 min="0"
                 max="50"
                 style={{
@@ -269,7 +379,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                 value={settings.inputPadding?.horizontal ?? 12}
                 onChange={(e: any) => onUpdate({ 
                   inputPadding: { 
-                    vertical: settings.inputPadding?.vertical ?? 8,
+                    vertical: settings.inputPadding?.vertical ?? 12,
                     horizontal: parseInt(e.target.value) || 12
                   } 
                 })}

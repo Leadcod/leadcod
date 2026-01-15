@@ -335,7 +335,7 @@ export default function FormDisplay({
       const fontSizeToUse = fontSize || getGlobalFontSize();
       const fontSizeNum = parseInt(fontSizeToUse.replace('px', '')) || 16;
       // Use global input padding if available, otherwise calculate from font size
-      const verticalPadding = globalSettings?.inputPadding?.vertical ?? Math.max(8, Math.round(fontSizeNum * 0.5));
+      const verticalPadding = globalSettings?.inputPadding?.vertical ?? Math.max(12, Math.round(fontSizeNum * 0.5));
       const height = fontSizeNum + (verticalPadding * 2) + 4; // 4px extra for border/line-height
       return `${height}px`;
     };
@@ -394,7 +394,7 @@ export default function FormDisplay({
       fontFamily: getFontFamily(),
       color: primaryColor,
       textAlign: labelAlignment,
-      fontSize: globalFontSize,
+      fontSize: field.labelFontSize || '12px',
       fontWeight: globalFontWeight,
       fontStyle: globalFontStyle,
       display: 'block', // Override flex to allow text-align to work
@@ -1586,12 +1586,12 @@ export default function FormDisplay({
           {globalSettings.headline.enabled && (
             <h2
               style={{
-                color: getPrimaryColor(),
+                color: globalSettings.headline.color || getPrimaryColor(),
                 textAlign: getTextAlign(globalSettings.headline.alignment),
                 fontFamily: getFontFamily(),
-                fontSize: '24px',
-                fontWeight: 'bold',
-                fontStyle: getGlobalFontStyle(),
+                fontSize: globalSettings.headline.fontSize || '24px',
+                fontWeight: globalSettings.headline.fontWeight || 'bold',
+                fontStyle: globalSettings.headline.fontStyle || getGlobalFontStyle(),
                 margin: '0 0 6px 0',
               }}
             >
@@ -1601,12 +1601,12 @@ export default function FormDisplay({
           {globalSettings.subtitle.enabled && (
             <p
               style={{
-                color: getPrimaryColor(),
+                color: globalSettings.subtitle.color || getPrimaryColor(),
                 textAlign: getTextAlign(globalSettings.subtitle.alignment),
                 fontFamily: getFontFamily(),
-                fontSize: getGlobalFontSize(),
-                fontWeight: getGlobalFontWeight(),
-                fontStyle: getGlobalFontStyle(),
+                fontSize: globalSettings.subtitle.fontSize || getGlobalFontSize(),
+                fontWeight: globalSettings.subtitle.fontWeight || getGlobalFontWeight(),
+                fontStyle: globalSettings.subtitle.fontStyle || getGlobalFontStyle(),
                 opacity: 0.7,
                 margin: 0,
               }}

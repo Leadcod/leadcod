@@ -89,11 +89,19 @@ export interface GlobalFormSettings {
     enabled: boolean;
     text: string;
     alignment: 'left' | 'center' | 'right';
+    color?: string;
+    fontSize?: string;
+    fontWeight?: 'normal' | 'bold' | '600' | '700';
+    fontStyle?: 'normal' | 'italic';
   };
   subtitle: {
     enabled: boolean;
     text: string;
     alignment: 'left' | 'center' | 'right';
+    color?: string;
+    fontSize?: string;
+    fontWeight?: 'normal' | 'bold' | '600' | '700';
+    fontStyle?: 'normal' | 'italic';
   };
   border: {
     enabled: boolean;
@@ -456,18 +464,26 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalFormSettings = {
   fontWeight: 'normal',
   fontStyle: 'normal',
   inputPadding: {
-    vertical: 8,
+    vertical: 12,
     horizontal: 12
   },
   headline: {
     enabled: true,
     text: 'نموذج الطلب',
-    alignment: 'center'
+    alignment: 'center',
+    color: '#000000',
+    fontSize: '24px',
+    fontWeight: 'bold',
+    fontStyle: 'normal'
   },
   subtitle: {
     enabled: true,
     text: 'يرجى ملء النموذج أدناه',
-    alignment: 'center'
+    alignment: 'center',
+    color: '#000000',
+    fontSize: '16px',
+    fontWeight: 'normal',
+    fontStyle: 'normal'
   },
   border: {
     enabled: true,

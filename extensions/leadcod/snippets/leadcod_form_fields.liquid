@@ -84,7 +84,7 @@
 
     const labelStyle = `
       font-family: ${fieldFontFamily} !important;
-      font-size: ${globalFontSize};
+      font-size: ${field.labelFontSize || '12px'};
       font-weight: ${globalFontWeight};
       font-style: ${globalFontStyle};
       color: ${field.labelColor || primaryColor || '#1f2937'};
@@ -142,7 +142,7 @@
         const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : (arrowOnLeft ? '32px' : horizontalPadding);
         const paddingRight = hasIcon && iconOnRight ? horizontalPadding : (arrowOnRight ? '32px' : horizontalPadding);
         const arrowClass = arrowOnLeft ? 'leadcod-select-arrow-left' : 'leadcod-select-arrow-right';
-        const citySelectStyle = `${inputStyle} padding-top: 0; padding-bottom: 0; padding-left: ${paddingLeft}; padding-right: ${paddingRight}; -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none !important' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none !important' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0 !important' : hasIcon && iconOnRight ? '8px 0 0 8px !important' : '8px'};`;
+        const citySelectStyle = `${inputStyle} font-weight: normal !important; font-style: normal !important; padding-top: 0; padding-bottom: 0; padding-left: ${paddingLeft}; padding-right: ${paddingRight}; -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none !important' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none !important' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0 !important' : hasIcon && iconOnRight ? '8px 0 0 8px !important' : '8px'};`;
         const placeholder = field.showPlaceholder ? field.placeholder : 'Select';
         const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
 
@@ -208,7 +208,7 @@
         const paddingLeft = hasIcon && iconOnLeft ? horizontalPadding : (arrowOnLeft ? '32px' : horizontalPadding);
         const paddingRight = hasIcon && iconOnRight ? horizontalPadding : (arrowOnRight ? '32px' : horizontalPadding);
         const arrowClass = arrowOnLeft ? 'leadcod-select-arrow-left' : 'leadcod-select-arrow-right';
-        const provinceSelectStyle = `${inputStyle} padding-top: 0; padding-bottom: 0; padding-left: ${paddingLeft}; padding-right: ${paddingRight}; -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none !important' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none !important' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0 !important' : hasIcon && iconOnRight ? '8px 0 0 8px !important' : '8px'};`;
+        const provinceSelectStyle = `${inputStyle} font-weight: normal !important; font-style: normal !important; padding-top: 0; padding-bottom: 0; padding-left: ${paddingLeft}; padding-right: ${paddingRight}; -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 100%; border-left: ${hasIcon && iconOnLeft ? 'none !important' : '1px solid #e5e7eb'}; border-right: ${hasIcon && iconOnRight ? 'none !important' : '1px solid #e5e7eb'}; border-radius: ${hasIcon && iconOnLeft ? '0 8px 8px 0 !important' : hasIcon && iconOnRight ? '8px 0 0 8px !important' : '8px'};`;
         const placeholder = field.showPlaceholder ? field.placeholder : 'Select';
         const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
 
@@ -446,11 +446,10 @@
         return '<div class="leadcod-field" style="margin-bottom: 4px;"><div style="color: #ef4444;">Unknown field type: ' + field.type + '</div></div>';
     }
 
-    // Close input wrapper (if not already closed for phone field) and field div
     if (!isPhoneField) {
-      fieldHTML += '</div>'; // Close input wrapper
+      fieldHTML += '</div>';
     }
-    fieldHTML += '</div>'; // Close field div
+    fieldHTML += '</div>';
     return fieldHTML;
   };
 
@@ -514,18 +513,15 @@
       buttonStyle += `--glow-color: ${rgbaColor};`;
     }
 
-    // Handle background - always respect field.inputBackgroundColor for solid colors
     const solidColor = field.inputBackgroundColor || '#000000';
     
     if (field.backgroundType === 'gradient' && field.gradientBackground) {
-      // Use gradient if explicitly set
       if (field.animation === 'background-shift') {
         buttonStyle += `background-image: ${field.gradientBackground} !important; background-size: 200% 200% !important;`;
       } else {
         buttonStyle += `background-image: ${field.gradientBackground} !important;`;
       }
     } else {
-      // Use solid color from field settings
       if (field.animation === 'background-shift') {
         const hex = solidColor.replace('#', '');
         const r = parseInt(hex.substring(0, 2), 16);
@@ -546,7 +542,6 @@
           buttonStyle += `background-image: linear-gradient(135deg, ${rgbaBase} 0%, ${rgbaSemiTransparent} 25%, ${rgbaLight} 50%, ${rgbaSemiTransparent} 75%, ${rgbaBase} 100%) !important; background-size: 200% 200% !important;`;
         }
       } else {
-        // Always use the background color from field settings
         buttonStyle += `background-color: ${solidColor} !important;`;
       }
     }
@@ -653,18 +648,15 @@
       buttonStyle += `--glow-color: ${rgbaColor};`;
     }
 
-    // Handle background - always respect field.inputBackgroundColor for solid colors
     const solidColor = field.inputBackgroundColor || '#25D366';
     
     if (field.backgroundType === 'gradient' && field.gradientBackground) {
-      // Use gradient if explicitly set
       if (field.animation === 'background-shift') {
         buttonStyle += `background-image: ${field.gradientBackground} !important; background-size: 200% 200% !important;`;
       } else {
         buttonStyle += `background-image: ${field.gradientBackground} !important;`;
       }
     } else {
-      // Use solid color from field settings
       if (field.animation === 'background-shift') {
         const hex = solidColor.replace('#', '');
         const r = parseInt(hex.substring(0, 2), 16);
@@ -685,7 +677,6 @@
           buttonStyle += `background-image: linear-gradient(135deg, ${rgbaBase} 0%, ${rgbaSemiTransparent} 25%, ${rgbaLight} 50%, ${rgbaSemiTransparent} 75%, ${rgbaBase} 100%) !important; background-size: 200% 200% !important;`;
         }
       } else {
-        // Always use the background color from field settings
         buttonStyle += `background-color: ${solidColor} !important;`;
       }
     }

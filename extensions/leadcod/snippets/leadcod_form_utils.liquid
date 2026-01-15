@@ -61,7 +61,7 @@
       const fontSizeNum = parseInt(fontSize.replace('px', '')) || 16;
       const verticalPadding = (settings && settings.inputPadding && settings.inputPadding.vertical)
         ? settings.inputPadding.vertical
-        : Math.max(8, Math.round(fontSizeNum * 0.5));
+        : Math.max(12, Math.round(fontSizeNum * 0.5));
       const height = fontSizeNum + (verticalPadding * 2) + 4;
       return `${height}px`;
     },

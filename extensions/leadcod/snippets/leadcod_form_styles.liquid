@@ -179,6 +179,26 @@
   font-size: 14px !important;
 }
 
+.leadcod-field select option[value=""],
+.leadcod-field select option:first-child[value=""] {
+  font-weight: normal !important;
+  font-style: normal !important;
+  color: #6b7280 !important;
+  font-size: inherit !important;
+}
+
+.leadcod-field select.leadcod-province-select,
+.leadcod-field select.leadcod-city-select {
+  font-weight: normal !important;
+  font-style: normal !important;
+}
+
+.leadcod-field select.leadcod-province-select option,
+.leadcod-field select.leadcod-city-select option {
+  font-weight: normal !important;
+  font-style: normal !important;
+}
+
 @keyframes backgroundShift {
   0%, 100% {
     background-position: 0% 50%;
@@ -271,7 +291,6 @@
 
 .leadcod-confirm-button {
   flex: 1;
-  /* Background and animation are set via inline styles from field settings */
   color: white;
   border: none;
   border-radius: 8px;
@@ -309,7 +328,6 @@
 }
 
 .leadcod-whatsapp-button {
-  /* Background is set via inline styles from field settings */
   color: white;
   border: none;
   border-radius: 8px;

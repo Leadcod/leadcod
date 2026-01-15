@@ -28,30 +28,24 @@
     const Utils = window.LeadcodFormUtils;
     const Fields = window.LeadcodFormFields;
 
-    // Phone validation function - accessible throughout renderForm
     const validatePhone = (phone, field) => {
       if (!phone) return null;
       const trimmed = phone.trim();
       
-      // Get custom error messages or use defaults (Arabic)
       const errorNumbersOnly = (field && field.phoneErrorNumbersOnly) ? field.phoneErrorNumbersOnly : 'يجب أن يحتوي رقم الهاتف على أرقام فقط';
       const errorInvalidPrefix = (field && field.phoneErrorInvalidPrefix) ? field.phoneErrorInvalidPrefix : 'يجب أن يبدأ رقم الهاتف بـ 05، 06، 07، 5، 6، أو 7';
       const errorWrongLength10 = (field && field.phoneErrorWrongLength10) ? field.phoneErrorWrongLength10 : 'يجب أن يكون رقم الهاتف 10 أرقام بالضبط عند البدء بـ 0';
       const errorWrongLength9 = (field && field.phoneErrorWrongLength9) ? field.phoneErrorWrongLength9 : 'يجب أن يكون رقم الهاتف 9 أرقام بالضبط عند البدء بـ 5، 6، أو 7';
       
-      // Check if phone contains only numbers
       if (!/^\d+$/.test(trimmed)) {
         return errorNumbersOnly;
       }
       
-      // Check if phone starts with 05, 06, 07, 5, 6, or 7
       const validPattern = /^(05|06|07|5|6|7)/;
       if (!validPattern.test(trimmed)) {
         return errorInvalidPrefix;
       }
       
-      // If starts with 0 (05, 06, 07), must be 10 digits
-      // If starts with 5, 6, or 7 (without 0), must be 9 digits
       if (trimmed.startsWith('0')) {
         if (trimmed.length !== 10) {
           return errorWrongLength10;
@@ -65,11 +59,9 @@
       return null;
     };
 
-    // Check if buy button shows quantity selector
     const buyButton = fields.find(f => f.type === 'buyButton');
     const buyButtonOrder = buyButton ? (buyButton.order || 11) : 11;
     
-    // Check if there's a visible quantity field that appears before the buy button
     const quantityField = fields.find(f => f.type === 'quantity' && f.visible);
     const quantityFieldOrder = quantityField ? (quantityField.order || 10) : null;
     const hasStandaloneQuantityBeforeButton = quantityFieldOrder !== null && quantityFieldOrder < buyButtonOrder;
@@ -77,7 +69,6 @@
     const visibleFields = fields
       .filter(field => {
         if (!field.visible) return false;
-        // Always show quantity field if it's visible - order will determine its position
         return true;
       })
       .sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -128,7 +119,6 @@
     if (visibleFields.length === 0) {
       formHTML += '<div style="text-align: center; padding: 32px; color: #6b7280;">No visible fields</div>';
     } else {
-      // Render fields in order, grouping consecutive grid fields together
       let currentGridGroup = [];
       let inGridSection = false;
       
@@ -136,7 +126,6 @@
         const isFullWidth = field.type === 'summary' || field.type === 'buyButton' || field.type === 'whatsappButton' || field.type === 'shippingOption';
         
         if (isFullWidth) {
-          // Close any open grid section before rendering full-width field
           if (inGridSection && currentGridGroup.length > 0) {
             currentGridGroup.forEach(gridField => {
               formHTML += Fields.renderField(gridField, settings, shippingSettings);
@@ -147,8 +136,6 @@
             inGridSection = false;
           }
           
-          // Render full-width field
-          // If this is a buyButton and there's a standalone quantity field before it, don't show quantity in button
           if (field.type === 'buyButton' && hasStandaloneQuantityBeforeButton) {
             const fieldCopy = { ...field, showQuantity: false };
             formHTML += Fields.renderField(fieldCopy, settings, shippingSettings);
@@ -164,9 +151,7 @@
             formHTML += Fields.renderField(field, settings, shippingSettings);
           }
         } else {
-          // This is a grid field
           if (!inGridSection) {
-            // Start a new grid section
             formHTML += '<div class="leadcod-form-section">';
             formHTML += '<div class="leadcod-fields-grid">';
             inGridSection = true;
@@ -175,7 +160,6 @@
         }
       });
       
-      // Close any remaining grid section
       if (inGridSection && currentGridGroup.length > 0) {
         currentGridGroup.forEach(gridField => {
           formHTML += Fields.renderField(gridField, settings, shippingSettings);
@@ -185,7 +169,6 @@
       }
     }
 
-    // Add hidden quantity input if quantity field is not visible
     const allQuantityField = fields.find(f => f.type === 'quantity');
     if (allQuantityField && !allQuantityField.visible) {
       formHTML += '<input type="hidden" name="' + allQuantityField.id + '" value="1">';
@@ -214,7 +197,6 @@
       form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // Validate phone fields before submission
         const phoneInputs = container.querySelectorAll('.leadcod-phone-input');
         let hasPhoneError = false;
         phoneInputs.forEach(input => {
@@ -235,7 +217,7 @@
         });
         
         if (hasPhoneError) {
-          return; // Prevent submission if phone validation fails
+          return;
         }
 
         const formData = new FormData(form);
@@ -243,7 +225,6 @@
 
         const provinceSelect = container.querySelector('.leadcod-province-select');
         const citySelect = container.querySelector('.leadcod-city-select');
-        // Get IDs from select values (they are already set to state.id and city.id)
         const provinceId = provinceSelect?.value || '';
         const cityId = citySelect?.value || '';
 
@@ -311,7 +292,6 @@
     quantitySelectors.forEach(selector => {
       const decreaseBtn = selector.querySelector('[data-action="decrease"]');
       const increaseBtn = selector.querySelector('[data-action="increase"]');
-      // Find quantity input - could be name="quantity" (buy button) or name="quantity" (standalone field)
       const quantityInput = selector.querySelector('input[type="number"]');
       
       if (decreaseBtn && quantityInput) {
@@ -344,19 +324,15 @@
       const errorElement = container.querySelector(`#error-${fieldId}`);
       const phoneField = fields ? fields.find(f => f.id === fieldId && f.type === 'phone') : null;
       
-      // Restrict input to numbers only and limit based on starting digit
       const restrictToNumbers = (e) => {
         const value = input.value;
-        // Remove any non-numeric characters
         const numericValue = value.replace(/\D/g, '');
-        // Limit based on starting digit: 10 if starts with 0, 9 otherwise
         let maxLength = 10;
         if (numericValue.length > 0 && !numericValue.startsWith('0')) {
           maxLength = 9;
         }
         const limitedValue = numericValue.slice(0, maxLength);
         
-        // Update maxlength attribute dynamically
         input.setAttribute('maxlength', maxLength.toString());
         
         if (limitedValue !== value) {
@@ -364,7 +340,6 @@
         }
       };
       
-      // Prevent non-numeric keys
       input.addEventListener('keydown', (e) => {
         const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
         if (!allowedKeys.includes(e.key) && !/^\d$/.test(e.key) && !e.ctrlKey && !e.metaKey) {
@@ -372,7 +347,6 @@
         }
       });
       
-      // Clean input on input event
       input.addEventListener('input', restrictToNumbers);
       
       const validateAndShowError = () => {
@@ -380,26 +354,21 @@
         const error = validatePhone(value, phoneField);
         
         if (error && value.length > 0) {
-          // Show error
           if (errorElement) {
             errorElement.textContent = error;
             errorElement.style.display = 'block';
           }
-          // Make border red
           input.style.borderColor = '#ef4444';
           input.style.borderWidth = '2px';
         } else {
-          // Hide error
           if (errorElement) {
             errorElement.style.display = 'none';
           }
-          // Reset border
           input.style.borderColor = '#e5e7eb';
           input.style.borderWidth = '1px';
         }
       };
       
-      // Validate only on change event (when user leaves the field or presses Enter)
       input.addEventListener('change', validateAndShowError);
       input.addEventListener('blur', validateAndShowError);
     });
@@ -485,7 +454,6 @@
       const selectedShippingOption = shippingSection?.querySelector('input[type="radio"]:checked');
 
       if (!provinceSelect || !provinceSelect.value) {
-        // Always show product name and price, even when no province is selected
         if (productNameEl && currentVariant) {
           productNameEl.textContent = product.title || currentVariant.title || summaryPlaceholder;
         } else if (productNameEl) {
@@ -615,7 +583,6 @@
       }
     }, 500);
 
-    // Find quantity input - could be from buy button or standalone quantity field
     const quantityInput = container.querySelector('input[name="quantity"], input#field-quantity');
     if (quantityInput) {
       quantityInput.addEventListener('change', function() {
@@ -826,7 +793,6 @@
       field.style.opacity = disabled ? '0.6' : '1';
       field.style.cursor = disabled ? 'not-allowed' : 'pointer';
       field.style.backgroundColor = disabled ? '#f9fafb' : '';
-      // Only reset innerHTML when disabling the field, not when enabling
       if (disabled && placeholder) {
         const displayPlaceholder = (isCityField && disabled && citySelectProvinceFirstHint) 
           ? citySelectProvinceFirstHint 
