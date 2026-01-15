@@ -23,6 +23,7 @@ model Shop {
   Form Form[]
   shippingSettings ShippingSettings?
   shippingFees ShippingFee[]
+  onboardingProgress OnboardingProgress?
 }
 
 model Form {
@@ -95,5 +96,14 @@ model ShippingFee {
   @@unique([shopId, stateId])
   @@index([shopId])
   @@index([stateId])
+}
+
+model OnboardingProgress {
+  id String @id @default(uuid())
+  shopId String @unique
+  completedSteps String[] // Array of step IDs that are completed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
 }
 

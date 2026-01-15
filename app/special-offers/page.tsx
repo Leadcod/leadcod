@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import PageLoader from "../components/PageLoader";
 
 export default async function SpecialOffersPage({
   searchParams,
@@ -9,12 +10,12 @@ export default async function SpecialOffersPage({
   const { shop } = await searchParams;
 
   return (
-    <>
+    <PageLoader>
       <s-page heading={t('title')} />
       <div className="p-6">
         <p>{t('description', { shop })}</p>
       </div>
-    </>
+    </PageLoader>
   );
 }
 

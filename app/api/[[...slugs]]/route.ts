@@ -3,6 +3,7 @@ import cors from '@elysiajs/cors'
 import { FormController } from '../controllers/FormController'
 import { LocationController } from '../controllers/LocationController'
 import { OrderController } from '../controllers/OrderController'
+import { OnboardingController } from '../controllers/OnboardingController'
 
 const app = new Elysia({ prefix: '/api' })
   .use(cors({
@@ -15,6 +16,12 @@ const app = new Elysia({ prefix: '/api' })
   .get('/states', LocationController.getStates, LocationController.getStatesSchema)
   .get('/cities', LocationController.getCities, LocationController.getCitiesSchema)
   .get('/shipping-fees', LocationController.getShippingFees, LocationController.getShippingFeesSchema)
+  .get('/onboarding', OnboardingController.getProgress, OnboardingController.getProgressSchema)
+  .post('/onboarding', async (context) => {
+    return OnboardingController.markStepComplete({ 
+      body: context.body as any
+    });
+  }, OnboardingController.markStepCompleteSchema)
   .post('/orders', async (context) => {
     return OrderController.createOrder({ 
       body: context.body as any, 

@@ -390,7 +390,8 @@ export const ModelName = {
   State: 'State',
   City: 'City',
   ShippingSettings: 'ShippingSettings',
-  ShippingFee: 'ShippingFee'
+  ShippingFee: 'ShippingFee',
+  OnboardingProgress: 'OnboardingProgress'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -406,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "shop" | "form" | "country" | "state" | "city" | "shippingSettings" | "shippingFee"
+    modelProps: "shop" | "form" | "country" | "state" | "city" | "shippingSettings" | "shippingFee" | "onboardingProgress"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -928,6 +929,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    OnboardingProgress: {
+      payload: Prisma.$OnboardingProgressPayload<ExtArgs>
+      fields: Prisma.OnboardingProgressFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OnboardingProgressFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingProgressPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OnboardingProgressFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingProgressPayload>
+        }
+        findFirst: {
+          args: Prisma.OnboardingProgressFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingProgressPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OnboardingProgressFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingProgressPayload>
+        }
+        findMany: {
+          args: Prisma.OnboardingProgressFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingProgressPayload>[]
+        }
+        create: {
+          args: Prisma.OnboardingProgressCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingProgressPayload>
+        }
+        createMany: {
+          args: Prisma.OnboardingProgressCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OnboardingProgressCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingProgressPayload>[]
+        }
+        delete: {
+          args: Prisma.OnboardingProgressDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingProgressPayload>
+        }
+        update: {
+          args: Prisma.OnboardingProgressUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingProgressPayload>
+        }
+        deleteMany: {
+          args: Prisma.OnboardingProgressDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OnboardingProgressUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OnboardingProgressUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingProgressPayload>[]
+        }
+        upsert: {
+          args: Prisma.OnboardingProgressUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OnboardingProgressPayload>
+        }
+        aggregate: {
+          args: Prisma.OnboardingProgressAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOnboardingProgress>
+        }
+        groupBy: {
+          args: Prisma.OnboardingProgressGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OnboardingProgressGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OnboardingProgressCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OnboardingProgressCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1053,6 +1128,17 @@ export const ShippingFeeScalarFieldEnum = {
 } as const
 
 export type ShippingFeeScalarFieldEnum = (typeof ShippingFeeScalarFieldEnum)[keyof typeof ShippingFeeScalarFieldEnum]
+
+
+export const OnboardingProgressScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  completedSteps: 'completedSteps',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OnboardingProgressScalarFieldEnum = (typeof OnboardingProgressScalarFieldEnum)[keyof typeof OnboardingProgressScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1287,6 +1373,7 @@ export type GlobalOmitConfig = {
   city?: Prisma.CityOmit
   shippingSettings?: Prisma.ShippingSettingsOmit
   shippingFee?: Prisma.ShippingFeeOmit
+  onboardingProgress?: Prisma.OnboardingProgressOmit
 }
 
 /* Types for Logging */

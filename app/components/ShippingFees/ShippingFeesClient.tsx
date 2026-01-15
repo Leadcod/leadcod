@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getProvinces, getShippingSettings, saveShippingSettings } from '@/app/actions/shipping';
 import { useAppBridge } from '@shopify/app-bridge-react';
+import { FullPageLoader } from '@/components/ui/loader';
 
 interface ShippingFeesClientProps {
   shopUrl: string;
@@ -227,6 +228,10 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
     if (isNaN(numValue)) return '';
     return numValue.toLocaleString('en-US');
   };
+
+  if (loading) {
+    return <FullPageLoader message="Loading shipping fees..." />;
+  }
 
   return (
     <form>

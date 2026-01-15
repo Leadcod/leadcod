@@ -52,3 +52,8 @@ export type ShippingSettings = Prisma.ShippingSettingsModel
  * 
  */
 export type ShippingFee = Prisma.ShippingFeeModel
+/**
+ * Model OnboardingProgress
+ * 
+ */
+export type OnboardingProgress = Prisma.OnboardingProgressModel

@@ -5,6 +5,7 @@ import FormBuilder from './FormBuilder';
 import FormDisplay from './FormDisplay';
 import { FormField, DEFAULT_FORM_FIELDS, GlobalFormSettings, DEFAULT_GLOBAL_SETTINGS } from '../../types/form';
 import { getShippingSettings } from '@/app/actions/shipping';
+import { FullPageLoader } from '@/components/ui/loader';
 
 interface FormBuilderClientProps {
   shopUrl: string;
@@ -104,6 +105,7 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
   const [shippingMethod, setShippingMethod] = useState<'free' | 'per-province'>('per-province');
   const [stopDeskEnabled, setStopDeskEnabled] = useState(false);
   const [freeShippingLabel, setFreeShippingLabel] = useState<string>('Free');
+  const [isLoading, setIsLoading] = useState(true);
 
   // Ensure shippingOption field is always present
   useEffect(() => {
@@ -121,6 +123,7 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
 
   useEffect(() => {
     async function fetchShippingSettings() {
+      setIsLoading(true);
       if (shopUrl) {
         const result = await getShippingSettings(shopUrl);
         if (result.success && result.data) {
@@ -130,9 +133,14 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
           setFreeShippingLabel(result.data.freeShippingLabel || 'Free');
         }
       }
+      setIsLoading(false);
     }
     fetchShippingSettings();
   }, [shopUrl]);
+
+  if (isLoading) {
+    return <FullPageLoader message="Loading form builder..." />;
+  }
 
   return (
     <s-stack background='strong' direction="inline" paddingBlock="large" paddingInline="large" justifyContent="space-between" gap="small">

@@ -178,5 +178,45 @@
     "errorCreatingOrder": "Erreur lors de la création de la commande : {error}",
     "errorSubmittingOrder": "Erreur lors de l'envoi de la commande : {error}",
     "newOrder": "Nouvelle commande :"
+  },
+  "onboarding": {
+    "title": "Commencer",
+    "description": "Complétez ces étapes pour configurer votre formulaire de commande",
+    "progress": "Progression",
+    "completed": "{completedCount} sur {totalSteps} terminé",
+    "steps": {
+      "configureForm": {
+        "title": "Configurer le formulaire dans le constructeur",
+        "description": "Configurez votre formulaire de commande avec des champs et paramètres personnalisés"
+      },
+      "configureShipping": {
+        "title": "Configurer les frais de livraison",
+        "description": "Configurez les frais de livraison pour différentes provinces"
+      },
+      "activatePlugin": {
+        "title": "Activer le plugin dans le constructeur de thème",
+        "description": "Ajoutez l'extension à votre thème dans l'éditeur de thème Shopify"
+      }
+    },
+    "buttons": {
+      "loading": "Chargement...",
+      "done": "Terminé",
+      "openThemeEditor": "Ouvrir l'éditeur de thème",
+      "getStarted": "Commencer"
+    },
+    "allCompleted": "🎉 Félicitations ! Vous avez terminé toutes les étapes de configuration."
+  },
+  "plan": {
+    "title": "Plan actuel",
+    "freePlan": "Plan gratuit",
+    "paidPlan": "Plan payant",
+    "ordersThisMonth": "Commandes ce mois-ci",
+    "remainingOrders": "{count} commandes restantes",
+    "limitReached": "Limite atteinte",
+    "unlimitedOrders": "Commandes illimitées",
+    "currentPlan": "Détails du plan",
+    "freePlanDescription": "Vous avez {limit} commandes gratuites par mois",
+    "paidPlanDescription": "Commandes illimitées pour ${price}/mois",
+    "upgradeToPaid": "Passer à ${price}/mois pour des commandes illimitées"
   }
 }

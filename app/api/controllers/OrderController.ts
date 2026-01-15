@@ -1,5 +1,7 @@
 import { t } from 'elysia'
 import { prisma } from '@/lib/prisma'
+import { SHOPIFY_API_VERSION } from '@/lib/constants/shopify'
+import { getPlanInfo } from '@/app/actions/plan'
 
 export class OrderController {
   static async createOrder({ body, request }: { 
@@ -53,6 +55,20 @@ export class OrderController {
         return {
           success: false,
           error: 'Shop not found or access token not available'
+        };
+      }
+
+      // Check if shop has exceeded free tier limit
+      const planInfo = await getPlanInfo(normalizedShopUrl);
+      if (planInfo.planType === 'free' && planInfo.orderCount >= planInfo.orderLimit) {
+        return {
+          success: false,
+          error: `You have reached your free tier limit of ${planInfo.orderLimit} orders per month. Please upgrade to a paid plan to continue creating orders.`,
+          planInfo: {
+            orderCount: planInfo.orderCount,
+            orderLimit: planInfo.orderLimit,
+            paidTierPrice: planInfo.paidTierPrice
+          }
         };
       }
 
@@ -124,8 +140,7 @@ export class OrderController {
       }
 
       // Create the order on Shopify using productId directly as variant_id
-      const shopifyApiVersion = '2024-10'; // Use the latest stable API version
-      const baseUrl = `https://${normalizedShopUrl}/admin/api/${shopifyApiVersion}`;
+      const baseUrl = `https://${normalizedShopUrl}/admin/api/${SHOPIFY_API_VERSION}`;
       
       // Convert productId to number if it's a string
       const variantId = typeof productId === 'string' ? parseInt(productId, 10) : productId;

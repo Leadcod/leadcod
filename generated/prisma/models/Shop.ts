@@ -185,6 +185,7 @@ export type ShopWhereInput = {
   Form?: Prisma.FormListRelationFilter
   shippingSettings?: Prisma.XOR<Prisma.ShippingSettingsNullableScalarRelationFilter, Prisma.ShippingSettingsWhereInput> | null
   shippingFees?: Prisma.ShippingFeeListRelationFilter
+  onboardingProgress?: Prisma.XOR<Prisma.OnboardingProgressNullableScalarRelationFilter, Prisma.OnboardingProgressWhereInput> | null
 }
 
 export type ShopOrderByWithRelationInput = {
@@ -196,6 +197,7 @@ export type ShopOrderByWithRelationInput = {
   Form?: Prisma.FormOrderByRelationAggregateInput
   shippingSettings?: Prisma.ShippingSettingsOrderByWithRelationInput
   shippingFees?: Prisma.ShippingFeeOrderByRelationAggregateInput
+  onboardingProgress?: Prisma.OnboardingProgressOrderByWithRelationInput
 }
 
 export type ShopWhereUniqueInput = Prisma.AtLeast<{
@@ -210,6 +212,7 @@ export type ShopWhereUniqueInput = Prisma.AtLeast<{
   Form?: Prisma.FormListRelationFilter
   shippingSettings?: Prisma.XOR<Prisma.ShippingSettingsNullableScalarRelationFilter, Prisma.ShippingSettingsWhereInput> | null
   shippingFees?: Prisma.ShippingFeeListRelationFilter
+  onboardingProgress?: Prisma.XOR<Prisma.OnboardingProgressNullableScalarRelationFilter, Prisma.OnboardingProgressWhereInput> | null
 }, "id">
 
 export type ShopOrderByWithAggregationInput = {
@@ -243,6 +246,7 @@ export type ShopCreateInput = {
   Form?: Prisma.FormCreateNestedManyWithoutShopInput
   shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
 }
 
 export type ShopUncheckedCreateInput = {
@@ -254,6 +258,7 @@ export type ShopUncheckedCreateInput = {
   Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
   shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
 }
 
 export type ShopUpdateInput = {
@@ -265,6 +270,7 @@ export type ShopUpdateInput = {
   Form?: Prisma.FormUpdateManyWithoutShopNestedInput
   shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateInput = {
@@ -276,6 +282,7 @@ export type ShopUncheckedUpdateInput = {
   Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
   shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
 }
 
 export type ShopCreateManyInput = {
@@ -385,6 +392,20 @@ export type ShopUpdateOneRequiredWithoutShippingFeesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ShopUpdateToOneWithWhereWithoutShippingFeesInput, Prisma.ShopUpdateWithoutShippingFeesInput>, Prisma.ShopUncheckedUpdateWithoutShippingFeesInput>
 }
 
+export type ShopCreateNestedOneWithoutOnboardingProgressInput = {
+  create?: Prisma.XOR<Prisma.ShopCreateWithoutOnboardingProgressInput, Prisma.ShopUncheckedCreateWithoutOnboardingProgressInput>
+  connectOrCreate?: Prisma.ShopCreateOrConnectWithoutOnboardingProgressInput
+  connect?: Prisma.ShopWhereUniqueInput
+}
+
+export type ShopUpdateOneRequiredWithoutOnboardingProgressNestedInput = {
+  create?: Prisma.XOR<Prisma.ShopCreateWithoutOnboardingProgressInput, Prisma.ShopUncheckedCreateWithoutOnboardingProgressInput>
+  connectOrCreate?: Prisma.ShopCreateOrConnectWithoutOnboardingProgressInput
+  upsert?: Prisma.ShopUpsertWithoutOnboardingProgressInput
+  connect?: Prisma.ShopWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShopUpdateToOneWithWhereWithoutOnboardingProgressInput, Prisma.ShopUpdateWithoutOnboardingProgressInput>, Prisma.ShopUncheckedUpdateWithoutOnboardingProgressInput>
+}
+
 export type ShopCreateWithoutFormInput = {
   id?: string
   url: string
@@ -393,6 +414,7 @@ export type ShopCreateWithoutFormInput = {
   updatedAt?: Date | string
   shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutFormInput = {
@@ -403,6 +425,7 @@ export type ShopUncheckedCreateWithoutFormInput = {
   updatedAt?: Date | string
   shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutFormInput = {
@@ -429,6 +452,7 @@ export type ShopUpdateWithoutFormInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutFormInput = {
@@ -439,6 +463,7 @@ export type ShopUncheckedUpdateWithoutFormInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
 }
 
 export type ShopCreateWithoutShippingSettingsInput = {
@@ -449,6 +474,7 @@ export type ShopCreateWithoutShippingSettingsInput = {
   updatedAt?: Date | string
   Form?: Prisma.FormCreateNestedManyWithoutShopInput
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutShippingSettingsInput = {
@@ -459,6 +485,7 @@ export type ShopUncheckedCreateWithoutShippingSettingsInput = {
   updatedAt?: Date | string
   Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutShippingSettingsInput = {
@@ -485,6 +512,7 @@ export type ShopUpdateWithoutShippingSettingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUpdateManyWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutShippingSettingsInput = {
@@ -495,6 +523,7 @@ export type ShopUncheckedUpdateWithoutShippingSettingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
 }
 
 export type ShopCreateWithoutShippingFeesInput = {
@@ -505,6 +534,7 @@ export type ShopCreateWithoutShippingFeesInput = {
   updatedAt?: Date | string
   Form?: Prisma.FormCreateNestedManyWithoutShopInput
   shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutShippingFeesInput = {
@@ -515,6 +545,7 @@ export type ShopUncheckedCreateWithoutShippingFeesInput = {
   updatedAt?: Date | string
   Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
   shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutShippingFeesInput = {
@@ -541,6 +572,7 @@ export type ShopUpdateWithoutShippingFeesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUpdateManyWithoutShopNestedInput
   shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutShippingFeesInput = {
@@ -551,6 +583,67 @@ export type ShopUncheckedUpdateWithoutShippingFeesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
   shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
+}
+
+export type ShopCreateWithoutOnboardingProgressInput = {
+  id?: string
+  url: string
+  accessToken?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  Form?: Prisma.FormCreateNestedManyWithoutShopInput
+  shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
+  shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
+}
+
+export type ShopUncheckedCreateWithoutOnboardingProgressInput = {
+  id?: string
+  url: string
+  accessToken?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
+  shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
+  shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
+}
+
+export type ShopCreateOrConnectWithoutOnboardingProgressInput = {
+  where: Prisma.ShopWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShopCreateWithoutOnboardingProgressInput, Prisma.ShopUncheckedCreateWithoutOnboardingProgressInput>
+}
+
+export type ShopUpsertWithoutOnboardingProgressInput = {
+  update: Prisma.XOR<Prisma.ShopUpdateWithoutOnboardingProgressInput, Prisma.ShopUncheckedUpdateWithoutOnboardingProgressInput>
+  create: Prisma.XOR<Prisma.ShopCreateWithoutOnboardingProgressInput, Prisma.ShopUncheckedCreateWithoutOnboardingProgressInput>
+  where?: Prisma.ShopWhereInput
+}
+
+export type ShopUpdateToOneWithWhereWithoutOnboardingProgressInput = {
+  where?: Prisma.ShopWhereInput
+  data: Prisma.XOR<Prisma.ShopUpdateWithoutOnboardingProgressInput, Prisma.ShopUncheckedUpdateWithoutOnboardingProgressInput>
+}
+
+export type ShopUpdateWithoutOnboardingProgressInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Form?: Prisma.FormUpdateManyWithoutShopNestedInput
+  shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
+  shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
+}
+
+export type ShopUncheckedUpdateWithoutOnboardingProgressInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
+  shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
+  shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
 }
 
 
@@ -602,6 +695,7 @@ export type ShopSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   Form?: boolean | Prisma.Shop$FormArgs<ExtArgs>
   shippingSettings?: boolean | Prisma.Shop$shippingSettingsArgs<ExtArgs>
   shippingFees?: boolean | Prisma.Shop$shippingFeesArgs<ExtArgs>
+  onboardingProgress?: boolean | Prisma.Shop$onboardingProgressArgs<ExtArgs>
   _count?: boolean | Prisma.ShopCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["shop"]>
 
@@ -634,6 +728,7 @@ export type ShopInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   Form?: boolean | Prisma.Shop$FormArgs<ExtArgs>
   shippingSettings?: boolean | Prisma.Shop$shippingSettingsArgs<ExtArgs>
   shippingFees?: boolean | Prisma.Shop$shippingFeesArgs<ExtArgs>
+  onboardingProgress?: boolean | Prisma.Shop$onboardingProgressArgs<ExtArgs>
   _count?: boolean | Prisma.ShopCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ShopIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -645,6 +740,7 @@ export type $ShopPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     Form: Prisma.$FormPayload<ExtArgs>[]
     shippingSettings: Prisma.$ShippingSettingsPayload<ExtArgs> | null
     shippingFees: Prisma.$ShippingFeePayload<ExtArgs>[]
+    onboardingProgress: Prisma.$OnboardingProgressPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1049,6 +1145,7 @@ export interface Prisma__ShopClient<T, Null = never, ExtArgs extends runtime.Typ
   Form<T extends Prisma.Shop$FormArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$FormArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FormPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   shippingSettings<T extends Prisma.Shop$shippingSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$shippingSettingsArgs<ExtArgs>>): Prisma.Prisma__ShippingSettingsClient<runtime.Types.Result.GetResult<Prisma.$ShippingSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   shippingFees<T extends Prisma.Shop$shippingFeesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$shippingFeesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShippingFeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  onboardingProgress<T extends Prisma.Shop$onboardingProgressArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$onboardingProgressArgs<ExtArgs>>): Prisma.Prisma__OnboardingProgressClient<runtime.Types.Result.GetResult<Prisma.$OnboardingProgressPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1535,6 +1632,25 @@ export type Shop$shippingFeesArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.ShippingFeeScalarFieldEnum | Prisma.ShippingFeeScalarFieldEnum[]
+}
+
+/**
+ * Shop.onboardingProgress
+ */
+export type Shop$onboardingProgressArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OnboardingProgress
+   */
+  select?: Prisma.OnboardingProgressSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OnboardingProgress
+   */
+  omit?: Prisma.OnboardingProgressOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OnboardingProgressInclude<ExtArgs> | null
+  where?: Prisma.OnboardingProgressWhereInput
 }
 
 /**

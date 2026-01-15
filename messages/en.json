@@ -179,5 +179,45 @@
     "errorCreatingOrder": "Error creating order: {error}",
     "errorSubmittingOrder": "Error submitting order: {error}",
     "newOrder": "طلب جديد:"
+  },
+  "onboarding": {
+    "title": "Get Started",
+    "description": "Complete these steps to set up your order form",
+    "progress": "Progress",
+    "completed": "{completedCount} of {totalSteps} completed",
+    "steps": {
+      "configureForm": {
+        "title": "Configure the form on the builder",
+        "description": "Set up your order form with custom fields and settings"
+      },
+      "configureShipping": {
+        "title": "Configure shipping fees",
+        "description": "Set up shipping fees for different provinces"
+      },
+      "activatePlugin": {
+        "title": "Activate the plugin in theme builder",
+        "description": "Add the extension to your theme in the Shopify theme editor"
+      }
+    },
+    "buttons": {
+      "loading": "Loading...",
+      "done": "Done",
+      "openThemeEditor": "Open Theme Editor",
+      "getStarted": "Get Started"
+    },
+    "allCompleted": "🎉 Congratulations! You've completed all setup steps."
+  },
+  "plan": {
+    "title": "Current Plan",
+    "freePlan": "Free Plan",
+    "paidPlan": "Paid Plan",
+    "ordersThisMonth": "Orders this month",
+    "remainingOrders": "{count} orders remaining",
+    "limitReached": "Limit reached",
+    "unlimitedOrders": "Unlimited orders",
+    "currentPlan": "Plan Details",
+    "freePlanDescription": "You have {limit} free orders per month",
+    "paidPlanDescription": "Unlimited orders for ${price}/month",
+    "upgradeToPaid": "Upgrade to ${price}/month for unlimited orders"
   }
 }
