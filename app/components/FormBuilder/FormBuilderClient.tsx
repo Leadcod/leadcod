@@ -47,17 +47,17 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
   
   // Sync quantity field visibility with buy button's showQuantity on initial load
   // The buy button's showQuantity is the source of truth (used by Liquid template)
+  // When buyButton shows quantity, hide the separate quantity field to avoid duplicates
   const syncQuantityWithBuyButton = (fields: FormField[]): FormField[] => {
     const quantityField = fields.find(f => f.type === 'quantity');
     const buyButton = fields.find(f => f.type === 'buyButton');
     
     if (quantityField && buyButton) {
-      // Sync quantity field's visibility to match buy button's showQuantity
-      // This ensures consistency when loading existing forms
+      // If buyButton shows quantity, hide the separate quantity field to avoid duplicates
       const showQuantity = buyButton.showQuantity !== false; // Default to true
       return fields.map(f => 
         f.type === 'quantity'
-          ? { ...f, visible: showQuantity }
+          ? { ...f, visible: !showQuantity } // Hide quantity field when buyButton shows quantity
           : f
       );
     }
@@ -66,15 +66,44 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
   
   const syncedInitialFields = syncQuantityWithBuyButton(initialFields);
   
-  const initialGlobalSettings = existingForm?.settings 
-    ? (existingForm.settings as GlobalFormSettings)
-    : DEFAULT_GLOBAL_SETTINGS;
+  // Merge existing settings with defaults to ensure all properties are present
+  const mergeSettings = (existing: any): GlobalFormSettings => {
+    if (!existing || typeof existing !== 'object' || Object.keys(existing).length === 0) {
+      return DEFAULT_GLOBAL_SETTINGS;
+    }
+    
+    // Deep merge with defaults, ensuring nested objects are also merged
+    return {
+      ...DEFAULT_GLOBAL_SETTINGS,
+      ...existing,
+      // Deep merge nested objects
+      inputPadding: {
+        ...DEFAULT_GLOBAL_SETTINGS.inputPadding,
+        ...(existing.inputPadding || {})
+      },
+      headline: {
+        ...DEFAULT_GLOBAL_SETTINGS.headline,
+        ...(existing.headline || {})
+      },
+      subtitle: {
+        ...DEFAULT_GLOBAL_SETTINGS.subtitle,
+        ...(existing.subtitle || {})
+      },
+      border: {
+        ...DEFAULT_GLOBAL_SETTINGS.border,
+        ...(existing.border || {})
+      }
+    };
+  };
+  
+  const initialGlobalSettings = mergeSettings(existingForm?.settings);
     
   const [fields, setFields] = useState<FormField[]>(syncedInitialFields);
   const [globalSettings, setGlobalSettings] = useState<GlobalFormSettings>(initialGlobalSettings);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
-  const [shippingMethod, setShippingMethod] = useState<'free' | 'per-province'>('free');
+  const [shippingMethod, setShippingMethod] = useState<'free' | 'per-province'>('per-province');
   const [stopDeskEnabled, setStopDeskEnabled] = useState(false);
+  const [freeShippingLabel, setFreeShippingLabel] = useState<string>('Free');
 
   // Ensure shippingOption field is always present
   useEffect(() => {
@@ -98,6 +127,7 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
           const method = result.data.method as 'free' | 'per-province';
           setShippingMethod(method);
           setStopDeskEnabled(result.data.stopDeskEnabled);
+          setFreeShippingLabel(result.data.freeShippingLabel || 'Free');
         }
       }
     }
@@ -126,6 +156,7 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
             mode="preview"
             shippingMethod={shippingMethod}
             stopDeskEnabled={stopDeskEnabled}
+            freeShippingLabel={freeShippingLabel}
             shopUrl={shopUrl}
           />
       </s-box>

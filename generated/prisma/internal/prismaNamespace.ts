@@ -1034,6 +1034,7 @@ export const ShippingSettingsScalarFieldEnum = {
   stopDeskEnabled: 'stopDeskEnabled',
   codLabel: 'codLabel',
   stopDeskLabel: 'stopDeskLabel',
+  freeShippingLabel: 'freeShippingLabel',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

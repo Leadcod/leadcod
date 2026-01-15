@@ -14,7 +14,7 @@ export default async function FormBuilderPage({
 
   return (
     <>
-      <s-page heading="Form Builder" />
+      <s-page heading={t('title')} />
       <FormBuilderClient shopUrl={shop} existingForm={existingForm} />
     </>
   );

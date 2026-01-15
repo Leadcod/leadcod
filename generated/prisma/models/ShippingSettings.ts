@@ -31,6 +31,7 @@ export type ShippingSettingsMinAggregateOutputType = {
   stopDeskEnabled: boolean | null
   codLabel: string | null
   stopDeskLabel: string | null
+  freeShippingLabel: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -42,6 +43,7 @@ export type ShippingSettingsMaxAggregateOutputType = {
   stopDeskEnabled: boolean | null
   codLabel: string | null
   stopDeskLabel: string | null
+  freeShippingLabel: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,6 +55,7 @@ export type ShippingSettingsCountAggregateOutputType = {
   stopDeskEnabled: number
   codLabel: number
   stopDeskLabel: number
+  freeShippingLabel: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -66,6 +69,7 @@ export type ShippingSettingsMinAggregateInputType = {
   stopDeskEnabled?: true
   codLabel?: true
   stopDeskLabel?: true
+  freeShippingLabel?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -77,6 +81,7 @@ export type ShippingSettingsMaxAggregateInputType = {
   stopDeskEnabled?: true
   codLabel?: true
   stopDeskLabel?: true
+  freeShippingLabel?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -88,6 +93,7 @@ export type ShippingSettingsCountAggregateInputType = {
   stopDeskEnabled?: true
   codLabel?: true
   stopDeskLabel?: true
+  freeShippingLabel?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -172,6 +178,7 @@ export type ShippingSettingsGroupByOutputType = {
   stopDeskEnabled: boolean
   codLabel: string | null
   stopDeskLabel: string | null
+  freeShippingLabel: string | null
   createdAt: Date
   updatedAt: Date
   _count: ShippingSettingsCountAggregateOutputType | null
@@ -204,6 +211,7 @@ export type ShippingSettingsWhereInput = {
   stopDeskEnabled?: Prisma.BoolFilter<"ShippingSettings"> | boolean
   codLabel?: Prisma.StringNullableFilter<"ShippingSettings"> | string | null
   stopDeskLabel?: Prisma.StringNullableFilter<"ShippingSettings"> | string | null
+  freeShippingLabel?: Prisma.StringNullableFilter<"ShippingSettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ShippingSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ShippingSettings"> | Date | string
   shop?: Prisma.XOR<Prisma.ShopScalarRelationFilter, Prisma.ShopWhereInput>
@@ -216,6 +224,7 @@ export type ShippingSettingsOrderByWithRelationInput = {
   stopDeskEnabled?: Prisma.SortOrder
   codLabel?: Prisma.SortOrderInput | Prisma.SortOrder
   stopDeskLabel?: Prisma.SortOrderInput | Prisma.SortOrder
+  freeShippingLabel?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   shop?: Prisma.ShopOrderByWithRelationInput
@@ -231,6 +240,7 @@ export type ShippingSettingsWhereUniqueInput = Prisma.AtLeast<{
   stopDeskEnabled?: Prisma.BoolFilter<"ShippingSettings"> | boolean
   codLabel?: Prisma.StringNullableFilter<"ShippingSettings"> | string | null
   stopDeskLabel?: Prisma.StringNullableFilter<"ShippingSettings"> | string | null
+  freeShippingLabel?: Prisma.StringNullableFilter<"ShippingSettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ShippingSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ShippingSettings"> | Date | string
   shop?: Prisma.XOR<Prisma.ShopScalarRelationFilter, Prisma.ShopWhereInput>
@@ -243,6 +253,7 @@ export type ShippingSettingsOrderByWithAggregationInput = {
   stopDeskEnabled?: Prisma.SortOrder
   codLabel?: Prisma.SortOrderInput | Prisma.SortOrder
   stopDeskLabel?: Prisma.SortOrderInput | Prisma.SortOrder
+  freeShippingLabel?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ShippingSettingsCountOrderByAggregateInput
@@ -260,6 +271,7 @@ export type ShippingSettingsScalarWhereWithAggregatesInput = {
   stopDeskEnabled?: Prisma.BoolWithAggregatesFilter<"ShippingSettings"> | boolean
   codLabel?: Prisma.StringNullableWithAggregatesFilter<"ShippingSettings"> | string | null
   stopDeskLabel?: Prisma.StringNullableWithAggregatesFilter<"ShippingSettings"> | string | null
+  freeShippingLabel?: Prisma.StringNullableWithAggregatesFilter<"ShippingSettings"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ShippingSettings"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ShippingSettings"> | Date | string
 }
@@ -270,6 +282,7 @@ export type ShippingSettingsCreateInput = {
   stopDeskEnabled?: boolean
   codLabel?: string | null
   stopDeskLabel?: string | null
+  freeShippingLabel?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   shop: Prisma.ShopCreateNestedOneWithoutShippingSettingsInput
@@ -282,6 +295,7 @@ export type ShippingSettingsUncheckedCreateInput = {
   stopDeskEnabled?: boolean
   codLabel?: string | null
   stopDeskLabel?: string | null
+  freeShippingLabel?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -292,6 +306,7 @@ export type ShippingSettingsUpdateInput = {
   stopDeskEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   codLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stopDeskLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  freeShippingLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   shop?: Prisma.ShopUpdateOneRequiredWithoutShippingSettingsNestedInput
@@ -304,6 +319,7 @@ export type ShippingSettingsUncheckedUpdateInput = {
   stopDeskEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   codLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stopDeskLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  freeShippingLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -315,6 +331,7 @@ export type ShippingSettingsCreateManyInput = {
   stopDeskEnabled?: boolean
   codLabel?: string | null
   stopDeskLabel?: string | null
+  freeShippingLabel?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -325,6 +342,7 @@ export type ShippingSettingsUpdateManyMutationInput = {
   stopDeskEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   codLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stopDeskLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  freeShippingLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -336,6 +354,7 @@ export type ShippingSettingsUncheckedUpdateManyInput = {
   stopDeskEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   codLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stopDeskLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  freeShippingLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -352,6 +371,7 @@ export type ShippingSettingsCountOrderByAggregateInput = {
   stopDeskEnabled?: Prisma.SortOrder
   codLabel?: Prisma.SortOrder
   stopDeskLabel?: Prisma.SortOrder
+  freeShippingLabel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -363,6 +383,7 @@ export type ShippingSettingsMaxOrderByAggregateInput = {
   stopDeskEnabled?: Prisma.SortOrder
   codLabel?: Prisma.SortOrder
   stopDeskLabel?: Prisma.SortOrder
+  freeShippingLabel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -374,6 +395,7 @@ export type ShippingSettingsMinOrderByAggregateInput = {
   stopDeskEnabled?: Prisma.SortOrder
   codLabel?: Prisma.SortOrder
   stopDeskLabel?: Prisma.SortOrder
+  freeShippingLabel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -420,6 +442,7 @@ export type ShippingSettingsCreateWithoutShopInput = {
   stopDeskEnabled?: boolean
   codLabel?: string | null
   stopDeskLabel?: string | null
+  freeShippingLabel?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -430,6 +453,7 @@ export type ShippingSettingsUncheckedCreateWithoutShopInput = {
   stopDeskEnabled?: boolean
   codLabel?: string | null
   stopDeskLabel?: string | null
+  freeShippingLabel?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -456,6 +480,7 @@ export type ShippingSettingsUpdateWithoutShopInput = {
   stopDeskEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   codLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stopDeskLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  freeShippingLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -466,6 +491,7 @@ export type ShippingSettingsUncheckedUpdateWithoutShopInput = {
   stopDeskEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   codLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stopDeskLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  freeShippingLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -479,6 +505,7 @@ export type ShippingSettingsSelect<ExtArgs extends runtime.Types.Extensions.Inte
   stopDeskEnabled?: boolean
   codLabel?: boolean
   stopDeskLabel?: boolean
+  freeShippingLabel?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   shop?: boolean | Prisma.ShopDefaultArgs<ExtArgs>
@@ -491,6 +518,7 @@ export type ShippingSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   stopDeskEnabled?: boolean
   codLabel?: boolean
   stopDeskLabel?: boolean
+  freeShippingLabel?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   shop?: boolean | Prisma.ShopDefaultArgs<ExtArgs>
@@ -503,6 +531,7 @@ export type ShippingSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   stopDeskEnabled?: boolean
   codLabel?: boolean
   stopDeskLabel?: boolean
+  freeShippingLabel?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   shop?: boolean | Prisma.ShopDefaultArgs<ExtArgs>
@@ -515,11 +544,12 @@ export type ShippingSettingsSelectScalar = {
   stopDeskEnabled?: boolean
   codLabel?: boolean
   stopDeskLabel?: boolean
+  freeShippingLabel?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ShippingSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "shopId" | "method" | "stopDeskEnabled" | "codLabel" | "stopDeskLabel" | "createdAt" | "updatedAt", ExtArgs["result"]["shippingSettings"]>
+export type ShippingSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "shopId" | "method" | "stopDeskEnabled" | "codLabel" | "stopDeskLabel" | "freeShippingLabel" | "createdAt" | "updatedAt", ExtArgs["result"]["shippingSettings"]>
 export type ShippingSettingsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   shop?: boolean | Prisma.ShopDefaultArgs<ExtArgs>
 }
@@ -542,6 +572,7 @@ export type $ShippingSettingsPayload<ExtArgs extends runtime.Types.Extensions.In
     stopDeskEnabled: boolean
     codLabel: string | null
     stopDeskLabel: string | null
+    freeShippingLabel: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["shippingSettings"]>
@@ -974,6 +1005,7 @@ export interface ShippingSettingsFieldRefs {
   readonly stopDeskEnabled: Prisma.FieldRef<"ShippingSettings", 'Boolean'>
   readonly codLabel: Prisma.FieldRef<"ShippingSettings", 'String'>
   readonly stopDeskLabel: Prisma.FieldRef<"ShippingSettings", 'String'>
+  readonly freeShippingLabel: Prisma.FieldRef<"ShippingSettings", 'String'>
   readonly createdAt: Prisma.FieldRef<"ShippingSettings", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ShippingSettings", 'DateTime'>
 }

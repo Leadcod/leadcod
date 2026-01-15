@@ -1,26 +1,15 @@
-{% comment %}
-  Leadcod Form Block
-  Main form block that renders the Leadcod form using component snippets
-{% endcomment %}
-
-{% comment %} Include head resources (fonts, scripts) {% endcomment %}
 {% render 'leadcod_form_head' %}
 
-{% comment %} Form container {% endcomment %}
 <div id="leadcod-form-{{ block.id }}" class="leadcod-form-container">
   <div class="leadcod-form-loading">Loading form...</div>
 </div>
 
-{% comment %} Include utility functions {% endcomment %}
 {% render 'leadcod_form_utils' %}
 
-{% comment %} Include field rendering functions {% endcomment %}
 {% render 'leadcod_form_fields' %}
 
-{% comment %} Include initialization script {% endcomment %}
 {% render 'leadcod_form_init' %}
 
-{% comment %} Include styles {% endcomment %}
 {% render 'leadcod_form_styles' %}
 
 {% schema %}

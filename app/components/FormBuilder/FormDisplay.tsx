@@ -2,10 +2,10 @@
 
 import { useState, FormEvent, useEffect } from 'react';
 import * as Icons from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { FormField, GlobalFormSettings } from '@/app/types/form';
 import { InputGroup, InputGroupInput, InputGroupAddon } from '@/components/ui/input-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 
@@ -52,6 +52,7 @@ interface FormDisplayProps {
   onSubmit?: (formData: Record<string, any>) => void;
   shippingMethod?: 'free' | 'per-province';
   stopDeskEnabled?: boolean;
+  freeShippingLabel?: string;
   shopUrl?: string;
 }
 
@@ -61,10 +62,12 @@ export default function FormDisplay({
   onFieldClick, 
   mode = 'preview',
   onSubmit,
-  shippingMethod = 'free',
+  shippingMethod = 'per-province',
   stopDeskEnabled = false,
+  freeShippingLabel = 'Free',
   shopUrl
 }: FormDisplayProps) {
+  const t = useTranslations('formDisplay');
   const isPreview = mode === 'preview';
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [states, setStates] = useState<State[]>([]);
@@ -74,6 +77,8 @@ export default function FormDisplay({
   const [loadingCities, setLoadingCities] = useState(false);
   const [shippingFees, setShippingFees] = useState<{ cashOnDelivery: number | null; stopDesk: number | null } | null>(null);
   const [loadingShippingFees, setLoadingShippingFees] = useState(false);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [phoneErrors, setPhoneErrors] = useState<Record<string, string>>({});
 
   // Fetch states on mount (skip in preview mode)
   useEffect(() => {
@@ -126,7 +131,7 @@ export default function FormDisplay({
     if (isPreview) return; // Skip API call in builder preview
     
     const fetchShippingFees = async () => {
-      if (!selectedStateId || !shopUrl || shippingMethod !== 'per-province') {
+      if (!selectedStateId || !shopUrl) {
         setShippingFees(null);
         return;
       }
@@ -180,32 +185,23 @@ export default function FormDisplay({
   // Filter only visible fields and sort by order
   // In preview mode (builder), always show shippingOption with placeholder values
   // In production mode, hide shippingOption if shipping method is 'free'
-  // Exclude quantity fields - quantity is handled in the buy button
   const visibleFields = fields
     .filter((field) => {
       if (!field.visible) return false;
-      // In preview mode, always show shippingOption (for builder)
-      // In production mode, hide shippingOption if shipping method is 'free'
-      if (field.type === 'shippingOption' && !isPreview && shippingMethod === 'free') {
-        return false;
-      }
-      // Exclude quantity fields - quantity is handled in the buy button
-      if (field.type === 'quantity') {
-        return false;
-      }
+      // Shipping option is always shown (per-province method)
       return true;
     })
     .sort((a, b) => a.order - b.order);
 
   const getFontFamily = (fontFamily?: string) => {
-    const fontToUse = fontFamily || globalSettings?.fontFamily || 'nunito';
+    const fontToUse = fontFamily || globalSettings?.fontFamily || 'cairo';
     const fontMap: Record<string, string> = {
       cairo: 'var(--font-cairo)',
       nunito: 'var(--font-nunito)',
       poppins: 'var(--font-poppins)',
       montserrat: 'var(--font-montserrat)',
     };
-    return fontMap[fontToUse] || 'var(--font-nunito)';
+    return fontMap[fontToUse] || 'var(--font-cairo)';
   };
 
   const getGlobalFontSize = () => {
@@ -228,11 +224,63 @@ export default function FormDisplay({
     return alignment;
   };
 
+  const validatePhone = (phone: string, field?: FormField): string | null => {
+    if (!phone) return null;
+    const trimmed = phone.trim();
+    
+    // Get custom error messages or use defaults (Arabic)
+    const errorNumbersOnly = field?.phoneErrorNumbersOnly || 'يجب أن يحتوي رقم الهاتف على أرقام فقط';
+    const errorInvalidPrefix = field?.phoneErrorInvalidPrefix || 'يجب أن يبدأ رقم الهاتف بـ 05، 06، 07، 5، 6، أو 7';
+    const errorWrongLength10 = field?.phoneErrorWrongLength10 || 'يجب أن يكون رقم الهاتف 10 أرقام بالضبط عند البدء بـ 0';
+    const errorWrongLength9 = field?.phoneErrorWrongLength9 || 'يجب أن يكون رقم الهاتف 9 أرقام بالضبط عند البدء بـ 5، 6، أو 7';
+    
+    // Check if phone contains only numbers
+    if (!/^\d+$/.test(trimmed)) {
+      return errorNumbersOnly;
+    }
+    
+    // Check if phone starts with 05, 06, 07, 5, 6, or 7
+    const validPattern = /^(05|06|07|5|6|7)/;
+    if (!validPattern.test(trimmed)) {
+      return errorInvalidPrefix;
+    }
+    
+    // If starts with 0 (05, 06, 07), must be 10 digits
+    // If starts with 5, 6, or 7 (without 0), must be 9 digits
+    if (trimmed.startsWith('0')) {
+      if (trimmed.length !== 10) {
+        return errorWrongLength10;
+      }
+    } else {
+      if (trimmed.length !== 9) {
+        return errorWrongLength9;
+      }
+    }
+    
+    return null;
+  };
+
   const handleInputChange = (fieldId: string, value: any) => {
     if (!isPreview) {
-      setFormData(prev => ({ ...prev, [fieldId]: value }));
+      // Validate phone field - only allow numbers
+      const phoneField = fields.find(f => f.id === fieldId && f.type === 'phone');
+      if (phoneField) {
+        // Remove any non-numeric characters
+        const numericValue = value.replace(/\D/g, '');
+        // Limit based on starting digit: 10 if starts with 0, 9 otherwise
+        let maxLength = 10;
+        if (numericValue.length > 0 && !numericValue.startsWith('0')) {
+          maxLength = 9;
+        }
+        const limitedValue = numericValue.slice(0, maxLength);
+        setFormData(prev => ({ ...prev, [fieldId]: limitedValue }));
+        // Don't validate on every keystroke - validation happens on blur/change
+      } else {
+        setFormData(prev => ({ ...prev, [fieldId]: value }));
+      }
     }
   };
+
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -269,6 +317,19 @@ export default function FormDisplay({
       return `${verticalPadding}px ${horizontalPadding}px`;
     };
 
+    // Helper function to get horizontal-only padding for select fields
+    const getHorizontalPadding = (fontSize?: string): string => {
+      // Use global input padding if available
+      if (globalSettings?.inputPadding) {
+        return `0px ${globalSettings.inputPadding.horizontal}px`;
+      }
+      // Fallback to calculated padding based on font size
+      const fontSizeToUse = fontSize || getGlobalFontSize();
+      const fontSizeNum = parseInt(fontSizeToUse.replace('px', '')) || 16;
+      const horizontalPadding = Math.max(12, Math.round(fontSizeNum * 0.75));
+      return `0px ${horizontalPadding}px`;
+    };
+
     // Helper function to calculate height based on font size and global padding
     const getHeight = (fontSize?: string): string => {
       const fontSizeToUse = fontSize || getGlobalFontSize();
@@ -284,7 +345,7 @@ export default function FormDisplay({
     const globalFontStyle = getGlobalFontStyle();
     const primaryColor = getPrimaryColor();
 
-    const inputAlignment = field.inputAlignment || 'left';
+    const inputAlignment = field.inputAlignment || 'right';
     const inputStyle = {
       color: field.inputTextColor,
       backgroundColor: field.inputBackgroundColor,
@@ -328,7 +389,7 @@ export default function FormDisplay({
     // Calculate icon size based on global font size
     const iconSize = getIconSize(globalFontSize, 16);
 
-    const labelAlignment = field.labelAlignment || 'left';
+    const labelAlignment = field.labelAlignment || 'right';
     const labelStyle = {
       fontFamily: getFontFamily(),
       color: primaryColor,
@@ -422,7 +483,7 @@ export default function FormDisplay({
                   className={citySelectClass}
                   style={{
                     ...inputStyle,
-                    padding: getPadding(globalFontSize),
+                    padding: getHorizontalPadding(globalFontSize),
                     height: getHeight(globalFontSize),
                     minHeight: getHeight(globalFontSize),
                     justifyContent: inputAlignment === 'center' ? 'center' : inputAlignment === 'right' ? 'flex-end' : 'space-between',
@@ -447,10 +508,10 @@ export default function FormDisplay({
                   <SelectValue 
                     placeholder={
                       isPreview 
-                        ? 'City Name'
+                        ? (field.showPlaceholder ? field.placeholder : t('select'))
                         : (!selectedStateId 
-                          ? 'Select province first' 
-                          : (field.showPlaceholder ? field.placeholder : 'Select'))
+                          ? (field.selectProvinceFirstHint || t('selectProvinceFirst'))
+                          : (field.showPlaceholder ? field.placeholder : t('select')))
                     }
                     style={{ textAlign: inputAlignment }}
                   />
@@ -481,6 +542,9 @@ export default function FormDisplay({
         const phoneCodeOnRight = labelAlignment === 'right' || labelAlignment === 'center';
         const phoneIconOnLeft = !phoneCodeOnLeft; // Opposite of code position
         const phoneIconOnRight = !phoneCodeOnRight; // Opposite of code position
+        const phoneValue = isPreview ? '' : (formData[field.id] || '');
+        const phoneError = phoneErrors[field.id];
+        const hasError = !!phoneError && phoneValue.length > 0;
         
         return (
           <div key={field.id} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -503,13 +567,38 @@ export default function FormDisplay({
               )}
               <InputGroupInput
                 type="tel"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={phoneValue.startsWith('0') ? 10 : 9}
                 placeholder={field.showPlaceholder ? field.placeholder : ''}
-                style={inputStyle}
+                style={{
+                  ...inputStyle,
+                  borderColor: hasError ? '#ef4444' : inputStyle.borderColor,
+                  borderWidth: hasError ? '2px' : inputStyle.borderWidth
+                }}
                 required={field.required}
                 readOnly={isPreview}
                 className={cursorClass}
-                value={isPreview ? '' : (formData[field.id] || '')}
+                value={phoneValue}
                 onChange={(e) => handleInputChange(field.id, e.target.value)}
+                onBlur={(e) => {
+                  // Validate on blur (when user leaves the field)
+                  const phoneField = fields.find(f => f.id === field.id && f.type === 'phone');
+                  if (phoneField) {
+                    const error = validatePhone(e.target.value, phoneField);
+                    setPhoneErrors(prev => ({
+                      ...prev,
+                      [field.id]: error || ''
+                    }));
+                  }
+                }}
+                onKeyDown={(e) => {
+                  // Prevent non-numeric keys (except backspace, delete, tab, arrow keys, etc.)
+                  const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+                  if (!allowedKeys.includes(e.key) && !/^\d$/.test(e.key) && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                  }
+                }}
               />
               {IconComponent && phoneIconOnRight && (
                 <InputGroupAddon style={getIconStyle(false)}>
@@ -522,6 +611,17 @@ export default function FormDisplay({
                 </InputGroupAddon>
               )}
             </InputGroup>
+            {hasError && (
+              <span style={{ 
+                color: '#ef4444', 
+                fontSize: '0.875rem', 
+                marginTop: '2px',
+                textAlign: (field.inputAlignment || 'right') as 'left' | 'center' | 'right',
+                display: 'block'
+              }}>
+                {phoneError}
+              </span>
+            )}
           </div>
         );
 
@@ -556,7 +656,7 @@ export default function FormDisplay({
                   className={provinceSelectClass}
                   style={{
                     ...inputStyle,
-                    padding: getPadding(globalFontSize),
+                    padding: getHorizontalPadding(globalFontSize),
                     height: getHeight(globalFontSize),
                     minHeight: getHeight(globalFontSize),
                     justifyContent: inputAlignment === 'center' ? 'center' : inputAlignment === 'right' ? 'flex-end' : 'space-between',
@@ -580,9 +680,7 @@ export default function FormDisplay({
                 >
                   <SelectValue 
                     placeholder={
-                      isPreview 
-                        ? 'State Name' 
-                        : (field.showPlaceholder ? field.placeholder : 'Select')
+                      field.showPlaceholder ? field.placeholder : t('select')
                     }
                     style={{ textAlign: inputAlignment }}
                   />
@@ -638,6 +736,7 @@ export default function FormDisplay({
                   className={variantsSelectClass}
                   style={{
                     ...inputStyle,
+                    padding: getHorizontalPadding(globalFontSize),
                     justifyContent: inputAlignment === 'center' ? 'center' : inputAlignment === 'right' ? 'flex-end' : 'space-between',
                   }}
                   onClick={(e) => {
@@ -660,9 +759,9 @@ export default function FormDisplay({
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="small">Size: Small</SelectItem>
-                  <SelectItem value="medium">Size: Medium</SelectItem>
-                  <SelectItem value="large">Size: Large</SelectItem>
+                  <SelectItem value="small">{t('sizeSmall')}</SelectItem>
+                  <SelectItem value="medium">{t('sizeMedium')}</SelectItem>
+                  <SelectItem value="large">{t('sizeLarge')}</SelectItem>
                 </SelectContent>
               </Select>
               {IconComponent && iconOnRight && (
@@ -705,96 +804,112 @@ export default function FormDisplay({
                   </InputGroupAddon>
                 )}
               </InputGroup>
-              <Button type={isPreview ? 'button' : 'button'} disabled={isPreview}>
-                Apply
-              </Button>
+              <button type="button" disabled={isPreview} style={{ padding: '8px 16px', borderRadius: '0.375rem', backgroundColor: '#000000', color: '#ffffff', border: 'none', cursor: isPreview ? 'not-allowed' : 'pointer' }}>
+                {t('apply')}
+              </button>
             </div>
           </div>
         );
 
       case 'summary': {
-        const [isExpanded, setIsExpanded] = useState(true);
-        const CartIcon = Icons.ShoppingCart;
-        const ChevronIcon = Icons.ChevronDown;
+        const currency = globalSettings?.currency || 'DZD';
+        const summaryPlaceholder = field.summaryPlaceholder || '-';
+        const totalLabel = field.totalLabel || t('total');
+        const shippingLabel = field.shippingLabel || t('shippingPrice');
+        const chooseProvinceHint = field.chooseProvinceHint || t('chooseProvince');
+        const selectShippingOptionHint = field.selectShippingOptionHint || t('selectShippingOption');
+        const summaryAlignment = field.summaryAlignment || 'right';
         
+        // Determine placeholder value when no province/shipping is selected
+        const getPlaceholderValue = () => {
+          if (isPreview) {
+            return summaryPlaceholder;
+          }
+          // In production, show placeholder if no province selected or no shipping price
+          if (!selectedStateId || !shippingFees) {
+            return summaryPlaceholder;
+          }
+          return '-';
+        };
+
+        const placeholderValue = getPlaceholderValue();
+        const formatPrice = (price: number, quantity: number = 1) => {
+          return `${price.toLocaleString('en-US')} ${currency}${quantity > 1 ? ` x${quantity}` : ''}`;
+        };
+
         return (
           <div key={field.id} className="leadcod-field" style={{ marginBottom: 0 }}>
             <div className="leadcod-summary-section">
               <div 
-                className="leadcod-summary-header"
-                onClick={() => setIsExpanded(!isExpanded)}
+                className="leadcod-summary-content" 
+                style={{ 
+                  display: 'block',
+                  textAlign: summaryAlignment
+                }}
               >
-                <h3 className="leadcod-summary-title">
-                  <CartIcon size={20} />
-                  <span>{field.showLabel ? field.label : 'ملخص الطلب'}</span>
-                </h3>
-                <div className={`leadcod-summary-toggle ${isExpanded ? 'expanded' : ''}`}>
-                  <ChevronIcon size={20} />
+                <div className="leadcod-summary-item" style={{ textAlign: summaryAlignment }}>
+                  <span className="leadcod-summary-item-label leadcod-product-name">
+                    {isPreview ? t('productName') : placeholderValue}
+                  </span>
+                  <span className="leadcod-summary-item-value leadcod-product-price">
+                    {isPreview ? formatPrice(1600, 1) : placeholderValue}
+                  </span>
+                </div>
+                <div className="leadcod-summary-item" style={{ textAlign: summaryAlignment }}>
+                  <div>
+                    <div className="leadcod-summary-item-label leadcod-shipping-label">
+                      {isPreview ? shippingLabel : placeholderValue}
+                    </div>
+                    {!isPreview && (
+                      <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Icons.Globe size={14} />
+                        <span className="leadcod-shipping-hint-text">{chooseProvinceHint}</span>
+                      </div>
+                    )}
+                  </div>
+                  <span className="leadcod-summary-item-value leadcod-shipping-price">
+                    {isPreview 
+                      ? `${400} ${currency}`
+                      : placeholderValue}
+                  </span>
+                </div>
+                <div className="leadcod-summary-total" style={{ textAlign: summaryAlignment }}>
+                  <div>
+                    <div className="leadcod-summary-total-label">{totalLabel}</div>
+                  </div>
+                  <span className="leadcod-summary-total-value leadcod-total-price">
+                    {isPreview 
+                      ? formatPrice(2000)
+                      : placeholderValue}
+                  </span>
                 </div>
               </div>
-              {isExpanded && (
-                <div className="leadcod-summary-content" style={{ display: 'block' }}>
-                  <div className="leadcod-summary-item">
-                    <span className="leadcod-summary-item-label leadcod-product-name">
-                      {isPreview ? 'Product Name' : '-'}
-                    </span>
-                    <span className="leadcod-summary-item-value leadcod-product-price">
-                      {isPreview ? '1,600 DZD x1' : '-'}
-                    </span>
-                  </div>
-                  <div className="leadcod-summary-item">
-                    <div>
-                      <div className="leadcod-summary-item-label leadcod-shipping-label">
-                        {isPreview ? 'Shipping Price' : '-'}
-                      </div>
-                      {!isPreview && (
-                        <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Icons.Globe size={14} />
-                          <span className="leadcod-shipping-hint-text">Choose province</span>
-                        </div>
-                      )}
-                    </div>
-                    <span className="leadcod-summary-item-value leadcod-shipping-price">
-                      {isPreview ? '400 DZD' : '-'}
-                    </span>
-                  </div>
-                  <div className="leadcod-summary-total">
-                    <div>
-                      <div className="leadcod-summary-total-label">Total</div>
-                    </div>
-                    <span className="leadcod-summary-total-value leadcod-total-price">
-                      {isPreview ? '2,000 DZD' : '-'}
-                    </span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         );
       }
 
       case 'shippingOption': {
-        const ShippingIconComponent = field.icon === 'none' ? null : getIconComponent(field.icon) || Icons.Truck;
-        const iconSize = getIconSize(globalFontSize, 16);
-        
         // Calculate smaller font size for shipping labels and prices (85% of global size, min 12px)
         const fontSizeNum = parseInt(globalFontSize.replace('px', '')) || 16;
         const smallerFontSize = Math.max(12, Math.round(fontSizeNum * 0.85)) + 'px';
         
-        // Format price with DZD currency
+        const currency = globalSettings?.currency || 'DZD';
+        const shippingAlignment = field.shippingAlignment || 'right';
+        
+        // Format price with currency
         // In preview mode (builder), always show placeholder prices (400 for COD, 300 for Stop Desk)
-        // In production mode, show "Free" if shipping method is 'free', otherwise show actual price
+        // In production mode, show freeShippingLabel if price is 0, otherwise show actual price
         const formatPrice = (price: number | null, isCOD: boolean): string => {
           if (isPreview) {
             // Always show placeholder prices in builder preview
-            return isCOD ? '400 DZD' : '300 DZD';
+            return isCOD ? `400 ${currency}` : `300 ${currency}`;
           }
-          // Production mode
-          if (shippingMethod === 'free') {
-            return 'Free';
+          // Production mode - show freeShippingLabel when price is 0 or null
+          if (price === null || price === undefined || price === 0) {
+            return freeShippingLabel;
           }
-          if (price === null || price === undefined) return 'Free';
-          return `${price.toLocaleString('en-US')} DZD`;
+          return `${price.toLocaleString('en-US')} ${currency}`;
         };
 
         const codPrice = shippingFees?.cashOnDelivery ?? null;
@@ -806,18 +921,7 @@ export default function FormDisplay({
           fontWeight: globalFontWeight,
           fontStyle: globalFontStyle,
           color: primaryColor,
-        };
-
-        const shippingOptionTitleStyle = {
-          fontFamily: getFontFamily(),
-          fontSize: globalFontSize,
-          fontWeight: 'bold',
-          fontStyle: globalFontStyle,
-          color: primaryColor,
-          margin: '0 0 12px 0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
+          textAlign: shippingAlignment,
         };
 
         const shippingOptionItemStyle = {
@@ -826,11 +930,11 @@ export default function FormDisplay({
           fontWeight: globalFontWeight,
           fontStyle: globalFontStyle,
           color: primaryColor,
+          textAlign: shippingAlignment,
         };
 
-        const codLabel = 'Cash on Delivery';
-        const stopDeskLabel = 'Stop Desk';
-        const titleText = field.showLabel ? field.label : (field.label || 'Shipping Option');
+        const codLabel = t('cashOnDelivery');
+        const stopDeskLabel = t('stopDesk');
 
         return (
           <div key={field.id} className="leadcod-field" style={{ marginBottom: '4px' }}>
@@ -839,19 +943,12 @@ export default function FormDisplay({
               style={{ display: isPreview ? 'block' : 'none', '--leadcod-primary-color': primaryColor } as React.CSSProperties}
             >
               <div style={shippingOptionStyle}>
-                <h3 style={shippingOptionTitleStyle}>
-                  {ShippingIconComponent && <ShippingIconComponent size={iconSize} style={{ color: primaryColor }} />}
-                  <span>
-                    {titleText}
-                    {field.required && <span style={{ color: '#ef4444' }}> *</span>}
-                  </span>
-                </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <label 
                     style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
-                      justifyContent: 'space-between', 
+                      justifyContent: shippingAlignment === 'left' ? 'flex-start' : shippingAlignment === 'center' ? 'center' : 'space-between', 
                       gap: '12px', 
                       cursor: 'pointer', 
                       ...shippingOptionItemStyle 
@@ -868,11 +965,11 @@ export default function FormDisplay({
                         required={field.required}
                         style={{ width: '16px', height: '16px', cursor: 'pointer' }}
                       />
-                      <span>{codLabel}</span>
+                      <span style={{ textAlign: shippingAlignment }}>{codLabel}</span>
                     </div>
                     <span 
                       className="leadcod-shipping-price-cod" 
-                      style={{ fontWeight: 600, fontSize: smallerFontSize }}
+                      style={{ fontWeight: 600, fontSize: smallerFontSize, textAlign: shippingAlignment }}
                       data-price="0"
                     >
                       {loadingShippingFees ? '...' : formatPrice(codPrice, true)}
@@ -883,7 +980,7 @@ export default function FormDisplay({
                       style={{ 
                         display: 'flex', 
                         alignItems: 'center', 
-                        justifyContent: 'space-between', 
+                        justifyContent: shippingAlignment === 'left' ? 'flex-start' : shippingAlignment === 'center' ? 'center' : 'space-between', 
                         gap: '12px', 
                         cursor: 'pointer', 
                         ...shippingOptionItemStyle 
@@ -900,11 +997,11 @@ export default function FormDisplay({
                           required={field.required}
                           style={{ width: '16px', height: '16px', cursor: 'pointer' }}
                         />
-                        <span>{stopDeskLabel}</span>
+                        <span style={{ textAlign: shippingAlignment }}>{stopDeskLabel}</span>
                       </div>
                       <span 
                         className="leadcod-shipping-price-stopdesk" 
-                        style={{ fontWeight: 600, fontSize: smallerFontSize }}
+                        style={{ fontWeight: 600, fontSize: smallerFontSize, textAlign: shippingAlignment }}
                         data-price="0"
                       >
                         {loadingShippingFees ? '...' : formatPrice(stopDeskPrice, false)}
@@ -913,6 +1010,69 @@ export default function FormDisplay({
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        );
+      }
+
+      case 'quantity': {
+        const quantity = quantities[field.id] || 1;
+        
+        const handleFieldClick = () => {
+          if (isPreview && onFieldClick) {
+            onFieldClick(field.id);
+          }
+        };
+        
+        const handleDecrease = (e: React.MouseEvent) => {
+          if (isPreview) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleFieldClick();
+          } else if (quantity > 1) {
+            setQuantities(prev => ({ ...prev, [field.id]: quantity - 1 }));
+            handleInputChange(field.id, quantity - 1);
+          }
+        };
+        
+        const handleIncrease = (e: React.MouseEvent) => {
+          if (isPreview) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleFieldClick();
+          } else {
+            setQuantities(prev => ({ ...prev, [field.id]: quantity + 1 }));
+            handleInputChange(field.id, quantity + 1);
+          }
+        };
+        
+        const cursorClass = isPreview && onFieldClick ? 'cursor-pointer' : 'cursor-default';
+        
+        return (
+          <div key={field.id} className="leadcod-field" style={{ marginBottom: 0 }} onClick={handleFieldClick}>
+            <div className={`flex items-center justify-between gap-2 bg-white border border-gray-200 rounded-lg p-1 w-full ${cursorClass}`}>
+              <button
+                type="button"
+                onClick={handleDecrease}
+                className="flex-1 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md font-semibold text-gray-700 transition-colors"
+                disabled={isPreview}
+              >
+                -
+              </button>
+              <input
+                type="number"
+                value={quantity}
+                readOnly
+                className="w-16 text-center font-semibold text-lg border-none bg-transparent focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={handleIncrease}
+                className="flex-1 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-md font-semibold text-gray-700 transition-colors"
+                disabled={isPreview}
+              >
+                +
+              </button>
             </div>
           </div>
         );
@@ -970,8 +1130,11 @@ export default function FormDisplay({
           gap: '8px',
         };
         
-        // Handle background
+        // Handle background - always respect field.inputBackgroundColor for solid colors
+        const solidColor = field.inputBackgroundColor || '#000000';
+        
         if (field.backgroundType === 'gradient' && field.gradientBackground) {
+          // Use gradient if explicitly set
           if (field.animation === 'background-shift') {
             buttonStyle.backgroundImage = field.gradientBackground;
             buttonStyle.backgroundSize = '200% 200%';
@@ -979,8 +1142,7 @@ export default function FormDisplay({
             buttonStyle.backgroundImage = field.gradientBackground;
           }
         } else {
-          const solidColor = field.inputBackgroundColor || '#000000';
-          
+          // Use solid color from field settings
           // For background-shift animation with solid colors, convert to gradient
           if (field.animation === 'background-shift') {
             const hex = solidColor.replace('#', '');
@@ -1003,6 +1165,7 @@ export default function FormDisplay({
               buttonStyle.backgroundSize = '200% 200%';
             }
           } else {
+            // Always use the background color from field settings
             buttonStyle.backgroundColor = solidColor;
           }
         }
@@ -1056,7 +1219,7 @@ export default function FormDisplay({
                 </button>
               </div>
             )}
-            <Button 
+            <button 
               type={isPreview ? 'button' : 'submit'}
               className={`w-full flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:-translate-y-0.5 ${animationClass}`}
               style={buttonStyle}
@@ -1064,7 +1227,7 @@ export default function FormDisplay({
             >
               {field.label}
               <IconComponent size={buttonIconSize} style={field.icon && field.icon !== 'none' ? { fill: 'currentColor', strokeWidth: 1.5 } : undefined} />
-            </Button>
+            </button>
           </div>
         );
       }
@@ -1118,8 +1281,11 @@ export default function FormDisplay({
           gap: '8px',
         };
         
-        // Handle background
+        // Handle background - always respect field.inputBackgroundColor for solid colors
+        const solidColor = field.inputBackgroundColor || '#25D366';
+        
         if (field.backgroundType === 'gradient' && field.gradientBackground) {
+          // Use gradient if explicitly set
           if (field.animation === 'background-shift') {
             buttonStyle.backgroundImage = field.gradientBackground;
             buttonStyle.backgroundSize = '200% 200%';
@@ -1127,8 +1293,7 @@ export default function FormDisplay({
             buttonStyle.backgroundImage = field.gradientBackground;
           }
         } else {
-          const solidColor = field.inputBackgroundColor || '#25D366';
-          
+          // Use solid color from field settings
           // For background-shift animation with solid colors, convert to gradient
           if (field.animation === 'background-shift') {
             const hex = solidColor.replace('#', '');
@@ -1151,6 +1316,7 @@ export default function FormDisplay({
               buttonStyle.backgroundSize = '200% 200%';
             }
           } else {
+            // Always use the background color from field settings
             buttonStyle.backgroundColor = solidColor;
           }
         }
@@ -1200,7 +1366,7 @@ export default function FormDisplay({
         
         return (
           <div key={field.id} className="space-y-3">
-            <Button 
+            <button 
               type="button"
               className={`w-full flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:-translate-y-0.5 ${animationClass}`}
               style={buttonStyle}
@@ -1208,7 +1374,7 @@ export default function FormDisplay({
             >
               {field.label}
               <IconComponent size={buttonIconSize} style={field.icon && field.icon !== 'none' ? { fill: 'currentColor', strokeWidth: 1.5 } : undefined} />
-            </Button>
+            </button>
           </div>
         );
       }
@@ -1251,7 +1417,7 @@ export default function FormDisplay({
   };
 
   const content = (
-    <div className="space-y-4" style={{ padding: '16px', backgroundColor: '#E5E7EB', borderRadius: '12px' }}>
+    <div className="space-y-4" style={{ padding: '16px', backgroundColor: '#F3F4F6', borderRadius: '12px' }}>
       <style>{`
         @keyframes backgroundShift {
           0%, 100% {
@@ -1369,31 +1535,8 @@ export default function FormDisplay({
           margin-top: 0;
           margin-bottom: 0;
         }
-        .leadcod-summary-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          cursor: pointer;
-          padding: 4px 0;
-        }
-        .leadcod-summary-title {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-weight: 600;
-          font-size: 18px;
-          color: #1f2937;
-          margin: 0;
-        }
-        .leadcod-summary-toggle {
-          color: #6b7280;
-          transition: transform 0.3s;
-        }
-        .leadcod-summary-toggle.expanded {
-          transform: rotate(180deg);
-        }
         .leadcod-summary-content {
-          margin-top: 6px;
+          margin-top: 0;
         }
         .leadcod-summary-item {
           display: flex;
@@ -1478,41 +1621,31 @@ export default function FormDisplay({
           <div className="mb-4 flex justify-center">
             <Icons.AlertCircle size={48} className="text-muted-foreground" />
           </div>
-          <p className="mb-2 font-medium">No visible fields</p>
+          <p className="mb-2 font-medium">{t('noVisibleFields')}</p>
           <p className="text-sm text-muted-foreground">
-            Enable some fields to see the {isPreview ? 'preview' : 'form'}
+            {t('enableFieldsToSee')} {isPreview ? t('preview') : t('form')}
           </p>
         </div>
       ) : (
         <>
           {visibleFields
-            .filter(f => f.type !== 'summary' && f.type !== 'buyButton' && f.type !== 'whatsappButton' && f.type !== 'shippingOption')
+            .filter(f => f.type !== 'summary' && f.type !== 'buyButton' && f.type !== 'whatsappButton' && f.type !== 'shippingOption' && f.type !== 'quantity')
             .length > 0 && (
             <div className="leadcod-form-section">
               <div className="leadcod-fields-grid">
                 {visibleFields
-                  .filter(f => f.type !== 'summary' && f.type !== 'buyButton' && f.type !== 'whatsappButton' && f.type !== 'shippingOption')
+                  .filter(f => f.type !== 'summary' && f.type !== 'buyButton' && f.type !== 'whatsappButton' && f.type !== 'shippingOption' && f.type !== 'quantity')
                   .map(renderField)}
               </div>
             </div>
           )}
           {visibleFields
-            .filter(f => f.type === 'shippingOption')
+            .filter(f => f.type === 'shippingOption' || f.type === 'summary' || f.type === 'quantity' || f.type === 'buyButton' || f.type === 'whatsappButton')
             .map(field => (
               <div key={field.id} className="leadcod-form-section">
                 {renderField(field)}
               </div>
             ))}
-          {visibleFields
-            .filter(f => f.type === 'summary')
-            .map(field => (
-              <div key={field.id} className="leadcod-form-section">
-                {renderField(field)}
-              </div>
-            ))}
-          {visibleFields
-            .filter(f => f.type === 'buyButton' || f.type === 'whatsappButton')
-            .map(renderField)}
         </>
       )}
     </div>

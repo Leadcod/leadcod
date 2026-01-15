@@ -1,6 +1,7 @@
 'use client';
 
 import { X, AlignLeft, AlignCenter, AlignRight, Bold, Italic } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { GlobalFormSettings } from '@/app/types/form';
 import CompactColorSwatch from '@/app/components/ui/compact-color-swatch';
 
@@ -11,6 +12,7 @@ interface GlobalFormSettingsPanelProps {
 }
 
 export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }: GlobalFormSettingsPanelProps) {
+  const t = useTranslations('formBuilder');
   const updateHeadline = (updates: Partial<GlobalFormSettings['headline']>) => {
     onUpdate({
       headline: { ...settings.headline, ...updates }
@@ -38,7 +40,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
     >
       <s-stack gap="small">
         <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-          <h3 style={{ fontWeight: 600, margin: 0 }}>Global Form Settings</h3>
+          <h3 style={{ fontWeight: 600, margin: 0 }}>{t('globalFormSettings')}</h3>
           <s-button
             variant="auto"
             onClick={onClose}
@@ -51,10 +53,10 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
 
         {/* Font Settings & Color Section */}
         <div>
-          <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }}>Font Settings & Color</h4>
+          <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }}>{t('fontSettingsColor')}</h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
             <div style={{ flex: '1 1 150px', minWidth: '120px' }}>
-              <s-text >Primary Color</s-text>
+              <s-text >{t('primaryColor')}</s-text>
               <CompactColorSwatch
                 value={settings.primaryColor}
                 onChange={(color) => onUpdate({ primaryColor: color })}
@@ -62,7 +64,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
             </div>
             <div style={{ flex: '1 1 150px', minWidth: '120px' }}>
               <s-select
-                label="Font Family"
+                label={t('fontFamily')}
                 value={settings.fontFamily}
                 onChange={(e: any) => onUpdate({ fontFamily: e.target.value || e.detail?.value || settings.fontFamily })}
               >
@@ -73,7 +75,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
               </s-select>
             </div>
             <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
-              <s-text>Font Size</s-text>
+              <s-text>{t('fontSize')}</s-text>
               <input
                 type="number"
                 value={parseInt((settings.fontSize || '16px').replace('px', '')) || 16}
@@ -94,7 +96,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
               />
             </div>
             <div style={{ flex: '0 0 auto' }}>
-              <s-text>Font Style</s-text>
+              <s-text>{t('fontStyle')}</s-text>
               <s-stack direction="inline" gap="small">
                 <s-button
                   variant={settings.fontWeight === 'bold' ? 'primary' : 'secondary'}
@@ -122,7 +124,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
             </div>
           </div>
           <s-text>
-            These settings will be applied to all form fields. Primary color is used for borders, icons, labels, and other form elements.
+            {t('fontSettingsDescription')}
           </s-text>
         </div>
 
@@ -131,7 +133,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
         {/* Headline Section */}
         <div>
           <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-            <h4 style={{ fontWeight: 600, margin: 0 }}>Headline</h4>
+            <h4 style={{ fontWeight: 600, margin: 0 }}>{t('headline')}</h4>
             <s-switch
               checked={settings.headline.enabled}
               onInput={(e: any) => updateHeadline({ enabled: e.target?.checked ?? e.detail?.checked ?? !settings.headline.enabled })}
@@ -141,14 +143,14 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
           {settings.headline.enabled && (
             <s-stack gap="small">
               <div>
-                <s-text>Text</s-text>
+                <s-text>{t('text')}</s-text>
                 <s-text-field
                   value={settings.headline.text}
                   onChange={(e: any) => updateHeadline({ text: e.target.value })}
                 />
               </div>
               <div>
-                <s-text>Alignment</s-text>
+                <s-text>{t('alignment')}</s-text>
                 <s-stack direction="inline" gap="small">
                   <s-button
                     variant={settings.headline.alignment === 'left' ? 'primary' : 'secondary'}
@@ -185,7 +187,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
         {/* Subtitle Section */}
         <div>
             <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-            <h4 style={{ fontWeight: 600, margin: 0 }}>Subtitle</h4>
+            <h4 style={{ fontWeight: 600, margin: 0 }}>{t('subtitle')}</h4>
             <s-switch
               checked={settings.subtitle.enabled}
               onInput={(e: any) => updateSubtitle({ enabled: e.target?.checked ?? e.detail?.checked ?? !settings.subtitle.enabled })}
@@ -195,14 +197,14 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
           {settings.subtitle.enabled && (
             <s-stack gap="small">
               <div>
-                <s-text>Text</s-text>
+                <s-text>{t('text')}</s-text>
                 <s-text-field
                   value={settings.subtitle.text}
                   onChange={(e: any) => updateSubtitle({ text: e.target.value })}
                 />
               </div>
               <div>
-                <s-text>Alignment</s-text>
+                <s-text>{t('alignment')}</s-text>
                 <s-stack direction="inline" gap="small">
                   <s-button
                     variant={settings.subtitle.alignment === 'left' ? 'primary' : 'secondary'}
@@ -235,10 +237,10 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
 
         {/* Input Padding Section */}
         <div>
-          <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }}>Input Padding</h4>
+          <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }}>{t('inputPadding')}</h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
             <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
-              <s-text>Vertical Padding</s-text>
+              <s-text>{t('verticalPadding')}</s-text>
               <input
                 type="number"
                 value={settings.inputPadding?.vertical ?? 8}
@@ -261,7 +263,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
               />
             </div>
             <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
-              <s-text>Horizontal Padding</s-text>
+              <s-text>{t('horizontalPadding')}</s-text>
               <input
                 type="number"
                 value={settings.inputPadding?.horizontal ?? 12}
@@ -285,8 +287,26 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
             </div>
           </div>
           <s-text>
-            Adjust the padding inside all form input fields. Vertical padding controls top/bottom spacing, horizontal padding controls left/right spacing.
+            {t('inputPaddingDescription')}
           </s-text>
+        </div>
+
+        <s-divider />
+
+        {/* Currency Section */}
+        <div>
+          <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }}>{t('currency')}</h4>
+          <div>
+            <s-text>{t('currencySymbol')}</s-text>
+            <s-text-field
+              value={settings.currency || 'DZD'}
+              onChange={(e: any) => onUpdate({ currency: e.target.value || 'DZD' })}
+              placeholder="DZD"
+            />
+            <s-text variant="subdued" tone="subdued">
+              {t('currencyDescription')}
+            </s-text>
+          </div>
         </div>
 
         <s-divider />
@@ -294,7 +314,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
         {/* Shadow Section */}
         <div>
           <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-            <h4 style={{ fontWeight: 600, margin: 0 }}>Form Shadow</h4>
+            <h4 style={{ fontWeight: 600, margin: 0 }}>{t('formShadow')}</h4>
             <s-switch
               checked={settings.border.enabled}
               onInput={(e: any) => updateBorder({ enabled: e.target?.checked ?? e.detail?.checked ?? !settings.border.enabled })}
@@ -305,7 +325,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
             <s-stack gap="small">
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
                 <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
-                  <s-text>Blur Radius</s-text>
+                  <s-text>{t('blurRadius')}</s-text>
                   <input
                     type="number"
                     value={settings.border.width}
@@ -323,7 +343,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   />
                 </div>
                 <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
-                  <s-text>Border Radius</s-text>
+                  <s-text>{t('borderRadius')}</s-text>
                   <input
                     type="number"
                     value={settings.border.radius}
@@ -341,7 +361,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   />
                 </div>
                 <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
-                  <s-text>Padding</s-text>
+                  <s-text>{t('padding')}</s-text>
                   <input
                     type="number"
                     value={settings.border.padding}
@@ -359,7 +379,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   />
                 </div>
                 <div style={{ flex: '0 0 auto' }}>
-                  <s-text>Shadow Color</s-text>
+                  <s-text>{t('shadowColor')}</s-text>
                   <CompactColorSwatch
                     value={settings.border.color || '#9ca3af'}
                     onChange={(color) => updateBorder({ color })}

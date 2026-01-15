@@ -54,10 +54,11 @@ export async function getShippingSettings(shopUrl: string) {
       return {
         success: true,
         data: {
-          method: 'free' as const,
+          method: 'per-province' as const,
           stopDeskEnabled: false,
           codLabel: 'Cash on Delivery',
           stopDeskLabel: 'Stop Desk',
+          freeShippingLabel: 'Free',
           fees: {}
         }
       };
@@ -90,10 +91,11 @@ export async function getShippingSettings(shopUrl: string) {
     return {
       success: true,
       data: {
-        method: settings?.method || 'free',
+        method: settings?.method || 'per-province',
         stopDeskEnabled: settings?.stopDeskEnabled || false,
         codLabel: settings?.codLabel || 'Cash on Delivery',
         stopDeskLabel: settings?.stopDeskLabel || 'Stop Desk',
+        freeShippingLabel: settings?.freeShippingLabel || 'Free',
         fees: feesRecord
       }
     };
@@ -161,7 +163,8 @@ export async function saveShippingSettings(
   stopDeskEnabled: boolean,
   fees: Record<string, { cashOnDelivery: string; stopDesk: string }>,
   codLabel?: string,
-  stopDeskLabel?: string
+  stopDeskLabel?: string,
+  freeShippingLabel?: string
 ) {
   try {
     // Find or create shop
@@ -177,76 +180,73 @@ export async function saveShippingSettings(
       });
     }
 
+    // Always use per-province method
+    const finalMethod = 'per-province';
+
     // Upsert shipping settings
     await prisma.shippingSettings.upsert({
       where: { shopId: shop.id },
       update: {
-        method,
+        method: finalMethod,
         stopDeskEnabled,
         codLabel: codLabel || null,
         stopDeskLabel: stopDeskLabel || null,
+        freeShippingLabel: freeShippingLabel || null,
         updatedAt: new Date()
       },
       create: {
         shopId: shop.id,
-        method,
+        method: finalMethod,
         stopDeskEnabled,
         codLabel: codLabel || null,
-        stopDeskLabel: stopDeskLabel || null
+        stopDeskLabel: stopDeskLabel || null,
+        freeShippingLabel: freeShippingLabel || null
       }
     });
 
-    // If method is per-province, save/update fees
-    if (method === 'per-province') {
-      // Get all states to ensure we have fees for all
-      const algeria = await prisma.country.findFirst({
-        where: { name: 'Algeria' }
+    // Always save/update fees for all provinces
+    const algeria = await prisma.country.findFirst({
+      where: { name: 'Algeria' }
+    });
+
+    if (algeria) {
+      const states = await prisma.state.findMany({
+        where: { countryId: algeria.id },
+        select: { id: true }
       });
 
-      if (algeria) {
-        const states = await prisma.state.findMany({
-          where: { countryId: algeria.id },
-          select: { id: true }
-        });
-
-        // Upsert fees for each state
-        for (const state of states) {
-          const fee = fees[state.id] || { cashOnDelivery: '', stopDesk: '' };
-          
-          // Convert string to integer, or null if empty
-          const codValue = fee.cashOnDelivery && fee.cashOnDelivery.trim() !== '' 
-            ? parseInt(fee.cashOnDelivery.replace(/[^\d]/g, ''), 10) 
-            : null;
-          const stopDeskValue = fee.stopDesk && fee.stopDesk.trim() !== '' 
-            ? parseInt(fee.stopDesk.replace(/[^\d]/g, ''), 10) 
-            : null;
-          
-          await prisma.shippingFee.upsert({
-            where: {
-              shopId_stateId: {
-                shopId: shop.id,
-                stateId: state.id
-              }
-            },
-            update: {
-              cashOnDelivery: codValue,
-              stopDesk: stopDeskValue,
-              updatedAt: new Date()
-            },
-            create: {
+      // Upsert fees for each state
+      for (const state of states) {
+        const fee = fees[state.id] || { cashOnDelivery: '', stopDesk: '' };
+        
+        // Convert string to integer, or 0 if empty (default to 0)
+        const codValue = fee.cashOnDelivery && fee.cashOnDelivery.trim() !== '' 
+          ? parseInt(fee.cashOnDelivery.replace(/[^\d]/g, ''), 10) 
+          : 0;
+        const stopDeskValue = fee.stopDesk && fee.stopDesk.trim() !== '' 
+          ? parseInt(fee.stopDesk.replace(/[^\d]/g, ''), 10) 
+          : 0;
+        
+        await prisma.shippingFee.upsert({
+          where: {
+            shopId_stateId: {
               shopId: shop.id,
-              stateId: state.id,
-              cashOnDelivery: codValue,
-              stopDesk: stopDeskValue
+              stateId: state.id
             }
-          });
-        }
+          },
+          update: {
+            cashOnDelivery: codValue,
+            stopDesk: stopDeskValue,
+            updatedAt: new Date()
+          },
+          create: {
+            shopId: shop.id,
+            stateId: state.id,
+            cashOnDelivery: codValue,
+            stopDesk: stopDeskValue
+          }
+        });
       }
-    } else {
-      // If method is free, delete all fees
-      await prisma.shippingFee.deleteMany({
-        where: { shopId: shop.id }
-      });
     }
 
     revalidatePath('/shipping-fees');

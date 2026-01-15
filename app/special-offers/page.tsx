@@ -10,9 +10,9 @@ export default async function SpecialOffersPage({
 
   return (
     <>
-      <s-page heading="Special offers" />
+      <s-page heading={t('title')} />
       <div className="p-6">
-        <p>Special offers settings page for shop: {shop}</p>
+        <p>{t('description', { shop })}</p>
       </div>
     </>
   );

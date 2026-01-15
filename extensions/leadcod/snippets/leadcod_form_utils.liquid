@@ -1,93 +1,49 @@
-{% comment %}
-  Leadcod Form - Utility Functions
-  Helper functions for styling, colors, icons, etc.
-{% endcomment %}
 <script>
 (function() {
   'use strict';
 
-  // Make utilities available globally for other scripts
   window.LeadcodFormUtils = {
-    /**
-     * Get font family CSS value
-     * @param {Object} settings - Form settings
-     * @param {string} fontFamily - Optional font family override
-     * @returns {string} Font family CSS value
-     */
     getFontFamily: function(settings, fontFamily) {
-      const fontToUse = fontFamily || (settings && settings.fontFamily) || 'nunito';
+      const fontToUse = fontFamily || (settings && settings.fontFamily) || 'cairo';
       const fontMap = {
         cairo: "'Cairo', sans-serif",
         nunito: "'Nunito', sans-serif",
         poppins: "'Poppins', sans-serif",
         montserrat: "'Montserrat', sans-serif"
       };
-      return fontMap[fontToUse] || fontMap.nunito;
+      return fontMap[fontToUse] || fontMap.cairo;
     },
 
-    /**
-     * Get global font size
-     * @param {Object} settings - Form settings
-     * @returns {string} Font size value
-     */
     getGlobalFontSize: function(settings) {
       return (settings && settings.fontSize) || '16px';
     },
 
-    /**
-     * Get global font weight
-     * @param {Object} settings - Form settings
-     * @returns {string} Font weight value
-     */
     getGlobalFontWeight: function(settings) {
       return (settings && settings.fontWeight) || 'normal';
     },
 
-    /**
-     * Get global font style
-     * @param {Object} settings - Form settings
-     * @returns {string} Font style value
-     */
     getGlobalFontStyle: function(settings) {
       return (settings && settings.fontStyle) || 'normal';
     },
 
-    /**
-     * Get primary color
-     * @param {Object} settings - Form settings
-     * @returns {string} Color value
-     */
     getPrimaryColor: function(settings) {
       return (settings && settings.primaryColor) || '#000000';
     },
 
-    /**
-     * Get text alignment
-     * @param {string} alignment - Alignment value
-     * @returns {string} Text alignment value
-     */
+    getCurrency: function(settings) {
+      return (settings && settings.currency) || 'DZD';
+    },
+
     getTextAlign: function(alignment) {
       return alignment || 'left';
     },
 
-    /**
-     * Calculate icon size based on font size
-     * @param {string} fontSize - Font size value
-     * @param {Object} settings - Form settings
-     * @returns {number} Icon size in pixels
-     */
     calculateIconSize: function(fontSize, settings) {
       if (!fontSize) return 16;
       const fontSizeNum = parseInt(fontSize.replace('px', '')) || 16;
       return Math.round(fontSizeNum * 1.2);
     },
 
-    /**
-     * Calculate input padding based on font size or settings
-     * @param {string} fontSize - Font size value
-     * @param {Object} settings - Form settings
-     * @returns {string} Padding CSS value
-     */
     calculatePadding: function(fontSize, settings) {
       if (settings && settings.inputPadding) {
         return `${settings.inputPadding.vertical}px ${settings.inputPadding.horizontal}px`;
@@ -100,12 +56,6 @@
       return `${verticalPadding}px ${horizontalPadding}px`;
     },
 
-    /**
-     * Calculate input height based on font size and padding
-     * @param {string} fontSize - Font size value
-     * @param {Object} settings - Form settings
-     * @returns {string} Height CSS value
-     */
     calculateHeight: function(fontSize, settings) {
       if (!fontSize) return '36px';
       const fontSizeNum = parseInt(fontSize.replace('px', '')) || 16;
@@ -116,11 +66,6 @@
       return `${height}px`;
     },
 
-    /**
-     * Convert icon name to Lucide icon name
-     * @param {string} iconName - Icon name
-     * @returns {string} Lucide icon name
-     */
     getLucideIconName: function(iconName) {
       if (!iconName || iconName === 'none') return '';
       const iconMap = {
@@ -167,17 +112,9 @@
       return iconMap[iconName] || iconName.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '');
     },
 
-    /**
-     * Render icon HTML
-     * @param {string} iconName - Icon name
-     * @param {number} size - Icon size in pixels
-     * @param {boolean} isSolid - Whether icon should be solid
-     * @returns {string} Icon HTML string
-     */
     renderIcon: function(iconName, size, isSolid) {
       if (!iconName || iconName === 'none') return '';
       
-      // Handle WhatsApp icon specially (not in Lucide)
       if (iconName === 'WhatsApp') {
         return `<span class="leadcod-icon-wrapper" style="display: inline-flex; align-items: center; justify-content: center;"><svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></span>`;
       }
@@ -188,21 +125,15 @@
       return `<span class="leadcod-icon-wrapper" style="display: inline-flex; align-items: center; justify-content: center;"><i data-lucide="${lucideName}" style="width: ${size}px; height: ${size}px; ${solidStyle}"></i></span>`;
     },
 
-    /**
-     * Get border style CSS for form container
-     * @param {Object} settings - Form settings
-     * @returns {string} Border style CSS
-     */
     getBorderStyle: function(settings) {
       if (!settings || !settings.border || !settings.border.enabled) {
         return '';
       }
       const blurRadius = settings.border.width || 4;
-      const spreadRadius = 1; // Slight spread for more aggressive shadow
+      const spreadRadius = 1;
       const shadowColor = settings.border.color || '#9ca3af';
       const shadowOpacity = 0.3;
       
-      // Convert hex to rgba for shadow
       let rgbaColor = shadowColor;
       if (shadowColor.startsWith('#')) {
         const hex = shadowColor.replace('#', '');
@@ -223,11 +154,6 @@
       `;
     },
 
-    /**
-     * Extract glow color from field configuration
-     * @param {Object} field - Field configuration
-     * @returns {string} Color value
-     */
     extractGlowColor: function(field) {
       if (field.backgroundType === 'gradient' && field.gradientBackground) {
         const gradientMatch = field.gradientBackground.match(/#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|rgb\([^)]+\)|rgba\([^)]+\)/);
@@ -238,12 +164,6 @@
       return field.inputBackgroundColor || '#000000';
     },
 
-    /**
-     * Convert color to RGBA format
-     * @param {string} color - Color value (hex, rgb, or rgba)
-     * @param {number} alpha - Alpha value (0-1)
-     * @returns {string} RGBA color value
-     */
     colorToRgba: function(color, alpha) {
       if (color.startsWith('#')) {
         const hex = color.replace('#', '');
@@ -261,12 +181,6 @@
       return color;
     },
 
-    /**
-     * Lighten a color by a percentage
-     * @param {string} color - Hex color value
-     * @param {number} percent - Percentage to lighten (0-100)
-     * @returns {string} Lightened RGB color value
-     */
     lightenColor: function(color, percent) {
       if (color.startsWith('#')) {
         const hex = color.replace('#', '');

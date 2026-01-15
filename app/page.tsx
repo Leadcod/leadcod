@@ -1,11 +1,13 @@
 "use client";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { createApp } from "@shopify/app-bridge/client";
 import { getSessionToken } from "@shopify/app-bridge/utilities";
 import { initializeShopWithToken } from "@/app/actions/shopify-auth";
 
 export default function Home() {
+  const t = useTranslations('home');
   const shopify = useAppBridge();
   const [status, setStatus] = useState<{
     loading: boolean;
@@ -69,12 +71,12 @@ export default function Home() {
     <s-page heading="Home">
       <s-box slot="content">
         <s-section>
-          <h1>Hello World</h1>
-          {status.loading && <p>Loading...</p>}
+          <h1>{t('helloWorld')}</h1>
+          {status.loading && <p>{t('loading')}</p>}
           {status.success !== null && (
             <div style={{ marginTop: "1rem", padding: "1rem", backgroundColor: status.success ? "#d4edda" : "#f8d7da", borderRadius: "4px" }}>
               <p style={{ color: status.success ? "#155724" : "#721c24", margin: 0 }}>
-                {status.success ? "Shop initialized successfully" : "Failed to initialize shop"}
+                {status.success ? t('shopInitialized') : t('shopInitFailed')}
               </p>
             </div>
           )}

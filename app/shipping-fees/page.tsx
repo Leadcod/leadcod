@@ -8,10 +8,9 @@ export default async function ShippingFeesPage({
 }) {
   const t = await getTranslations("shippingFees");
   const { shop } = await searchParams;
-
   return (
     <>
-      <s-page heading="Shipping fees" />
+      <s-page heading={t('title')} />
       <ShippingFeesClient shopUrl={shop} />
     </>
   );

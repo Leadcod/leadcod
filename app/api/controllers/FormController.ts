@@ -32,12 +32,14 @@ export class FormController {
         method: shop.shippingSettings.method,
         stopDeskEnabled: shop.shippingSettings.stopDeskEnabled,
         codLabel: shop.shippingSettings.codLabel || 'Cash on Delivery',
-        stopDeskLabel: shop.shippingSettings.stopDeskLabel || 'Stop Desk'
+        stopDeskLabel: shop.shippingSettings.stopDeskLabel || 'Stop Desk',
+        freeShippingLabel: shop.shippingSettings.freeShippingLabel || 'Free'
       } : {
-        method: 'free' as const,
+        method: 'per-province' as const,
         stopDeskEnabled: false,
         codLabel: 'Cash on Delivery',
-        stopDeskLabel: 'Stop Desk'
+        stopDeskLabel: 'Stop Desk',
+        freeShippingLabel: 'Free'
       };
       
       return {

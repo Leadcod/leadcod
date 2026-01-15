@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Cairo, Nunito, Poppins, Montserrat } from "next/font/google";
 import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,6 +48,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const t = await getTranslations("navigation");
   return (
     <html>
       <head>
@@ -62,9 +64,9 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} ${nunito.variable} ${poppins.variable} ${montserrat.variable} antialiased`}
       >
         <s-app-nav>
-          <s-link href="/form-builder">Form Builder</s-link>
-          <s-link href="/shipping-fees">Shipping fees</s-link>
-          <s-link href="/special-offers">Special offers</s-link>
+          <s-link href="/form-builder">{t('formBuilder')}</s-link>
+          <s-link href="/shipping-fees">{t('shippingFees')}</s-link>
+          <s-link href="/special-offers">{t('specialOffers')}</s-link>
         </s-app-nav>
         {children}
       </body>

@@ -6,6 +6,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { FormField, DEFAULT_FORM_FIELDS, GlobalFormSettings, DEFAULT_GLOBAL_SETTINGS } from '@/app/types/form';
 import { saveForm } from '@/app/actions/form';
 import { useAppBridge } from '@shopify/app-bridge-react';
+import { useTranslations } from 'next-intl';
 import SortableField from './SortableField';
 import FieldSettingsPanel from './FieldSettingsPanel';
 import GlobalFormSettingsPanel from './GlobalFormSettingsPanel';
@@ -22,9 +23,42 @@ interface FormBuilderProps {
 }
 
 export default function FormBuilder({ shopUrl , initialFields, initialGlobalSettings, onFieldsChange, onGlobalSettingsChange, selectedFieldId: externalSelectedFieldId, onFieldSelect }: FormBuilderProps) {
+  const t = useTranslations('formBuilder');
+  
+  // Merge settings with defaults to ensure all properties are present
+  const mergeSettings = (settings: GlobalFormSettings | undefined): GlobalFormSettings => {
+    if (!settings || typeof settings !== 'object' || Object.keys(settings).length === 0) {
+      return DEFAULT_GLOBAL_SETTINGS;
+    }
+    
+    // Deep merge with defaults, ensuring nested objects are also merged
+    return {
+      ...DEFAULT_GLOBAL_SETTINGS,
+      ...settings,
+      // Deep merge nested objects
+      inputPadding: {
+        ...DEFAULT_GLOBAL_SETTINGS.inputPadding,
+        ...(settings.inputPadding || {})
+      },
+      headline: {
+        ...DEFAULT_GLOBAL_SETTINGS.headline,
+        ...(settings.headline || {})
+      },
+      subtitle: {
+        ...DEFAULT_GLOBAL_SETTINGS.subtitle,
+        ...(settings.subtitle || {})
+      },
+      border: {
+        ...DEFAULT_GLOBAL_SETTINGS.border,
+        ...(settings.border || {})
+      }
+    };
+  };
+  
   const initialFieldsValue = initialFields || DEFAULT_FORM_FIELDS;
+  const mergedGlobalSettings = mergeSettings(initialGlobalSettings);
   const [fields, setFields] = useState<FormField[]>(initialFieldsValue);
-  const [globalSettings, setGlobalSettings] = useState<GlobalFormSettings>(initialGlobalSettings || DEFAULT_GLOBAL_SETTINGS);
+  const [globalSettings, setGlobalSettings] = useState<GlobalFormSettings>(mergedGlobalSettings);
   const [internalSelectedFieldId, setInternalSelectedFieldId] = useState<string | null>(null);
   const [showGlobalSettings, setShowGlobalSettings] = useState(false);
   const selectedFieldId = externalSelectedFieldId !== undefined ? externalSelectedFieldId : internalSelectedFieldId;
@@ -39,12 +73,12 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
   };
   const shopify = useAppBridge()
   const lastSavedFieldsRef = useRef<FormField[]>(JSON.parse(JSON.stringify(initialFieldsValue)));
-  const lastSavedGlobalSettingsRef = useRef<GlobalFormSettings>(JSON.parse(JSON.stringify(initialGlobalSettings || DEFAULT_GLOBAL_SETTINGS)));
+  const lastSavedGlobalSettingsRef = useRef<GlobalFormSettings>(JSON.parse(JSON.stringify(mergedGlobalSettings)));
   const prevExternalSelectedFieldIdRef = useRef<string | null | undefined>(externalSelectedFieldId);
   
   useEffect(() => {
     lastSavedFieldsRef.current = JSON.parse(JSON.stringify(initialFieldsValue));
-    lastSavedGlobalSettingsRef.current = JSON.parse(JSON.stringify(initialGlobalSettings || DEFAULT_GLOBAL_SETTINGS));
+    lastSavedGlobalSettingsRef.current = JSON.parse(JSON.stringify(mergedGlobalSettings));
   }, []);
 
   // Sync fields when initialFields prop changes (e.g., when new fields are merged in)
@@ -67,6 +101,19 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
       }
     }
   }, [initialFields]);
+
+  // Sync globalSettings when initialGlobalSettings prop changes
+  // Merge with defaults to ensure all properties are present
+  const lastInitialGlobalSettingsRef = useRef<GlobalFormSettings>(mergedGlobalSettings);
+  
+  useEffect(() => {
+    const currentMerged = mergeSettings(initialGlobalSettings);
+    // Only update if settings actually changed (deep comparison would be better, but this is a simple check)
+    if (JSON.stringify(currentMerged) !== JSON.stringify(lastInitialGlobalSettingsRef.current)) {
+      setGlobalSettings(currentMerged);
+      lastInitialGlobalSettingsRef.current = currentMerged;
+    }
+  }, [initialGlobalSettings]);
 
   useEffect(() => {
     if (onFieldsChange) {
@@ -149,11 +196,24 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
   };
 
   const updateField = (id: string, updates: Partial<FormField>) => {
-    setFields((items) =>
-      items.map((item) =>
+    setFields((items) => {
+      const updatedItems = items.map((item) =>
         item.id === id ? { ...item, ...updates } : item
-      )
-    );
+      );
+      
+      // If updating buyButton's showQuantity, sync quantity field visibility
+      const buyButton = updatedItems.find(item => item.id === id && item.type === 'buyButton');
+      if (buyButton && 'showQuantity' in updates) {
+        const showQuantity = updates.showQuantity !== false;
+        return updatedItems.map((item) =>
+          item.type === 'quantity'
+            ? { ...item, visible: !showQuantity } // Hide quantity field when buyButton shows quantity
+            : item
+        );
+      }
+      
+      return updatedItems;
+    });
     shopify.saveBar.show('form-builder-save-bar');
   };
 
@@ -193,12 +253,12 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
       if (result.success) {
         lastSavedFieldsRef.current = JSON.parse(JSON.stringify(fields));
         lastSavedGlobalSettingsRef.current = JSON.parse(JSON.stringify(globalSettings));
-        shopify.toast.show('Form saved successfully!');
+        shopify.toast.show(t('formSaved'));
       } else {
-        shopify.toast.show(result.error || 'Failed to save form',{isError:true});
+        shopify.toast.show(result.error || t('formSaveFailed'),{isError:true});
       }
     } catch (error) {
-      shopify.toast.show('An error occurred while saving',{isError:true});
+      shopify.toast.show(t('formSaveError'),{isError:true});
     } 
   };
 
@@ -218,17 +278,17 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
   return (
     <form>
     <ui-save-bar id="form-builder-save-bar">
-        <button variant="primary" id="save-button" onClick={handleSubmit}>Save</button>
-        <button type='button' onClick={handleDiscard} id="discard-button">Discard</button>
+        <button variant="primary" id="save-button" onClick={handleSubmit}>{t('save')}</button>
+        <button type='button' onClick={handleDiscard} id="discard-button">{t('discard')}</button>
     </ui-save-bar>
 
       <s-stack gap="small">
         <s-box>
           <s-stack direction="inline" justifyContent="space-between" alignItems="center">
             <div>
-              <h2 style={{ marginBottom: '8px', fontWeight: 600 }}>Form Fields</h2>
+              <h2 style={{ marginBottom: '8px', fontWeight: 600 }}>{t('formFields')}</h2>
               <p style={{ fontSize: '14px', opacity: 0.7 }}>
-                Drag to reorder, click settings icon to configure fields
+                {t('dragToReorder')}
               </p>
             </div>
             <s-button
@@ -239,7 +299,7 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
               }}
             >
               <Settings size={18} style={{ marginRight: '8px' }} />
-              Global Settings
+              {t('globalSettings')}
             </s-button>
           </s-stack>
         </s-box>

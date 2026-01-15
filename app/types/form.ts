@@ -26,7 +26,7 @@ export interface FormField {
   category: 'client' | 'product' | 'order';
   inputTextColor: string;
   inputBackgroundColor: string;
-  fontFamily: 'cairo' | 'nunito' | 'poppins' | 'montserrat';
+  fontFamily: 'cairo' | 'poppins' | 'montserrat';
   // Label styling
   labelColor?: string;
   labelAlignment?: 'left' | 'center' | 'right';
@@ -57,11 +57,27 @@ export interface FormField {
   showQuantity?: boolean; // Show/hide quantity selector in buy button
   // WhatsApp button specific
   whatsappNumber?: string; // WhatsApp number (e.g., "213000000000")
+  // Summary field specific
+  summaryPlaceholder?: string; // Placeholder text when no province/shipping is selected
+  totalLabel?: string; // Custom text for "Total" label
+  shippingLabel?: string; // Custom text for shipping price label (e.g., "Shipping Price", "Prix de livraison")
+  chooseProvinceHint?: string; // Custom text for "Choose province" hint
+  selectShippingOptionHint?: string; // Custom text for "Select shipping option" hint
+  summaryAlignment?: 'left' | 'center' | 'right'; // Text alignment in summary
+  // Shipping option field specific
+  shippingAlignment?: 'left' | 'center' | 'right'; // Text alignment in shipping options
+  // City field specific
+  selectProvinceFirstHint?: string; // Custom text for "Select province first" hint when no province is selected
+  // Phone field specific
+  phoneErrorNumbersOnly?: string; // Custom error message for non-numeric input
+  phoneErrorInvalidPrefix?: string; // Custom error message for invalid prefix
+  phoneErrorWrongLength10?: string; // Custom error message for wrong length when starting with 0
+  phoneErrorWrongLength9?: string; // Custom error message for wrong length when starting with 5, 6, or 7
 }
 
 export interface GlobalFormSettings {
   primaryColor: string;
-  fontFamily: 'cairo' | 'nunito' | 'poppins' | 'montserrat';
+  fontFamily: 'cairo' | 'poppins' | 'montserrat';
   fontSize: string;
   fontWeight: 'normal' | 'bold' | '600' | '700';
   fontStyle: 'normal' | 'italic';
@@ -87,6 +103,7 @@ export interface GlobalFormSettings {
     padding: number;
     color: string;
   };
+  currency?: string; // Currency symbol/text (e.g., "DZD", "$", "€")
 }
 
 export interface FormSettings {
@@ -99,9 +116,9 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
   {
     id: 'variants',
     type: 'variants',
-    label: 'Variants',
+    label: 'المتغيرات',
     showLabel: true,
-    placeholder: 'Select variant',
+    placeholder: 'اختر المتغير',
     showPlaceholder: true,
     icon: 'Package',
     required: false,
@@ -110,24 +127,18 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     category: 'product',
     inputTextColor: '#000000',
     inputBackgroundColor: '#ffffff',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputAlignment: 'left',
-    inputFontSize: '16px',
-    inputFontWeight: 'normal',
-    inputFontStyle: 'normal'
+    labelAlignment: 'right',
+    inputAlignment: 'right'
   },
   // Client Information
   {
     id: 'name',
     type: 'name',
-    label: 'Name',
+    label: 'الاسم',
     showLabel: true,
-    placeholder: 'Enter your name',
+    placeholder: 'أدخل اسمك',
     showPlaceholder: true,
     icon: 'User',
     required: true, // Always required
@@ -136,23 +147,17 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     category: 'client',
     inputTextColor: '#000000',
     inputBackgroundColor: '#ffffff',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputAlignment: 'left',
-    inputFontSize: '16px',
-    inputFontWeight: 'normal',
-    inputFontStyle: 'normal'
+    labelAlignment: 'right',
+    inputAlignment: 'right'
   },
   {
     id: 'phone',
     type: 'phone',
-    label: 'Phone',
+    label: 'رقم الهاتف',
     showLabel: true,
-    placeholder: 'Enter phone number',
+    placeholder: 'أدخل رقم الهاتف',
     showPlaceholder: true,
     icon: 'Phone',
     required: true, // Always required
@@ -161,23 +166,17 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     category: 'client',
     inputTextColor: '#000000',
     inputBackgroundColor: '#ffffff',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputAlignment: 'left',
-    inputFontSize: '16px',
-    inputFontWeight: 'normal',
-    inputFontStyle: 'normal'
+    labelAlignment: 'right',
+    inputAlignment: 'right'
   },
   {
     id: 'province',
     type: 'province',
-    label: 'Province',
+    label: 'الولاية',
     showLabel: true,
-    placeholder: 'Select province',
+    placeholder: 'اختر الولاية',
     showPlaceholder: true,
     icon: 'MapPin',
     required: true, // Always required
@@ -186,23 +185,17 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     category: 'client',
     inputTextColor: '#000000',
     inputBackgroundColor: '#ffffff',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputAlignment: 'left',
-    inputFontSize: '16px',
-    inputFontWeight: 'normal',
-    inputFontStyle: 'normal'
+    labelAlignment: 'right',
+    inputAlignment: 'right'
   },
   {
     id: 'city',
     type: 'city',
-    label: 'City',
+    label: 'المدينة',
     showLabel: true,
-    placeholder: 'Enter your city',
+    placeholder: 'أدخل مدينتك',
     showPlaceholder: true,
     icon: 'Building',
     required: true, // Always required
@@ -211,48 +204,37 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     category: 'client',
     inputTextColor: '#000000',
     inputBackgroundColor: '#ffffff',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputAlignment: 'left',
-    inputFontSize: '16px',
-    inputFontWeight: 'normal',
-    inputFontStyle: 'normal'
+    labelAlignment: 'right',
+    inputAlignment: 'right',
+    selectProvinceFirstHint: 'اختر الولاية أولاً'
   },
   {
     id: 'quantity',
     type: 'quantity',
-    label: 'Quantity',
+    label: 'الكمية',
     showLabel: true,
     placeholder: '1',
     showPlaceholder: true,
     icon: 'Hash',
     required: false,
-    visible: false,
-    order: 5,
+    visible: true,
+    order: 10,
     category: 'order',
     inputTextColor: '#000000',
     inputBackgroundColor: '#ffffff',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputAlignment: 'left',
-    inputFontSize: '16px',
-    inputFontWeight: 'normal',
-    inputFontStyle: 'normal'
+    labelAlignment: 'right',
+    inputAlignment: 'right'
   },
   {
     id: 'email',
     type: 'email',
-    label: 'Email',
+    label: 'البريد الإلكتروني',
     showLabel: true,
-    placeholder: 'Enter your email',
+    placeholder: 'أدخل بريدك الإلكتروني',
     showPlaceholder: true,
     icon: 'Mail',
     required: false,
@@ -261,23 +243,17 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     category: 'client',
     inputTextColor: '#000000',
     inputBackgroundColor: '#ffffff',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputAlignment: 'left',
-    inputFontSize: '16px',
-    inputFontWeight: 'normal',
-    inputFontStyle: 'normal'
+    labelAlignment: 'right',
+    inputAlignment: 'right'
   },
   {
     id: 'coupon',
     type: 'coupon',
-    label: 'Coupon',
+    label: 'الكوبون',
     showLabel: true,
-    placeholder: 'Enter coupon code',
+    placeholder: 'أدخل رمز الكوبون',
     showPlaceholder: true,
     icon: 'Ticket',
     required: false,
@@ -286,65 +262,54 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     category: 'order',
     inputTextColor: '#000000',
     inputBackgroundColor: '#ffffff',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputAlignment: 'left',
-    inputFontSize: '16px',
-    inputFontWeight: 'normal',
-    inputFontStyle: 'normal'
+    labelAlignment: 'right',
+    inputAlignment: 'right'
   },
   {
     id: 'summary',
     type: 'summary',
-    label: 'Summary',
+    label: 'الملخص',
     showLabel: true,
     placeholder: '',
     showPlaceholder: false,
     icon: 'FileText',
     required: false,
     visible: true,
-    order: 8,
+    order: 9,
     category: 'order',
     inputTextColor: '#000000',
     inputBackgroundColor: '#ffffff',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputAlignment: 'left',
-    inputFontSize: '16px',
-    inputFontWeight: 'normal',
-    inputFontStyle: 'normal'
+    labelAlignment: 'right',
+    inputAlignment: 'right',
+    summaryPlaceholder: '-',
+    totalLabel: 'المجموع',
+    shippingLabel: 'سعر الشحن',
+    chooseProvinceHint: 'اختر الولاية',
+    selectShippingOptionHint: 'اختر خيار الشحن',
+    summaryAlignment: 'right'
   },
   {
     id: 'shippingOption',
     type: 'shippingOption',
-    label: 'Shipping Option',
+    label: 'خيار الشحن',
     showLabel: true,
     placeholder: '',
     showPlaceholder: false,
     icon: 'Truck',
     required: false,
-    visible: false,
-    order: 8.5,
+    visible: true,
+    order: 8,
     category: 'order',
     inputTextColor: '#000000',
     inputBackgroundColor: '#ffffff',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputFontSize: '16px',
-    inputFontWeight: 'normal',
-    inputFontStyle: 'normal',
+    labelAlignment: 'right',
+    shippingAlignment: 'right',
     shadow: {
       enabled: false,
       color: '#000000',
@@ -357,59 +322,47 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
   {
     id: 'buyButton',
     type: 'buyButton',
-    label: 'Buy Now Button',
+    label: 'شراء الآن',
     showLabel: false,
     placeholder: '',
     showPlaceholder: false,
     icon: 'ShoppingCart',
     required: false,
     visible: true,
-    order: 9,
+    order: 11,
     category: 'order',
     inputTextColor: '#ffffff',
     inputBackgroundColor: '#000000',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputAlignment: 'center',
-    inputFontSize: '16px',
-    inputFontWeight: 'bold',
-    inputFontStyle: 'normal',
+    labelAlignment: 'right',
+    inputAlignment: 'right',
     backgroundType: 'solid',
     gradientBackground: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     animation: 'none',
     buttonSize: 'base',
     buttonFontSize: '16px',
     buttonIconSize: 20,
-    showQuantity: true
+    showQuantity: false
   },
   {
     id: 'whatsappButton',
     type: 'whatsappButton',
-    label: 'Order via WhatsApp',
+    label: 'طلب عبر واتساب',
     showLabel: false,
     placeholder: '',
     showPlaceholder: false,
     icon: 'MessageCircle',
     required: false,
     visible: true,
-    order: 10,
+    order: 12,
     category: 'order',
     inputTextColor: '#ffffff',
     inputBackgroundColor: '#25D366',
-    fontFamily: 'nunito',
+    fontFamily: 'cairo',
     labelColor: '#000000',
-    labelAlignment: 'left',
-    labelFontSize: '14px',
-    labelFontWeight: 'normal',
-    labelFontStyle: 'normal',
-    inputAlignment: 'center',
-    inputFontSize: '16px',
-    inputFontWeight: 'bold',
-    inputFontStyle: 'normal',
+    labelAlignment: 'right',
+    inputAlignment: 'right',
     backgroundType: 'solid',
     gradientBackground: 'linear-gradient(135deg, #25D366 0%, #20ba5a 100%)',
     animation: 'none',
@@ -498,7 +451,7 @@ export const GRADIENT_PRESETS = [
 
 export const DEFAULT_GLOBAL_SETTINGS: GlobalFormSettings = {
   primaryColor: '#000000',
-  fontFamily: 'nunito',
+  fontFamily: 'cairo',
   fontSize: '16px',
   fontWeight: 'normal',
   fontStyle: 'normal',
@@ -508,12 +461,12 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalFormSettings = {
   },
   headline: {
     enabled: true,
-    text: 'Order Form',
+    text: 'نموذج الطلب',
     alignment: 'center'
   },
   subtitle: {
     enabled: true,
-    text: 'Please fill out the form below',
+    text: 'يرجى ملء النموذج أدناه',
     alignment: 'center'
   },
   border: {
@@ -523,6 +476,7 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalFormSettings = {
     radius: 6,
     padding: 16,
     color: '#9ca3af'
-  }
+  },
+  currency: 'DZD'
 };
 

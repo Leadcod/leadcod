@@ -1,6 +1,6 @@
 'use server';
 
-import { FormSettings } from '../types/form';
+import { FormSettings, DEFAULT_FORM_FIELDS, DEFAULT_GLOBAL_SETTINGS } from '../types/form';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 
@@ -25,20 +25,39 @@ export async function saveForm(shopUrl: string, formData: FormSettings, isRender
     });
 
     if (!form) {
+      // Use defaults if fields or settings are missing
+      const fields = formData.fields && formData.fields.length > 0 
+        ? formData.fields 
+        : DEFAULT_FORM_FIELDS;
+      
+      const settings = formData.globalSettings && Object.keys(formData.globalSettings).length > 0
+        ? formData.globalSettings
+        : DEFAULT_GLOBAL_SETTINGS;
+      
       form = await prisma.form.create({
         data: {
           shopId: shop.id,
           name: 'Order Form',
-          fields: formData.fields as any,
-          settings: (formData.globalSettings || {}) as any
+          fields: fields as any,
+          settings: settings as any
         }
       });
     } else {
+      // When updating, ensure we have valid fields and settings
+      const fields = formData.fields && formData.fields.length > 0 
+        ? formData.fields 
+        : form.fields as any; // Keep existing if not provided
+      
+      // Merge with defaults to ensure all required settings are present
+      const settings = formData.globalSettings && Object.keys(formData.globalSettings).length > 0
+        ? { ...DEFAULT_GLOBAL_SETTINGS, ...formData.globalSettings }
+        : form.settings as any; // Keep existing if not provided
+      
       form = await prisma.form.update({
         where: { id: form.id },
         data: {
-          fields: formData.fields as any,
-          settings: (formData.globalSettings || {}) as any,
+          fields: fields as any,
+          settings: settings as any,
           updatedAt: new Date()
         }
       });

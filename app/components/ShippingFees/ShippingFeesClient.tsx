@@ -1,19 +1,15 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Check } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
 import { getProvinces, getShippingSettings, saveShippingSettings } from '@/app/actions/shipping';
 import { useAppBridge } from '@shopify/app-bridge-react';
 
 interface ShippingFeesClientProps {
   shopUrl: string;
 }
-
-type ShippingMethod = 'free' | 'per-province';
 
 interface Province {
   id: string;
@@ -28,8 +24,8 @@ interface ProvinceFees {
 }
 
 export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps) {
+  const t = useTranslations('shippingFees');
   const shopify = useAppBridge();
-  const [shippingMethod, setShippingMethod] = useState<ShippingMethod>('free');
   const [stopDeskEnabled, setStopDeskEnabled] = useState(false);
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [provinceFees, setProvinceFees] = useState<Record<string, ProvinceFees>>({});
@@ -37,15 +33,16 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const [allCOD, setAllCOD] = useState<string>('');
   const [allStopDesk, setAllStopDesk] = useState<string>('');
-  const [codLabel, setCodLabel] = useState<string>('Cash on Delivery');
-  const [stopDeskLabel, setStopDeskLabel] = useState<string>('Stop Desk');
+  const [codLabel, setCodLabel] = useState<string>(t('cashOnDelivery'));
+  const [stopDeskLabel, setStopDeskLabel] = useState<string>(t('stopDesk'));
+  const [freeShippingLabel, setFreeShippingLabel] = useState<string>('مجاني');
 
   // Track last saved state
-  const lastSavedMethodRef = useRef<ShippingMethod>('free');
   const lastSavedStopDeskEnabledRef = useRef(false);
   const lastSavedFeesRef = useRef<Record<string, ProvinceFees>>({});
-  const lastSavedCodLabelRef = useRef<string>('Cash on Delivery');
+  const lastSavedCodLabelRef = useRef<string>('الدفع عند الاستلام');
   const lastSavedStopDeskLabelRef = useRef<string>('Stop Desk');
+  const lastSavedFreeShippingLabelRef = useRef<string>('مجاني');
 
   useEffect(() => {
     async function fetchData() {
@@ -57,41 +54,45 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
       if (provincesResult.success && provincesResult.data) {
         setProvinces(provincesResult.data);
         
-        // Initialize fees for all provinces
+        // Initialize fees for all provinces with 0 by default
         const initialFees: Record<string, ProvinceFees> = {};
         provincesResult.data.forEach((province) => {
           initialFees[province.id] = {
-            cashOnDelivery: '',
-            stopDesk: ''
+            cashOnDelivery: '0',
+            stopDesk: '0'
           };
         });
 
         // Load saved settings if available
         if (settingsResult.success && settingsResult.data) {
-          setShippingMethod(settingsResult.data.method as ShippingMethod);
           setStopDeskEnabled(settingsResult.data.stopDeskEnabled);
-          setCodLabel(settingsResult.data.codLabel || 'Cash on Delivery');
-          setStopDeskLabel(settingsResult.data.stopDeskLabel || 'Stop Desk');
+          setCodLabel(settingsResult.data.codLabel || t('cashOnDelivery'));
+          setStopDeskLabel(settingsResult.data.stopDeskLabel || t('stopDesk'));
+          setFreeShippingLabel(settingsResult.data.freeShippingLabel || 'مجاني');
           
-          // Merge saved fees with initial fees
+          // Merge saved fees with initial fees (use saved values if available, otherwise keep 0)
           Object.keys(initialFees).forEach(stateId => {
             if (settingsResult.data.fees[stateId]) {
-              initialFees[stateId] = settingsResult.data.fees[stateId];
+              const savedFee = settingsResult.data.fees[stateId];
+              initialFees[stateId] = {
+                cashOnDelivery: savedFee.cashOnDelivery || '0',
+                stopDesk: savedFee.stopDesk || '0'
+              };
             }
           });
 
           // Update refs with loaded data
-          lastSavedMethodRef.current = settingsResult.data.method as ShippingMethod;
           lastSavedStopDeskEnabledRef.current = settingsResult.data.stopDeskEnabled;
-          lastSavedCodLabelRef.current = settingsResult.data.codLabel || 'Cash on Delivery';
-          lastSavedStopDeskLabelRef.current = settingsResult.data.stopDeskLabel || 'Stop Desk';
+          lastSavedCodLabelRef.current = settingsResult.data.codLabel || t('cashOnDelivery');
+          lastSavedStopDeskLabelRef.current = settingsResult.data.stopDeskLabel || t('stopDesk');
+          lastSavedFreeShippingLabelRef.current = settingsResult.data.freeShippingLabel || 'مجاني';
           lastSavedFeesRef.current = JSON.parse(JSON.stringify(initialFees));
         } else {
-          // No saved data, use defaults
-          lastSavedMethodRef.current = 'free';
+          // No saved data, use defaults (all 0)
           lastSavedStopDeskEnabledRef.current = false;
-          lastSavedCodLabelRef.current = 'Cash on Delivery';
-          lastSavedStopDeskLabelRef.current = 'Stop Desk';
+          lastSavedCodLabelRef.current = t('cashOnDelivery');
+          lastSavedStopDeskLabelRef.current = t('stopDesk');
+          lastSavedFreeShippingLabelRef.current = 'مجاني';
           lastSavedFeesRef.current = JSON.parse(JSON.stringify(initialFees));
         }
 
@@ -106,11 +107,6 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
     shopify.saveBar.show('shipping-fees-save-bar');
   };
 
-  const handleMethodChange = (method: ShippingMethod) => {
-    setShippingMethod(method);
-    showSaveBar();
-  };
-
   const handleStopDeskToggle = (enabled: boolean) => {
     setStopDeskEnabled(enabled);
     showSaveBar();
@@ -123,6 +119,11 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
 
   const handleStopDeskLabelChange = (value: string) => {
     setStopDeskLabel(value);
+    showSaveBar();
+  };
+
+  const handleFreeShippingLabelChange = (value: string) => {
+    setFreeShippingLabel(value);
     showSaveBar();
   };
 
@@ -185,28 +186,29 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
     shopify.saveBar.hide('shipping-fees-save-bar');
 
     try {
-      const result = await saveShippingSettings(shopUrl, shippingMethod, stopDeskEnabled, provinceFees, codLabel, stopDeskLabel);
+      // Always use 'per-province' method
+      const result = await saveShippingSettings(shopUrl, 'per-province', stopDeskEnabled, provinceFees, codLabel, stopDeskLabel, freeShippingLabel);
       
       if (result.success) {
-        lastSavedMethodRef.current = shippingMethod;
         lastSavedStopDeskEnabledRef.current = stopDeskEnabled;
         lastSavedCodLabelRef.current = codLabel;
         lastSavedStopDeskLabelRef.current = stopDeskLabel;
+        lastSavedFreeShippingLabelRef.current = freeShippingLabel;
         lastSavedFeesRef.current = JSON.parse(JSON.stringify(provinceFees));
-        shopify.toast.show('Shipping settings saved successfully!');
+        shopify.toast.show(t('shippingSettingsSaved'));
       } else {
-        shopify.toast.show(result.error || 'Failed to save shipping settings', { isError: true });
+        shopify.toast.show(result.error || t('shippingSettingsSaveFailed'), { isError: true });
       }
     } catch (error) {
-      shopify.toast.show('An error occurred while saving', { isError: true });
+      shopify.toast.show(t('shippingSettingsSaveError'), { isError: true });
     }
   };
 
   const handleDiscard = () => {
-    setShippingMethod(lastSavedMethodRef.current);
     setStopDeskEnabled(lastSavedStopDeskEnabledRef.current);
     setCodLabel(lastSavedCodLabelRef.current);
     setStopDeskLabel(lastSavedStopDeskLabelRef.current);
+    setFreeShippingLabel(lastSavedFreeShippingLabelRef.current);
     setProvinceFees(JSON.parse(JSON.stringify(lastSavedFeesRef.current)));
     // Reset "all" inputs
     setAllCOD('');
@@ -229,70 +231,12 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
   return (
     <form>
       <ui-save-bar id="shipping-fees-save-bar">
-        <button variant="primary" id="save-button" onClick={handleSave}>Save</button>
-        <button type="button" onClick={handleDiscard} id="discard-button">Discard</button>
+        <button variant="primary" id="save-button" onClick={handleSave}>{t('save')}</button>
+        <button type="button" onClick={handleDiscard} id="discard-button">{t('discard')}</button>
       </ui-save-bar>
 
       <s-box padding="large">
         <s-stack gap="large">
-          <s-box>
-            <s-text variant="headingMd" as="h2">Shipping Method</s-text>
-            <s-text variant="bodyMd" tone="subdued">
-              Choose how shipping fees are calculated for your orders
-            </s-text>
-          </s-box>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card
-              className={cn(
-                "cursor-pointer transition-all hover:shadow-md",
-                shippingMethod === 'free' && "ring-2 ring-primary"
-              )}
-              onClick={() => handleMethodChange('free')}
-            >
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Free shipping</CardTitle>
-                {shippingMethod === 'free' && (
-                  <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="h-3 w-3 text-white" />
-                  </div>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                All orders will have free shipping regardless of location
-              </CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card
-            className={cn(
-              "cursor-pointer transition-all hover:shadow-md",
-              shippingMethod === 'per-province' && "ring-2 ring-primary"
-            )}
-            onClick={() => handleMethodChange('per-province')}
-          >
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Shipping Per province</CardTitle>
-                {shippingMethod === 'per-province' && (
-                  <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="h-3 w-3 text-white" />
-                  </div>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Set different shipping fees for each province
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </div>
-
-        {shippingMethod === 'per-province' && (
           <s-box
             padding="base"
             background="base"
@@ -301,15 +245,15 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
           >
             <s-stack gap="large">
               <s-box>
-                <s-text variant="headingSm" as="h3">Province Shipping Fees</s-text>
+                <s-text variant="headingSm" as="h3">{t('provinceShippingFees')}</s-text>
                 <s-text variant="bodyMd" tone="subdued">
-                  Configure shipping fees for each province
+                  {t('provinceShippingFeesDescription')}
                 </s-text>
               </s-box>
 
               <s-box>
                 <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                  <s-text>Enable Stop Desk</s-text>
+                  <s-text>{t('enableStopDesk')}</s-text>
                   <s-switch
                     checked={stopDeskEnabled}
                     onInput={(e: any) => handleStopDeskToggle(e.target?.checked ?? e.detail?.checked ?? !stopDeskEnabled)}
@@ -324,33 +268,45 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
                 borderRadius="base"
               >
                 <s-stack gap="base">
-                  <s-text variant="headingSm" as="h4">Shipping Method Labels</s-text>
+                  <s-text variant="headingSm" as="h4">{t('shippingMethodLabels')}</s-text>
                   <s-text variant="bodyMd" tone="subdued">
-                    Customize the labels displayed for shipping methods
+                    {t('shippingMethodLabelsDescription')}
                   </s-text>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="cod-label">
-                        Cash on Delivery Label
+                        {t('cashOnDeliveryLabel')}
                       </Label>
                       <Input
                         id="cod-label"
                         type="text"
                         value={codLabel}
                         onChange={(e) => handleCodLabelChange(e.target.value)}
-                        placeholder="Cash on Delivery"
+                        placeholder={t('cashOnDelivery')}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="stopdesk-label">
-                        Stop Desk Label
+                        {t('stopDeskLabel')}
                       </Label>
                       <Input
                         id="stopdesk-label"
                         type="text"
                         value={stopDeskLabel}
                         onChange={(e) => handleStopDeskLabelChange(e.target.value)}
-                        placeholder="Stop Desk"
+                        placeholder={t('stopDesk')}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="freeshipping-label">
+                        {t('freeShippingText')}
+                      </Label>
+                      <Input
+                        id="freeshipping-label"
+                        type="text"
+                        value={freeShippingLabel}
+                        onChange={(e) => handleFreeShippingLabelChange(e.target.value)}
+                        placeholder="مجاني"
                       />
                     </div>
                   </div>
@@ -364,11 +320,11 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
                 borderRadius="base"
               >
                 <s-stack gap="base">
-                  <s-text variant="headingSm" as="h4">Apply to All Provinces</s-text>
+                  <s-text variant="headingSm" as="h4">{t('applyToAllProvinces')}</s-text>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="all-cod">
-                        All {codLabel} (DZD)
+                        {t('allCashOnDelivery', { label: codLabel })}
                       </Label>
                       <div className="relative">
                         <Input
@@ -389,7 +345,7 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
                     {stopDeskEnabled && (
                       <div className="space-y-2">
                         <Label htmlFor="all-stopdesk">
-                          All {stopDeskLabel} (DZD)
+                          {t('allStopDesk', { label: stopDeskLabel })}
                         </Label>
                         <div className="relative">
                           <Input
@@ -413,7 +369,7 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
               </s-box>
 
               {loading ? (
-                <s-text>Loading provinces...</s-text>
+                <s-text>{t('loadingProvinces')}</s-text>
               ) : (
                 <div className="space-y-4">
                   {provinces.map((province) => (
@@ -435,7 +391,7 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
                               <Input
                                 id={`cash-${province.id}`}
                                 type="text"
-                                value={formatCurrencyDisplay(provinceFees[province.id]?.cashOnDelivery || '', `cash-${province.id}`)}
+                                value={formatCurrencyDisplay(provinceFees[province.id]?.cashOnDelivery || '0', `cash-${province.id}`)}
                                 onChange={(e) => handleFeeChange(province.id, 'cashOnDelivery', e.target.value)}
                                 onFocus={() => setFocusedInput(`cash-${province.id}`)}
                                 onBlur={() => setFocusedInput(null)}
@@ -456,7 +412,7 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
                                 <Input
                                   id={`stopdesk-${province.id}`}
                                   type="text"
-                                  value={formatCurrencyDisplay(provinceFees[province.id]?.stopDesk || '', `stopdesk-${province.id}`)}
+                                  value={formatCurrencyDisplay(provinceFees[province.id]?.stopDesk || '0', `stopdesk-${province.id}`)}
                                   onChange={(e) => handleFeeChange(province.id, 'stopDesk', e.target.value)}
                                   onFocus={() => setFocusedInput(`stopdesk-${province.id}`)}
                                   onBlur={() => setFocusedInput(null)}
@@ -477,7 +433,6 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
               )}
             </s-stack>
           </s-box>
-        )}
         </s-stack>
       </s-box>
     </form>

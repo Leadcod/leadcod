@@ -7,16 +7,14 @@ export class OrderController {
       shopUrl: string
       name: string
       phone: string
-      city: string
-      province: string
+      cityId: string
+      provinceId: string
       productId: string | number
-      shippingPrice?: number
-      shippingLabel?: string
       shippingType?: string
     },
     request?: Request
   }) {
-    const { shopUrl, name, phone, city, province, productId, shippingPrice, shippingLabel, shippingType } = body;
+    const { shopUrl, name, phone, cityId, provinceId, productId, shippingType } = body;
     
     // Get IP address from request headers
     let ipAddress = 'Unknown';
@@ -32,13 +30,13 @@ export class OrderController {
     }
 
     // Log received data for debugging
-    console.log('Received order data:', { shopUrl, name, phone, city, province, productId, productIdType: typeof productId, shippingPrice, shippingLabel });
+    console.log('Received order data:', { shopUrl, name, phone, cityId, provinceId, productId, productIdType: typeof productId, shippingType });
 
-    if (!shopUrl || !name || !phone || !city || !province || productId === undefined || productId === null) {
+    if (!shopUrl || !name || !phone || !cityId || !provinceId || productId === undefined || productId === null) {
       return {
         success: false,
-        error: 'shopUrl, name, phone, city, province, and productId are required',
-        received: { shopUrl, name, phone, city, province, productId }
+        error: 'shopUrl, name, phone, cityId, provinceId, and productId are required',
+        received: { shopUrl, name, phone, cityId, provinceId, productId }
       };
     }
 
@@ -56,6 +54,73 @@ export class OrderController {
           success: false,
           error: 'Shop not found or access token not available'
         };
+      }
+
+      // Look up state and city by IDs to get names
+      const [state, city] = await Promise.all([
+        prisma.state.findUnique({
+          where: { id: provinceId },
+          select: { id: true, name: true, nameAr: true }
+        }),
+        prisma.city.findUnique({
+          where: { id: cityId },
+          select: { id: true, name: true, nameAr: true }
+        })
+      ]);
+
+      if (!state) {
+        return {
+          success: false,
+          error: 'Invalid provinceId'
+        };
+      }
+
+      if (!city) {
+        return {
+          success: false,
+          error: 'Invalid cityId'
+        };
+      }
+
+      // Use state name for province (prefer name over nameAr for consistency)
+      const provinceName = state.name;
+      const cityName = city.name;
+
+      // Calculate shipping price and label from backend
+      let shippingPrice: number | null = null;
+      let shippingLabel: string = 'Shipping';
+      
+      if (shippingType) {
+        // Get shipping settings
+        const shippingSettings = await prisma.shippingSettings.findUnique({
+          where: { shopId: shop.id }
+        });
+
+        // Get shipping fee for this state (using provinceId directly)
+        const shippingFee = await prisma.shippingFee.findUnique({
+          where: {
+            shopId_stateId: {
+              shopId: shop.id,
+              stateId: provinceId
+            }
+          }
+        });
+
+        if (shippingFee) {
+          // Determine price based on shipping type
+          if (shippingType === 'cod') {
+            shippingPrice = shippingFee.cashOnDelivery ?? 0;
+            shippingLabel = shippingSettings?.codLabel || 'Cash on Delivery';
+          } else if (shippingType === 'stopDesk') {
+            shippingPrice = shippingFee.stopDesk ?? 0;
+            shippingLabel = shippingSettings?.stopDeskLabel || 'Stop Desk';
+          }
+
+          // If price is 0, use free shipping label
+          if (shippingPrice === 0 && shippingSettings?.freeShippingLabel) {
+            shippingLabel = shippingSettings.freeShippingLabel;
+          }
+        }
       }
 
       // Create the order on Shopify using productId directly as variant_id
@@ -108,9 +173,9 @@ export class OrderController {
                   {
                     first_name: name,
                     last_name: '',
-                    city: city,
-                    address1:province,
-                    province: province,
+                    city: cityName,
+                    address1: provinceName,
+                    province: provinceName,
                     country: 'Algeria',
                     phone: phone
                   }
@@ -174,11 +239,11 @@ export class OrderController {
           note_attributes: [
             {
               name: 'Province',
-              value: province
+              value: provinceName
             },
             {
               name: 'City',
-              value: city
+              value: cityName
             },
             {
               name: 'IP Address',
@@ -188,11 +253,11 @@ export class OrderController {
         }
       };
 
-      // Add shipping price if provided
-      if (shippingPrice !== undefined && shippingPrice !== null) {
+      // Add shipping price if calculated
+      if (shippingPrice !== null && shippingPrice !== undefined) {
         orderData.order.shipping_lines = [
           {
-            title: shippingLabel || 'Shipping',
+            title: shippingLabel,
             price: shippingPrice.toString(),
             code: 'manual'
           }
@@ -244,11 +309,9 @@ export class OrderController {
       shopUrl: t.String(),
       name: t.String(),
       phone: t.String(),
-      city: t.String(),
-      province: t.String(),
+      cityId: t.String(),
+      provinceId: t.String(),
       productId: t.Union([t.String(), t.Number()]),
-      shippingPrice: t.Optional(t.Number()),
-      shippingLabel: t.Optional(t.String()),
       shippingType: t.Optional(t.String())
     })
   }

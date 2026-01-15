@@ -1,14 +1,10 @@
-{% comment %}
-  Leadcod Form - Styles
-  CSS styles and animations for the form
-{% endcomment %}
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap');
 
 .leadcod-form-container {
   width: 100%;
   max-width: 100%;
-  background-color: #E5E7EB;
+  background-color: #F3F4F6;
   padding: 16px;
   border-radius: 12px;
 }
@@ -24,7 +20,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Cairo', sans-serif;
   padding: 0;
   border-radius: 0;
   box-shadow: none;
@@ -52,7 +48,6 @@
 .leadcod-fields-grid {
   display: flex;
   flex-direction: column;
-  gap: 16px;
   margin-bottom: 0;
 }
 
@@ -71,8 +66,8 @@
 .leadcod-field {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-bottom: 0;
+  gap: 0px;
+  margin-bottom: 5px;
 }
 
 .leadcod-field input,
@@ -90,7 +85,6 @@
   position: relative;
 }
 
-/* Arrow for select inputs */
 .leadcod-select-arrow-left::after,
 .leadcod-select-arrow-right::after {
   content: '';
@@ -115,7 +109,6 @@
   right: 12px;
 }
 
-/* Adjust arrow position when icon is on the same side */
 .leadcod-select-icon-right.leadcod-select-arrow-left::after {
   left: 12px;
 }
@@ -124,7 +117,6 @@
   right: 12px;
 }
 
-/* Remove border and border-radius on select when icon is present */
 .leadcod-select-icon-left {
   border-left: none !important;
   border-top-left-radius: 0 !important;
@@ -137,7 +129,6 @@
   border-bottom-right-radius: 0 !important;
 }
 
-/* Also remove border when icon wrapper is adjacent (icon on left) */
 .leadcod-input-wrapper > div[style*="border-right: none"] + select {
   border-left: none !important;
 }
@@ -152,7 +143,7 @@
 .leadcod-field label {
   font-weight: 500;
   color: #1f2937;
-  margin-bottom: 2px;
+  margin-bottom: 0px;
 }
 
 .leadcod-input-wrapper {
@@ -262,7 +253,6 @@
   animation: slideDownFadeIn 0.4s ease-out forwards;
 }
 
-/* Style radio buttons in shipping section to use primary color */
 .leadcod-shipping-section input[type="radio"] {
   accent-color: var(--leadcod-primary-color, #3b82f6);
   cursor: pointer;
@@ -272,7 +262,6 @@
   accent-color: var(--leadcod-primary-color, #3b82f6);
 }
 
-/* Button Styles */
 .leadcod-button-group {
   display: flex;
   gap: 12px;
@@ -282,9 +271,7 @@
 
 .leadcod-confirm-button {
   flex: 1;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  background-size: 200% 200%;
-  animation: backgroundShift 4s ease infinite;
+  /* Background and animation are set via inline styles from field settings */
   color: white;
   border: none;
   border-radius: 8px;
@@ -322,7 +309,7 @@
 }
 
 .leadcod-whatsapp-button {
-  background: #25D366;
+  /* Background is set via inline styles from field settings */
   color: white;
   border: none;
   border-radius: 8px;
@@ -341,8 +328,8 @@
 
 .leadcod-whatsapp-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
-  background: #20ba5a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  filter: brightness(0.95);
 }
 
 .leadcod-whatsapp-icon {
@@ -389,41 +376,13 @@
   color: #1f2937;
 }
 
-/* Order Summary Styles */
 .leadcod-summary-section {
   margin-top: 0;
   margin-bottom: 0;
 }
 
-.leadcod-summary-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  padding: 4px 0;
-}
-
-.leadcod-summary-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  font-size: 18px;
-  color: #1f2937;
-  margin: 0;
-}
-
-.leadcod-summary-toggle {
-  color: #6b7280;
-  transition: transform 0.3s;
-}
-
-.leadcod-summary-toggle.expanded {
-  transform: rotate(180deg);
-}
-
 .leadcod-summary-content {
-  margin-top: 6px;
+  margin-top: 0;
 }
 
 .leadcod-summary-item {
@@ -475,7 +434,6 @@
   margin-top: 2px;
 }
 
-/* Dotted separator */
 .leadcod-dotted-separator {
   border: none;
   border-top: 1px dotted #d1d5db;

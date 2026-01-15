@@ -75,6 +75,7 @@ model ShippingSettings {
   stopDeskEnabled Boolean @default(false)
   codLabel String? // Custom label for Cash on Delivery
   stopDeskLabel String? // Custom label for Stop Desk
+  freeShippingLabel String? // Custom label for Free Shipping
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
