@@ -158,7 +158,8 @@
   "navigation": {
     "formBuilder": "Constructeur de formulaire",
     "shippingFees": "Frais de livraison",
-    "specialOffers": "Offres spéciales"
+    "specialOffers": "Offres spéciales",
+    "plans": "Plans"
   },
   "liquid": {
     "loadingForm": "Chargement du formulaire...",
@@ -218,5 +219,43 @@
     "freePlanDescription": "Vous avez {limit} commandes gratuites par mois",
     "paidPlanDescription": "Commandes illimitées pour ${price}/mois",
     "upgradeToPaid": "Passer à ${price}/mois pour des commandes illimitées"
+  },
+  "plans": {
+    "title": "Plans et tarifs",
+    "description": "Choisissez le plan qui vous convient",
+    "currentPlan": "Plan actuel",
+    "freePlan": "Gratuit",
+    "paidPlan": "Payant",
+    "freePlanDescription": "Parfait pour commencer",
+    "paidPlanDescription": "Idéal pour les entreprises en croissance",
+    "free": "Gratuit",
+    "forever": "Pour toujours",
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
+    "month": "mois",
+    "year": "année",
+    "save": "Économiser",
+    "or": "ou",
+    "billedYearly": "Facturé ${price} par an",
+    "ifPaidYearly": "si payé annuellement",
+    "current": "Actuel",
+    "popular": "Populaire",
+    "selectPlan": "Sélectionner le plan",
+    "subscribe": "S'abonner",
+    "saving": "Enregistrement...",
+    "planUpdated": "Plan mis à jour avec succès",
+    "subscribeComingSoon": "Fonctionnalité d'abonnement à venir !",
+    "subscriptionActivated": "Abonnement activé avec succès !",
+    "subscriptionError": "Une erreur s'est produite lors de l'abonnement. Veuillez réessayer.",
+    "features": {
+      "free": {
+        "orders": "{count} commandes par mois",
+        "support": "Support par e-mail"
+      },
+      "paid": {
+        "orders": "Commandes illimitées",
+        "support": "Support WhatsApp"
+      }
+    }
   }
 }

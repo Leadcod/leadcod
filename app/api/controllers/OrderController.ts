@@ -2,6 +2,7 @@ import { t } from 'elysia'
 import { prisma } from '@/lib/prisma'
 import { SHOPIFY_API_VERSION } from '@/lib/constants/shopify'
 import { getPlanInfo } from '@/app/actions/plan'
+import { PlanType } from '@/lib/constants/plan'
 
 export class OrderController {
   static async createOrder({ body, request }: { 
@@ -31,9 +32,6 @@ export class OrderController {
                   'Unknown';
     }
 
-    // Log received data for debugging
-    console.log('Received order data:', { shopUrl, name, phone, cityId, provinceId, productId, productIdType: typeof productId, shippingType });
-
     if (!shopUrl || !name || !phone || !cityId || !provinceId || productId === undefined || productId === null) {
       return {
         success: false,
@@ -60,7 +58,7 @@ export class OrderController {
 
       // Check if shop has exceeded free tier limit
       const planInfo = await getPlanInfo(normalizedShopUrl);
-      if (planInfo.planType === 'free' && planInfo.orderCount >= planInfo.orderLimit) {
+      if (planInfo.planType === PlanType.FREE && planInfo.orderCount >= planInfo.orderLimit) {
         return {
           success: false,
           error: `You have reached your free tier limit of ${planInfo.orderLimit} orders per month. Please upgrade to a paid plan to continue creating orders.`,
@@ -162,11 +160,10 @@ export class OrderController {
           const searchData = await searchResponse.json();
           if (searchData.customers && searchData.customers.length > 0) {
             customerId = searchData.customers[0].id;
-            console.log('Found existing customer:', customerId);
           }
         }
       } catch (error) {
-        console.log('Customer search failed, will try to create new customer:', error);
+        // Customer search failed, will try to create new customer
       }
 
       // Step 2: If customer not found, try to create a new one
@@ -202,11 +199,9 @@ export class OrderController {
           if (customerResponse.ok) {
             const customerData = await customerResponse.json();
             customerId = customerData.customer.id;
-            console.log('Created new customer:', customerId);
           } else {
             // If creation fails (e.g., phone already taken), search again
             const errorText = await customerResponse.text();
-            console.log('Customer creation failed, searching again:', errorText);
             
             const retrySearchResponse = await fetch(searchUrl, {
               method: 'GET',
@@ -220,12 +215,11 @@ export class OrderController {
               const retrySearchData = await retrySearchResponse.json();
               if (retrySearchData.customers && retrySearchData.customers.length > 0) {
                 customerId = retrySearchData.customers[0].id;
-                console.log('Found existing customer on retry:', customerId);
               }
             }
           }
         } catch (error) {
-          console.log('Customer creation failed:', error);
+          // Customer creation failed
         }
       }
 
@@ -297,7 +291,6 @@ export class OrderController {
 
       if (!orderResponse.ok) {
         const errorText = await orderResponse.text();
-        console.error('Shopify order creation failed:', errorText);
         return {
           success: false,
           error: `Failed to create order: ${orderResponse.status} ${orderResponse.statusText} - ${errorText}`
@@ -311,7 +304,6 @@ export class OrderController {
         data: orderResult.order
       };
     } catch (error) {
-      console.error('Error creating order:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'

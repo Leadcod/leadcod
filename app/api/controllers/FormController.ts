@@ -51,7 +51,6 @@ export class FormController {
         }
       };
     } catch (error) {
-      console.error('Error fetching form:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'

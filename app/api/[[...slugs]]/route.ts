@@ -4,6 +4,7 @@ import { FormController } from '../controllers/FormController'
 import { LocationController } from '../controllers/LocationController'
 import { OrderController } from '../controllers/OrderController'
 import { OnboardingController } from '../controllers/OnboardingController'
+import { BillingController } from '../controllers/BillingController'
 
 const app = new Elysia({ prefix: '/api' })
   .use(cors({
@@ -28,6 +29,12 @@ const app = new Elysia({ prefix: '/api' })
       request: context.request 
     });
   }, OrderController.createOrderSchema)
+  .get('/billing/confirm', async (context) => {
+    return BillingController.confirm({
+      query: context.query as any,
+      request: context.request
+    });
+  }, BillingController.confirmSchema)
 
 export const GET = app.fetch 
 export const POST = app.fetch

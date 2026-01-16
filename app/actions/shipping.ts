@@ -34,7 +34,6 @@ export async function getProvinces() {
       data: states
     };
   } catch (error) {
-    console.error('Error fetching provinces:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -100,7 +99,6 @@ export async function getShippingSettings(shopUrl: string) {
       }
     };
   } catch (error) {
-    console.error('Error fetching shipping settings:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -148,7 +146,6 @@ export async function getShippingFeesForState(shopUrl: string, stateId: string) 
       }
     };
   } catch (error) {
-    console.error('Error fetching shipping fees for state:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -255,7 +252,6 @@ export async function saveShippingSettings(
       success: true
     };
   } catch (error) {
-    console.error('Error saving shipping settings:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'

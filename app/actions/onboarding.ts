@@ -13,7 +13,6 @@ export async function getOnboardingProgress(shopUrl: string): Promise<{ complete
     
     return { completedSteps: [] };
   } catch (error) {
-    console.error('Error getting onboarding progress:', error);
     return { completedSteps: [] };
   }
 }
@@ -39,7 +38,6 @@ export async function markOnboardingStepComplete(shopUrl: string, step: Onboardi
     
     return { success: false, error: result.error || 'Failed to save progress' };
   } catch (error) {
-    console.error('Error marking onboarding step complete:', error);
     return { success: false, error: 'Failed to save progress' };
   }
 }

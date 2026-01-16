@@ -158,7 +158,8 @@
   "navigation": {
     "formBuilder": "منشئ النماذج",
     "shippingFees": "رسوم الشحن",
-    "specialOffers": "العروض الخاصة"
+    "specialOffers": "العروض الخاصة",
+    "plans": "الخطط"
   },
   "liquid": {
     "loadingForm": "جاري تحميل النموذج...",
@@ -218,5 +219,43 @@
     "freePlanDescription": "لديك {limit} طلبات مجانية شهرياً",
     "paidPlanDescription": "طلبات غير محدودة مقابل ${price}/شهر",
     "upgradeToPaid": "ترقية إلى ${price}/شهر للحصول على طلبات غير محدودة"
+  },
+  "plans": {
+    "title": "الخطط والأسعار",
+    "description": "اختر الخطة المناسبة لك",
+    "currentPlan": "الخطة الحالية",
+    "freePlan": "مجاني",
+    "paidPlan": "مدفوع",
+    "freePlanDescription": "مثالي للبدء",
+    "paidPlanDescription": "الأفضل للشركات النامية",
+    "free": "مجاني",
+    "forever": "للأبد",
+    "monthly": "شهري",
+    "yearly": "سنوي",
+    "month": "شهر",
+    "year": "سنة",
+    "save": "توفير",
+    "or": "أو",
+    "billedYearly": "يُدفع ${price} سنوياً",
+    "ifPaidYearly": "إذا تم الدفع سنوياً",
+    "current": "الحالية",
+    "popular": "شائع",
+    "selectPlan": "اختر الخطة",
+    "subscribe": "اشترك",
+    "saving": "جاري الحفظ...",
+    "planUpdated": "تم تحديث الخطة بنجاح",
+    "subscribeComingSoon": "وظيفة الاشتراك قريباً!",
+    "subscriptionActivated": "تم تفعيل الاشتراك بنجاح!",
+    "subscriptionError": "حدث خطأ أثناء الاشتراك. يرجى المحاولة مرة أخرى.",
+    "features": {
+      "free": {
+        "orders": "{count} طلب شهرياً",
+        "support": "دعم عبر البريد الإلكتروني"
+      },
+      "paid": {
+        "orders": "طلبات غير محدودة",
+        "support": "دعم عبر واتساب"
+      }
+    }
   }
 }

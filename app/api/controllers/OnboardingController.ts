@@ -41,7 +41,6 @@ export class OnboardingController {
         }
       };
     } catch (error) {
-      console.error('Error getting onboarding progress:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'
@@ -105,7 +104,6 @@ export class OnboardingController {
         data: { completedSteps }
       };
     } catch (error) {
-      console.error('Error marking onboarding step complete:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to save progress'

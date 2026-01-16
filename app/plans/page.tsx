@@ -1,17 +1,16 @@
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
-import FormBuilderClient from "../components/FormBuilder/FormBuilderClient";
-import { getForm } from "../actions/form";
-import { shopExists } from "../actions/shopify-auth";
+import PlansClient from "../components/Plans/PlansClient";
+import { shopExists } from "@/app/actions/shopify-auth";
+import { getPlanInfo } from "@/app/actions/plan";
 import PageLoader from "../components/PageLoader";
 
-export default async function FormBuilderPage({
+export default async function PlansPage({
   searchParams,
 }: {
   searchParams: Promise<{ shop: string }>;
 }) {
-  const t = await getTranslations("formBuilder");
-
+  const t = await getTranslations("plans");
   const { shop } = await searchParams;
   
   // Check if shop exists, redirect to onboarding if not
@@ -23,13 +22,14 @@ export default async function FormBuilderPage({
   if (!exists) {
     redirect('/');
   }
-  
-  const existingForm = await getForm(shop);
+
+  // Load plan info on the server
+  const planInfo = await getPlanInfo(shop);
 
   return (
     <PageLoader>
-      <s-page heading={t('title')} />
-      <FormBuilderClient shopUrl={shop} existingForm={existingForm} />
+      <s-page heading={t("title")} />
+      <PlansClient shopUrl={shop} initialPlanInfo={planInfo} />
     </PageLoader>
   );
 }

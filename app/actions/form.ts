@@ -74,7 +74,6 @@ export async function saveForm(shopUrl: string, formData: FormSettings, isRender
       shopId: shop.id 
     };
   } catch (error) {
-    console.error('Error saving form:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error' 
@@ -99,7 +98,6 @@ export async function getForm(shopUrl: string) {
       settings: shop.Form[0].settings
     };
   } catch (error) {
-    console.error('Error getting form:', error);
     return null;
   }
 }

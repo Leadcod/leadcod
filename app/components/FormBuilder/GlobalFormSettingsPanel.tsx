@@ -413,7 +413,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
               onChange={(e: any) => onUpdate({ currency: e.target.value || 'DZD' })}
               placeholder="DZD"
             />
-            <s-text variant="subdued" tone="subdued">
+            <s-text>
               {t('currencyDescription')}
             </s-text>
           </div>

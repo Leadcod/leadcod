@@ -1,4 +1,4 @@
-{% assign LEADCOD_API_URL = 'https://65434dd7055b.ngrok-free.app/api/form' %}
+{% assign LEADCOD_API_URL = 'https://feof-antibody-blond-antonio.trycloudflare.com/api/form' %}
 <script>
 (function() {
   'use strict';
@@ -20,7 +20,6 @@
       renderForm(container, fields, settings, shippingSettings);
     })
     .catch(error => {
-      console.error('Error loading form:', error);
       container.innerHTML = `<div class="leadcod-form-error">Error loading form: ${error.message}. Please check your API URL configuration.</div>`;
     });
 
@@ -271,7 +270,6 @@
           
           if (result.success) form.reset();
         } catch (error) {
-          console.error('Error submitting order:', error);
           alert('Error submitting order: ' + error.message);
         } finally {
           if (submitButton) {
@@ -775,7 +773,6 @@
           }
         })
         .catch(error => {
-          console.error('Error fetching shipping fees:', error);
           removeLoaders();
           setErrorPrice(codPriceElement);
           setErrorPrice(stopDeskPriceElement);
@@ -844,7 +841,6 @@
                     updateShippingSectionVisibility();
                   })
                   .catch(error => {
-                    console.error('Error fetching cities:', error);
                     cityField.innerHTML = `<option value="">${cityPlaceholder}</option>`;
                     cityField.style.opacity = '0.6';
                     updateShippingSectionVisibility();
@@ -868,7 +864,6 @@
         }
       })
       .catch(error => {
-        console.error('Error fetching states:', error);
         provinceSelect.innerHTML = `<option value="">${provincePlaceholder}</option>`;
       });
   }

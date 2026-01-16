@@ -101,7 +101,7 @@ export default function FormDisplay({
           setStates(result.data);
         }
       } catch (error) {
-        console.error('Error fetching states:', error);
+        // Error handling
       } finally {
         setLoadingStates(false);
       }
@@ -126,7 +126,7 @@ export default function FormDisplay({
           setCities(result.data);
         }
       } catch (error) {
-        console.error('Error fetching cities:', error);
+        // Error handling
       } finally {
         setLoadingCities(false);
       }
@@ -153,7 +153,6 @@ export default function FormDisplay({
           setShippingFees(null);
         }
       } catch (error) {
-        console.error('Error fetching shipping fees:', error);
         setShippingFees(null);
       } finally {
         setLoadingShippingFees(false);
@@ -581,8 +580,10 @@ export default function FormDisplay({
                 placeholder={field.showPlaceholder ? field.placeholder : ''}
                 style={{
                   ...inputStyle,
-                  borderColor: hasError ? '#ef4444' : inputStyle.borderColor,
-                  borderWidth: hasError ? '2px' : inputStyle.borderWidth
+                  ...(hasError && {
+                    borderColor: '#ef4444',
+                    borderWidth: '2px'
+                  })
                 }}
                 required={field.required}
                 readOnly={isPreview}
@@ -1119,7 +1120,7 @@ export default function FormDisplay({
         const textColor = field.inputTextColor || '#ffffff';
         
         // Build button style object
-        const buttonStyle: React.CSSProperties = {
+        const buttonStyle: React.CSSProperties & Record<string, any> = {
           fontFamily: getFontFamily(field.fontFamily),
           fontSize: buttonFontSize,
           fontWeight: 'bold',
@@ -1198,7 +1199,7 @@ export default function FormDisplay({
           } else if (!glowColor.startsWith('rgba(')) {
             rgbaColor = `rgba(0, 0, 0, 0.3)`;
           }
-          buttonStyle['--glow-color' as any] = rgbaColor;
+          buttonStyle['--glow-color'] = rgbaColor;
         }
         
         return (
@@ -1270,7 +1271,7 @@ export default function FormDisplay({
         const textColor = field.inputTextColor || '#ffffff';
         
         // Build button style object
-        const buttonStyle: React.CSSProperties = {
+        const buttonStyle: React.CSSProperties & Record<string, any> = {
           fontFamily: getFontFamily(field.fontFamily),
           fontSize: buttonFontSize,
           fontWeight: 'bold',
@@ -1349,7 +1350,7 @@ export default function FormDisplay({
           } else if (!glowColor.startsWith('rgba(')) {
             rgbaColor = `rgba(0, 0, 0, 0.3)`;
           }
-          buttonStyle['--glow-color' as any] = rgbaColor;
+          buttonStyle['--glow-color'] = rgbaColor;
         }
         
         // Get WhatsApp number from field
@@ -1358,7 +1359,9 @@ export default function FormDisplay({
         // Handle WhatsApp button click
         const handleWhatsAppClick = () => {
           if (isPreview) {
-            handleFieldClick(field.id);
+            if (onFieldClick) {
+              onFieldClick(field.id);
+            }
             return;
           }
           

@@ -73,7 +73,6 @@ export default function Home() {
               loading: false,
             });
           } catch (error) {
-            console.error("Error loading onboarding progress:", error);
             setOnboardingProgress({ completedSteps: [], loading: false });
           }
         } else {
@@ -81,11 +80,10 @@ export default function Home() {
             loading: false,
             success: false,
           });
-          setOnboardingProgress({ completedSteps: [], loading: false });
-        }
-      } catch (error) {
-        console.error("Error initializing shop:", error);
-        setStatus({
+        setOnboardingProgress({ completedSteps: [], loading: false });
+      }
+    } catch (error) {
+      setStatus({
           loading: false,
           success: false,
         });

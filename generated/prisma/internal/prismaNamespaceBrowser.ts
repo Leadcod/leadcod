@@ -58,7 +58,8 @@ export const ModelName = {
   City: 'City',
   ShippingSettings: 'ShippingSettings',
   ShippingFee: 'ShippingFee',
-  OnboardingProgress: 'OnboardingProgress'
+  OnboardingProgress: 'OnboardingProgress',
+  Subscription: 'Subscription'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -81,6 +82,7 @@ export const ShopScalarFieldEnum = {
   id: 'id',
   url: 'url',
   accessToken: 'accessToken',
+  plan: 'plan',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -174,6 +176,24 @@ export const OnboardingProgressScalarFieldEnum = {
 } as const
 
 export type OnboardingProgressScalarFieldEnum = (typeof OnboardingProgressScalarFieldEnum)[keyof typeof OnboardingProgressScalarFieldEnum]
+
+
+export const SubscriptionScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  shopifyChargeId: 'shopifyChargeId',
+  status: 'status',
+  startedAt: 'startedAt',
+  expiresAt: 'expiresAt',
+  billingCycle: 'billingCycle',
+  price: 'price',
+  currencyCode: 'currencyCode',
+  cancelledAt: 'cancelledAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
 
 
 export const SortOrder = {

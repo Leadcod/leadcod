@@ -35,7 +35,6 @@ export class LocationController {
         data: states
       };
     } catch (error) {
-      console.error('Error fetching states:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'
@@ -69,7 +68,6 @@ export class LocationController {
         data: cities
       };
     } catch (error) {
-      console.error('Error fetching cities:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'
@@ -98,18 +96,11 @@ export class LocationController {
       const result = await getShippingFeesForState(shopUrl, stateId);
       return result;
     } catch (error) {
-      console.error('Error fetching shipping fees:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'
       };
     }
-  }
-
-  static getStatesSchema = {
-    query: t.Object({
-      countryId: t.Optional(t.String())
-    })
   }
 
   static getCitiesSchema = {

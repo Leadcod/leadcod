@@ -108,7 +108,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                   />
                 </div>
               </div>
-              <s-text variant="subdued" tone="subdued">
+              <s-text>
                 {t('whatsappNumberHint')}
               </s-text>
             </s-stack>
@@ -122,7 +122,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                   onChange={(e: any) => onUpdate(field.id, { summaryPlaceholder: e.target.value })}
                   placeholder="-"
                 />
-                <s-text variant="subdued" tone="subdued">
+                <s-text>
                   {t('summaryPlaceholderHint')}
                 </s-text>
               </div>
@@ -141,7 +141,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                   onChange={(e: any) => onUpdate(field.id, { shippingLabel: e.target.value })}
                   placeholder={t('shippingPrice')}
                 />
-                <s-text variant="subdued" tone="subdued">
+                <s-text>
                   {t('shippingLabelHint')}
                 </s-text>
               </div>
@@ -152,7 +152,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                   onChange={(e: any) => onUpdate(field.id, { chooseProvinceHint: e.target.value })}
                   placeholder={t('chooseProvince')}
                 />
-                <s-text variant="subdued" tone="subdued">
+                <s-text>
                   {t('chooseProvinceHintDescription')}
                 </s-text>
               </div>
@@ -163,7 +163,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                   onChange={(e: any) => onUpdate(field.id, { selectShippingOptionHint: e.target.value })}
                   placeholder={t('selectShippingOption')}
                 />
-                <s-text variant="subdued" tone="subdued">
+                <s-text>
                   {t('selectShippingOptionHintDescription')}
                 </s-text>
               </div>
@@ -231,7 +231,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
           ) : field.type === 'quantity' ? (
             /* Quantity Field - Minimal Settings Only */
             <s-stack gap="small">
-              <s-text variant="subdued" tone="subdued">
+              <s-text>
                 {t('quantityFieldDescription')}
               </s-text>
             </s-stack>
@@ -296,7 +296,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     onInput={(e: any) => onUpdate(field.id, { selectProvinceFirstHint: e.target.value })}
                     placeholder={t('selectProvinceFirst')}
                   />
-                  <s-text variant="subdued" tone="subdued">
+                  <s-text>
                     {t('selectProvinceFirstHintDescription')}
                   </s-text>
                 </div>
@@ -310,9 +310,9 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                       onInput={(e: any) => onUpdate(field.id, { phoneErrorNumbersOnly: e.target.value })}
                       placeholder="يجب أن يحتوي رقم الهاتف على أرقام فقط"
                     />
-                    <s-text variant="subdued" tone="subdued" style={{ fontSize: '12px', marginTop: '4px' }}>
+                    <span style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
                       يظهر عند إدخال أحرف أو رموز خاصة
-                    </s-text>
+                    </span>
                   </div>
                   <div>
                     <s-text>خطأ: بادئة غير صحيحة</s-text>
@@ -321,9 +321,9 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                       onInput={(e: any) => onUpdate(field.id, { phoneErrorInvalidPrefix: e.target.value })}
                       placeholder="يجب أن يبدأ رقم الهاتف بـ 05، 06، 07، 5، 6، أو 7"
                     />
-                    <s-text variant="subdued" tone="subdued" style={{ fontSize: '12px', marginTop: '4px' }}>
+                    <span style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
                       يظهر عندما لا يبدأ رقم الهاتف ببادئة صحيحة
-                    </s-text>
+                    </span>
                   </div>
                   <div>
                     <s-text>خطأ: طول خاطئ (10 أرقام)</s-text>
@@ -332,9 +332,9 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                       onInput={(e: any) => onUpdate(field.id, { phoneErrorWrongLength10: e.target.value })}
                       placeholder="يجب أن يكون رقم الهاتف 10 أرقام بالضبط عند البدء بـ 0"
                     />
-                    <s-text variant="subdued" tone="subdued" style={{ fontSize: '12px', marginTop: '4px' }}>
+                    <span style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
                       يظهر عندما يبدأ رقم الهاتف بـ 0 ولكن ليس 10 أرقام
-                    </s-text>
+                    </span>
                   </div>
                   <div>
                     <s-text>خطأ: طول خاطئ (9 أرقام)</s-text>
@@ -343,9 +343,9 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                       onInput={(e: any) => onUpdate(field.id, { phoneErrorWrongLength9: e.target.value })}
                       placeholder="يجب أن يكون رقم الهاتف 9 أرقام بالضبط عند البدء بـ 5، 6، أو 7"
                     />
-                    <s-text variant="subdued" tone="subdued" style={{ fontSize: '12px', marginTop: '4px' }}>
+                    <span style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
                       يظهر عندما يبدأ رقم الهاتف بـ 5، 6، أو 7 ولكن ليس 9 أرقام
-                    </s-text>
+                    </span>
                   </div>
                 </s-stack>
               )}
@@ -378,14 +378,14 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                 <s-stack direction="inline" gap="base" alignItems="center">
                   {(() => {
                     if (field.icon === 'none') {
-                      return <s-text variant="subdued" tone="subdued">{t('none')}</s-text>;
+                      return <s-text>{t('none')}</s-text>;
                     }
                     const IconComp = getIconComponent(field.icon);
                     if (!IconComp) return null;
                     // Font Awesome icons, just need to set size
                     return <IconComp size={24} />;
                   })()}
-                  <s-text variant="subdued" tone="subdued">{t('preview')}</s-text>
+                  <s-text>{t('preview')}</s-text>
                 </s-stack>
               </div>
             </div>
@@ -530,7 +530,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                                   />
                                 ))}
                               </div>
-                              <s-text variant="subdued" tone="subdued">
+                              <s-text>
                                 {t('selected')} {GRADIENT_PRESETS.find(p => p.value === field.gradientBackground)?.name || t('custom')}
                               </s-text>
                             </s-stack>
@@ -674,21 +674,21 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                       onClick={() => onUpdate(field.id, { labelAlignment: 'left' })}
                       aria-label="Align left"
                     >
-                      <Bars3BottomLeftIcon className="w-[18px] h-[18px]" />
+                      <FontAwesomeIcon icon="Bars3BottomLeft" size={18} />
                     </s-button>
                     <s-button
                       variant={(field.labelAlignment || 'right') === 'center' ? 'primary' : 'secondary'}
                       onClick={() => onUpdate(field.id, { labelAlignment: 'center' })}
                       aria-label="Align center"
                     >
-                      <Bars3Icon className="w-[18px] h-[18px]" />
+                      <FontAwesomeIcon icon="Bars3" size={18} />
                     </s-button>
                     <s-button
                       variant={(field.labelAlignment || 'right') === 'right' ? 'primary' : 'secondary'}
                       onClick={() => onUpdate(field.id, { labelAlignment: 'right' })}
                       aria-label="Align right"
                     >
-                      <Bars3BottomRightIcon className="w-[18px] h-[18px]" />
+                      <FontAwesomeIcon icon="Bars3BottomRight" size={18} />
                     </s-button>
                   </s-stack>
                 </div>

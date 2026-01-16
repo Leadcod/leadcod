@@ -62,6 +62,12 @@ const iconMap: Record<string, string> = {
   ChevronDown: 'fa-chevron-down',
   ChevronUp: 'fa-chevron-up',
   Cog6Tooth: 'fa-gear',
+  Crown: 'fa-crown',
+  Infinity: 'fa-infinity',
+  ExclamationTriangle: 'fa-triangle-exclamation',
+  Sparkles: 'fa-sparkles',
+  InfoCircle: 'fa-circle-info',
+  ArrowUpCircle: 'fa-circle-arrow-up',
 };
 
 export const FontAwesomeIcon: React.FC<FontAwesomeIconProps> = ({ 

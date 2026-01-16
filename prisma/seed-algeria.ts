@@ -20,8 +20,6 @@ interface AlgeriaCity {
 
 async function seedAlgeria() {
   try {
-    console.log('🌱 Starting Algeria seeder...');
-
     // Find or create Algeria country
     let algeria = await prisma.country.findFirst({
       where: { name: 'Algeria' }
@@ -33,9 +31,6 @@ async function seedAlgeria() {
           name: 'Algeria'
         }
       });
-      console.log('✅ Created Algeria country');
-    } else {
-      console.log('✅ Algeria country already exists');
     }
 
     // Group cities by wilaya (state)
@@ -61,8 +56,6 @@ async function seedAlgeria() {
       statesMap.get(stateKey)!.cities.push(city);
     });
 
-    console.log(`📊 Found ${statesMap.size} states (wilayas)`);
-
     // Validate country exists
     if (!algeria || !algeria.id) {
       throw new Error('Algeria country not found or invalid');
@@ -76,7 +69,6 @@ async function seedAlgeria() {
     for (const [code, stateData] of statesMap.entries()) {
       // Validate required fields
       if (!code || !stateData.wilaya_name_ascii || !stateData.wilaya_name) {
-        console.warn(`⚠️  Skipping invalid state data: code=${code}, name=${stateData.wilaya_name_ascii}`);
         continue;
       }
 
@@ -99,7 +91,6 @@ async function seedAlgeria() {
           }
         });
         totalStatesUpdated++;
-        console.log(`🔄 Updated state: ${stateData.wilaya_name_ascii} (${code})`);
       } else {
         // Create new state
         state = await prisma.state.create({
@@ -111,7 +102,6 @@ async function seedAlgeria() {
           }
         });
         totalStatesCreated++;
-        console.log(`✅ Created state: ${stateData.wilaya_name_ascii} (${code})`);
       }
 
       // Create cities for this state
@@ -135,20 +125,9 @@ async function seedAlgeria() {
           totalCitiesCreated++;
         }
       }
-
-      console.log(`  📍 Created/verified ${stateData.cities.length} cities for ${stateData.wilaya_name_ascii}`);
     }
 
-    console.log('\n✨ Seeding completed!');
-    console.log(`📈 Summary:`);
-    console.log(`   - States created: ${totalStatesCreated}`);
-    console.log(`   - States updated: ${totalStatesUpdated}`);
-    console.log(`   - Cities created: ${totalCitiesCreated}`);
-    console.log(`   - Total states: ${statesMap.size}`);
-    console.log(`   - Total cities: ${(algeriaData as AlgeriaCity[]).length}`);
-
   } catch (error) {
-    console.error('❌ Error seeding Algeria data:', error);
     throw error;
   } finally {
     await prisma.$disconnect();
@@ -157,7 +136,6 @@ async function seedAlgeria() {
 
 seedAlgeria()
   .catch((error) => {
-    console.error(error);
     process.exit(1);
   });
 

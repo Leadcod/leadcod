@@ -130,7 +130,6 @@ export default function OnboardingCard({ shopUrl, completedSteps, onProgressUpda
                 <Button
                   onClick={step.action}
                   disabled={isCompleted || isProcessingStep || !!isProcessing}
-                  variant={isCompleted ? "outline" : "default"}
                   size="sm"
                   className="shrink-0"
                 >

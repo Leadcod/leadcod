@@ -13,17 +13,23 @@ datasource db {
   provider = "postgresql"
 }
 
+enum PlanType {
+  free
+  paid
+}
 
 model Shop {
   id String @id @default(uuid())
   url String
   accessToken String?
+  plan PlanType @default(free)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Form Form[]
   shippingSettings ShippingSettings?
   shippingFees ShippingFee[]
   onboardingProgress OnboardingProgress?
+  subscriptions Subscription[]
 }
 
 model Form {
@@ -107,3 +113,22 @@ model OnboardingProgress {
   shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
 }
 
+model Subscription {
+  id String @id @default(uuid())
+  shopId String
+  shopifyChargeId String? // Shopify charge ID
+  status String // Status: active, cancelled, expired, pending, etc.
+  startedAt DateTime // When the subscription started
+  expiresAt DateTime? // Expiration date (null for recurring subscriptions)
+  billingCycle String? // 'monthly' or 'yearly'
+  price Float? // Subscription price
+  currencyCode String? @default("USD") // Currency code
+  cancelledAt DateTime? // When the subscription was cancelled
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@index([status])
+  @@index([shopifyChargeId])
+}

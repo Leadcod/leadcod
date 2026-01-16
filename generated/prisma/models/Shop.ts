@@ -28,6 +28,7 @@ export type ShopMinAggregateOutputType = {
   id: string | null
   url: string | null
   accessToken: string | null
+  plan: $Enums.PlanType | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +37,7 @@ export type ShopMaxAggregateOutputType = {
   id: string | null
   url: string | null
   accessToken: string | null
+  plan: $Enums.PlanType | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +46,7 @@ export type ShopCountAggregateOutputType = {
   id: number
   url: number
   accessToken: number
+  plan: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -54,6 +57,7 @@ export type ShopMinAggregateInputType = {
   id?: true
   url?: true
   accessToken?: true
+  plan?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +66,7 @@ export type ShopMaxAggregateInputType = {
   id?: true
   url?: true
   accessToken?: true
+  plan?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +75,7 @@ export type ShopCountAggregateInputType = {
   id?: true
   url?: true
   accessToken?: true
+  plan?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +157,7 @@ export type ShopGroupByOutputType = {
   id: string
   url: string
   accessToken: string | null
+  plan: $Enums.PlanType
   createdAt: Date
   updatedAt: Date
   _count: ShopCountAggregateOutputType | null
@@ -180,24 +187,28 @@ export type ShopWhereInput = {
   id?: Prisma.StringFilter<"Shop"> | string
   url?: Prisma.StringFilter<"Shop"> | string
   accessToken?: Prisma.StringNullableFilter<"Shop"> | string | null
+  plan?: Prisma.EnumPlanTypeFilter<"Shop"> | $Enums.PlanType
   createdAt?: Prisma.DateTimeFilter<"Shop"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Shop"> | Date | string
   Form?: Prisma.FormListRelationFilter
   shippingSettings?: Prisma.XOR<Prisma.ShippingSettingsNullableScalarRelationFilter, Prisma.ShippingSettingsWhereInput> | null
   shippingFees?: Prisma.ShippingFeeListRelationFilter
   onboardingProgress?: Prisma.XOR<Prisma.OnboardingProgressNullableScalarRelationFilter, Prisma.OnboardingProgressWhereInput> | null
+  subscriptions?: Prisma.SubscriptionListRelationFilter
 }
 
 export type ShopOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
   accessToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  plan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   Form?: Prisma.FormOrderByRelationAggregateInput
   shippingSettings?: Prisma.ShippingSettingsOrderByWithRelationInput
   shippingFees?: Prisma.ShippingFeeOrderByRelationAggregateInput
   onboardingProgress?: Prisma.OnboardingProgressOrderByWithRelationInput
+  subscriptions?: Prisma.SubscriptionOrderByRelationAggregateInput
 }
 
 export type ShopWhereUniqueInput = Prisma.AtLeast<{
@@ -207,18 +218,21 @@ export type ShopWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ShopWhereInput | Prisma.ShopWhereInput[]
   url?: Prisma.StringFilter<"Shop"> | string
   accessToken?: Prisma.StringNullableFilter<"Shop"> | string | null
+  plan?: Prisma.EnumPlanTypeFilter<"Shop"> | $Enums.PlanType
   createdAt?: Prisma.DateTimeFilter<"Shop"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Shop"> | Date | string
   Form?: Prisma.FormListRelationFilter
   shippingSettings?: Prisma.XOR<Prisma.ShippingSettingsNullableScalarRelationFilter, Prisma.ShippingSettingsWhereInput> | null
   shippingFees?: Prisma.ShippingFeeListRelationFilter
   onboardingProgress?: Prisma.XOR<Prisma.OnboardingProgressNullableScalarRelationFilter, Prisma.OnboardingProgressWhereInput> | null
+  subscriptions?: Prisma.SubscriptionListRelationFilter
 }, "id">
 
 export type ShopOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
   accessToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  plan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ShopCountOrderByAggregateInput
@@ -233,6 +247,7 @@ export type ShopScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Shop"> | string
   url?: Prisma.StringWithAggregatesFilter<"Shop"> | string
   accessToken?: Prisma.StringNullableWithAggregatesFilter<"Shop"> | string | null
+  plan?: Prisma.EnumPlanTypeWithAggregatesFilter<"Shop"> | $Enums.PlanType
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Shop"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Shop"> | Date | string
 }
@@ -241,54 +256,63 @@ export type ShopCreateInput = {
   id?: string
   url: string
   accessToken?: string | null
+  plan?: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormCreateNestedManyWithoutShopInput
   shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutShopInput
 }
 
 export type ShopUncheckedCreateInput = {
   id?: string
   url: string
   accessToken?: string | null
+  plan?: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
   shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutShopInput
 }
 
 export type ShopUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUpdateManyWithoutShopNestedInput
   shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
   shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutShopNestedInput
 }
 
 export type ShopCreateManyInput = {
   id?: string
   url: string
   accessToken?: string | null
+  plan?: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -297,6 +321,7 @@ export type ShopUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -305,6 +330,7 @@ export type ShopUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -313,6 +339,7 @@ export type ShopCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
   accessToken?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -321,6 +348,7 @@ export type ShopMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
   accessToken?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -329,6 +357,7 @@ export type ShopMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   url?: Prisma.SortOrder
   accessToken?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -344,6 +373,10 @@ export type StringFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type EnumPlanTypeFieldUpdateOperationsInput = {
+  set?: $Enums.PlanType
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -406,26 +439,44 @@ export type ShopUpdateOneRequiredWithoutOnboardingProgressNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ShopUpdateToOneWithWhereWithoutOnboardingProgressInput, Prisma.ShopUpdateWithoutOnboardingProgressInput>, Prisma.ShopUncheckedUpdateWithoutOnboardingProgressInput>
 }
 
+export type ShopCreateNestedOneWithoutSubscriptionsInput = {
+  create?: Prisma.XOR<Prisma.ShopCreateWithoutSubscriptionsInput, Prisma.ShopUncheckedCreateWithoutSubscriptionsInput>
+  connectOrCreate?: Prisma.ShopCreateOrConnectWithoutSubscriptionsInput
+  connect?: Prisma.ShopWhereUniqueInput
+}
+
+export type ShopUpdateOneRequiredWithoutSubscriptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ShopCreateWithoutSubscriptionsInput, Prisma.ShopUncheckedCreateWithoutSubscriptionsInput>
+  connectOrCreate?: Prisma.ShopCreateOrConnectWithoutSubscriptionsInput
+  upsert?: Prisma.ShopUpsertWithoutSubscriptionsInput
+  connect?: Prisma.ShopWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShopUpdateToOneWithWhereWithoutSubscriptionsInput, Prisma.ShopUpdateWithoutSubscriptionsInput>, Prisma.ShopUncheckedUpdateWithoutSubscriptionsInput>
+}
+
 export type ShopCreateWithoutFormInput = {
   id?: string
   url: string
   accessToken?: string | null
+  plan?: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
   shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutFormInput = {
   id?: string
   url: string
   accessToken?: string | null
+  plan?: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
   shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutFormInput = {
@@ -448,44 +499,52 @@ export type ShopUpdateWithoutFormInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutFormInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutShopNestedInput
 }
 
 export type ShopCreateWithoutShippingSettingsInput = {
   id?: string
   url: string
   accessToken?: string | null
+  plan?: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormCreateNestedManyWithoutShopInput
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutShippingSettingsInput = {
   id?: string
   url: string
   accessToken?: string | null
+  plan?: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutShippingSettingsInput = {
@@ -508,44 +567,52 @@ export type ShopUpdateWithoutShippingSettingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUpdateManyWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutShippingSettingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutShopNestedInput
 }
 
 export type ShopCreateWithoutShippingFeesInput = {
   id?: string
   url: string
   accessToken?: string | null
+  plan?: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormCreateNestedManyWithoutShopInput
   shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutShippingFeesInput = {
   id?: string
   url: string
   accessToken?: string | null
+  plan?: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
   shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutShippingFeesInput = {
@@ -568,44 +635,52 @@ export type ShopUpdateWithoutShippingFeesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUpdateManyWithoutShopNestedInput
   shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutShippingFeesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
   shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutShopNestedInput
 }
 
 export type ShopCreateWithoutOnboardingProgressInput = {
   id?: string
   url: string
   accessToken?: string | null
+  plan?: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormCreateNestedManyWithoutShopInput
   shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutOnboardingProgressInput = {
   id?: string
   url: string
   accessToken?: string | null
+  plan?: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
   Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
   shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutOnboardingProgressInput = {
@@ -628,22 +703,94 @@ export type ShopUpdateWithoutOnboardingProgressInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUpdateManyWithoutShopNestedInput
   shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutOnboardingProgressInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
   shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutShopNestedInput
+}
+
+export type ShopCreateWithoutSubscriptionsInput = {
+  id?: string
+  url: string
+  accessToken?: string | null
+  plan?: $Enums.PlanType
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  Form?: Prisma.FormCreateNestedManyWithoutShopInput
+  shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
+  shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
+}
+
+export type ShopUncheckedCreateWithoutSubscriptionsInput = {
+  id?: string
+  url: string
+  accessToken?: string | null
+  plan?: $Enums.PlanType
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
+  shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
+  shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
+}
+
+export type ShopCreateOrConnectWithoutSubscriptionsInput = {
+  where: Prisma.ShopWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShopCreateWithoutSubscriptionsInput, Prisma.ShopUncheckedCreateWithoutSubscriptionsInput>
+}
+
+export type ShopUpsertWithoutSubscriptionsInput = {
+  update: Prisma.XOR<Prisma.ShopUpdateWithoutSubscriptionsInput, Prisma.ShopUncheckedUpdateWithoutSubscriptionsInput>
+  create: Prisma.XOR<Prisma.ShopCreateWithoutSubscriptionsInput, Prisma.ShopUncheckedCreateWithoutSubscriptionsInput>
+  where?: Prisma.ShopWhereInput
+}
+
+export type ShopUpdateToOneWithWhereWithoutSubscriptionsInput = {
+  where?: Prisma.ShopWhereInput
+  data: Prisma.XOR<Prisma.ShopUpdateWithoutSubscriptionsInput, Prisma.ShopUncheckedUpdateWithoutSubscriptionsInput>
+}
+
+export type ShopUpdateWithoutSubscriptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Form?: Prisma.FormUpdateManyWithoutShopNestedInput
+  shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
+  shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
+}
+
+export type ShopUncheckedUpdateWithoutSubscriptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
+  shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
+  shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
 }
 
 
@@ -654,11 +801,13 @@ export type ShopUncheckedUpdateWithoutOnboardingProgressInput = {
 export type ShopCountOutputType = {
   Form: number
   shippingFees: number
+  subscriptions: number
 }
 
 export type ShopCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   Form?: boolean | ShopCountOutputTypeCountFormArgs
   shippingFees?: boolean | ShopCountOutputTypeCountShippingFeesArgs
+  subscriptions?: boolean | ShopCountOutputTypeCountSubscriptionsArgs
 }
 
 /**
@@ -685,17 +834,26 @@ export type ShopCountOutputTypeCountShippingFeesArgs<ExtArgs extends runtime.Typ
   where?: Prisma.ShippingFeeWhereInput
 }
 
+/**
+ * ShopCountOutputType without action
+ */
+export type ShopCountOutputTypeCountSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SubscriptionWhereInput
+}
+
 
 export type ShopSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   url?: boolean
   accessToken?: boolean
+  plan?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   Form?: boolean | Prisma.Shop$FormArgs<ExtArgs>
   shippingSettings?: boolean | Prisma.Shop$shippingSettingsArgs<ExtArgs>
   shippingFees?: boolean | Prisma.Shop$shippingFeesArgs<ExtArgs>
   onboardingProgress?: boolean | Prisma.Shop$onboardingProgressArgs<ExtArgs>
+  subscriptions?: boolean | Prisma.Shop$subscriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.ShopCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["shop"]>
 
@@ -703,6 +861,7 @@ export type ShopSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   url?: boolean
   accessToken?: boolean
+  plan?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["shop"]>
@@ -711,6 +870,7 @@ export type ShopSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   url?: boolean
   accessToken?: boolean
+  plan?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["shop"]>
@@ -719,16 +879,18 @@ export type ShopSelectScalar = {
   id?: boolean
   url?: boolean
   accessToken?: boolean
+  plan?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ShopOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "url" | "accessToken" | "createdAt" | "updatedAt", ExtArgs["result"]["shop"]>
+export type ShopOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "url" | "accessToken" | "plan" | "createdAt" | "updatedAt", ExtArgs["result"]["shop"]>
 export type ShopInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   Form?: boolean | Prisma.Shop$FormArgs<ExtArgs>
   shippingSettings?: boolean | Prisma.Shop$shippingSettingsArgs<ExtArgs>
   shippingFees?: boolean | Prisma.Shop$shippingFeesArgs<ExtArgs>
   onboardingProgress?: boolean | Prisma.Shop$onboardingProgressArgs<ExtArgs>
+  subscriptions?: boolean | Prisma.Shop$subscriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.ShopCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ShopIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -741,11 +903,13 @@ export type $ShopPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     shippingSettings: Prisma.$ShippingSettingsPayload<ExtArgs> | null
     shippingFees: Prisma.$ShippingFeePayload<ExtArgs>[]
     onboardingProgress: Prisma.$OnboardingProgressPayload<ExtArgs> | null
+    subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     url: string
     accessToken: string | null
+    plan: $Enums.PlanType
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["shop"]>
@@ -1146,6 +1310,7 @@ export interface Prisma__ShopClient<T, Null = never, ExtArgs extends runtime.Typ
   shippingSettings<T extends Prisma.Shop$shippingSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$shippingSettingsArgs<ExtArgs>>): Prisma.Prisma__ShippingSettingsClient<runtime.Types.Result.GetResult<Prisma.$ShippingSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   shippingFees<T extends Prisma.Shop$shippingFeesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$shippingFeesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShippingFeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   onboardingProgress<T extends Prisma.Shop$onboardingProgressArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$onboardingProgressArgs<ExtArgs>>): Prisma.Prisma__OnboardingProgressClient<runtime.Types.Result.GetResult<Prisma.$OnboardingProgressPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  subscriptions<T extends Prisma.Shop$subscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1178,6 +1343,7 @@ export interface ShopFieldRefs {
   readonly id: Prisma.FieldRef<"Shop", 'String'>
   readonly url: Prisma.FieldRef<"Shop", 'String'>
   readonly accessToken: Prisma.FieldRef<"Shop", 'String'>
+  readonly plan: Prisma.FieldRef<"Shop", 'PlanType'>
   readonly createdAt: Prisma.FieldRef<"Shop", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Shop", 'DateTime'>
 }
@@ -1651,6 +1817,30 @@ export type Shop$onboardingProgressArgs<ExtArgs extends runtime.Types.Extensions
    */
   include?: Prisma.OnboardingProgressInclude<ExtArgs> | null
   where?: Prisma.OnboardingProgressWhereInput
+}
+
+/**
+ * Shop.subscriptions
+ */
+export type Shop$subscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Subscription
+   */
+  select?: Prisma.SubscriptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Subscription
+   */
+  omit?: Prisma.SubscriptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubscriptionInclude<ExtArgs> | null
+  where?: Prisma.SubscriptionWhereInput
+  orderBy?: Prisma.SubscriptionOrderByWithRelationInput | Prisma.SubscriptionOrderByWithRelationInput[]
+  cursor?: Prisma.SubscriptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SubscriptionScalarFieldEnum | Prisma.SubscriptionScalarFieldEnum[]
 }
 
 /**

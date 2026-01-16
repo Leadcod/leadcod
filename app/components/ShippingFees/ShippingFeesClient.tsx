@@ -250,8 +250,8 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
           >
             <s-stack gap="large">
               <s-box>
-                <s-text variant="headingSm" as="h3">{t('provinceShippingFees')}</s-text>
-                <s-text variant="bodyMd" tone="subdued">
+                <s-text >{t('provinceShippingFees')}</s-text>
+                <s-text>
                   {t('provinceShippingFeesDescription')}
                 </s-text>
               </s-box>
@@ -273,8 +273,8 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
                 borderRadius="base"
               >
                 <s-stack gap="base">
-                  <s-text variant="headingSm" as="h4">{t('shippingMethodLabels')}</s-text>
-                  <s-text variant="bodyMd" tone="subdued">
+                  <s-text>{t('shippingMethodLabels')}</s-text>
+                  <s-text>
                     {t('shippingMethodLabelsDescription')}
                   </s-text>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -325,7 +325,7 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
                 borderRadius="base"
               >
                 <s-stack gap="base">
-                  <s-text variant="headingSm" as="h4">{t('applyToAllProvinces')}</s-text>
+                  <s-text>{t('applyToAllProvinces')}</s-text>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="all-cod">
@@ -386,7 +386,7 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
                       borderRadius="base"
                     >
                       <s-stack gap="base">
-                        <s-text variant="headingSm" as="h4">{province.name}</s-text>
+                        <s-text>{province.name}</s-text>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor={`cash-${province.id}`}>

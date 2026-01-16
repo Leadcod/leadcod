@@ -159,7 +159,8 @@
   "navigation": {
     "formBuilder": "Form Builder",
     "shippingFees": "Shipping fees",
-    "specialOffers": "Special offers"
+    "specialOffers": "Special offers",
+    "plans": "Plans"
   },
   "liquid": {
     "loadingForm": "Loading form...",
@@ -219,5 +220,43 @@
     "freePlanDescription": "You have {limit} free orders per month",
     "paidPlanDescription": "Unlimited orders for ${price}/month",
     "upgradeToPaid": "Upgrade to ${price}/month for unlimited orders"
+  },
+  "plans": {
+    "title": "Plans & Pricing",
+    "description": "Choose the plan that's right for you",
+    "currentPlan": "Current Plan",
+    "freePlan": "Free",
+    "paidPlan": "Paid",
+    "freePlanDescription": "Perfect for getting started",
+    "paidPlanDescription": "Best for growing businesses",
+    "free": "Free",
+    "forever": "Forever",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "month": "month",
+    "year": "year",
+    "save": "Save",
+    "or": "or",
+    "billedYearly": "Billed ${price} yearly",
+    "ifPaidYearly": "if paid yearly",
+    "current": "Current",
+    "popular": "Popular",
+    "selectPlan": "Select Plan",
+    "subscribe": "Subscribe",
+    "saving": "Saving...",
+    "planUpdated": "Plan updated successfully",
+    "subscribeComingSoon": "Subscription functionality coming soon!",
+    "subscriptionActivated": "Subscription activated successfully!",
+    "subscriptionError": "An error occurred during subscription. Please try again.",
+    "features": {
+      "free": {
+        "orders": "{count} orders per month",
+        "support": "Email support"
+      },
+      "paid": {
+        "orders": "Unlimited orders",
+        "support": "WhatsApp support"
+      }
+    }
   }
 }

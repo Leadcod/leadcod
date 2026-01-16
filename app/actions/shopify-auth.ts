@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { DEFAULT_FORM_FIELDS, DEFAULT_GLOBAL_SETTINGS } from '../types/form';
+import { redirect } from 'next/navigation';
 
 interface TokenExchangeResponse {
   access_token: string;
@@ -55,7 +56,6 @@ export async function initializeShopWithToken(
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      console.error('Token exchange failed:', errorText);
       return {
         success: false,
         error: `Token exchange failed: ${tokenResponse.status} ${tokenResponse.statusText} - ${errorText}`,
@@ -118,7 +118,6 @@ export async function initializeShopWithToken(
       formId: form.id,
     };
   } catch (error) {
-    console.error('Error initializing shop with token:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
@@ -126,3 +125,17 @@ export async function initializeShopWithToken(
   }
 }
 
+/**
+ * Check if a shop exists in the database
+ */
+export async function shopExists(shopUrl: string): Promise<boolean> {
+  try {
+    const shop = await prisma.shop.findFirst({
+      where: { url: shopUrl },
+      select: { id: true }
+    });
+    return !!shop;
+  } catch (error) {
+    return false;
+  }
+}
