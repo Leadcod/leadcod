@@ -1,6 +1,6 @@
 'use client';
 
-import { X, AlignLeft, AlignCenter, AlignRight, Bold, Italic } from 'lucide-react';
+import { FontAwesomeIcon } from '@/app/components/ui/font-awesome-icon';
 import { useTranslations } from 'next-intl';
 import { GlobalFormSettings } from '@/app/types/form';
 import CompactColorSwatch from '@/app/components/ui/compact-color-swatch';
@@ -45,7 +45,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
             variant="auto"
             onClick={onClose}
           >
-            <X size={20} />
+            <FontAwesomeIcon icon="XMark" size={20} />
           </s-button>
         </s-stack>
 
@@ -107,7 +107,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   }}
                   aria-label="Bold"
                 >
-                  <Bold size={18} />
+                  <span className="font-bold text-[18px]">B</span>
                 </s-button>
                 <s-button
                   variant={settings.fontStyle === 'italic' ? 'primary' : 'secondary'}
@@ -118,7 +118,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                   }}
                   aria-label="Italic"
                 >
-                  <Italic size={18} />
+                  <span className="italic text-[18px]">I</span>
                 </s-button>
               </s-stack>
             </div>
@@ -158,7 +158,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                     onClick={() => updateHeadline({ alignment: 'left' })}
                     aria-label="Align left"
                   >
-                    <AlignLeft size={18} />
+                    <FontAwesomeIcon icon="Bars3BottomLeft" size={18} />
                   </s-button>
                   <s-button
                     variant={settings.headline.alignment === 'center' ? 'primary' : 'secondary'}
@@ -166,7 +166,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                     onClick={() => updateHeadline({ alignment: 'center' })}
                     aria-label="Align center"
                   >
-                    <AlignCenter size={18} />
+                    <FontAwesomeIcon icon="Bars3" size={18} />
                   </s-button>
                   <s-button
                     variant={settings.headline.alignment === 'right' ? 'primary' : 'secondary'}
@@ -174,7 +174,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                     onClick={() => updateHeadline({ alignment: 'right' })}
                     aria-label="Align right"
                   >
-                    <AlignRight size={18} />
+                    <FontAwesomeIcon icon="Bars3BottomRight" size={18} />
                   </s-button>
                 </s-stack>
               </div>
@@ -218,7 +218,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                       }}
                       aria-label="Bold"
                     >
-                      <Bold size={18} />
+                      <span className="font-bold text-[18px]">B</span>
                     </s-button>
                     <s-button
                       variant={settings.headline.fontStyle === 'italic' ? 'primary' : 'secondary'}
@@ -228,7 +228,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                       }}
                       aria-label="Italic"
                     >
-                      <Italic size={18} />
+                      <span className="italic text-[18px]">I</span>
                     </s-button>
                   </s-stack>
                 </div>
@@ -266,21 +266,21 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                     onClick={() => updateSubtitle({ alignment: 'left' })}
                     aria-label="Align left"
                   >
-                    <AlignLeft size={18} />
+                    <FontAwesomeIcon icon="Bars3BottomLeft" size={18} />
                   </s-button>
                   <s-button
                     variant={settings.subtitle.alignment === 'center' ? 'primary' : 'secondary'}
                     onClick={() => updateSubtitle({ alignment: 'center' })}
                     aria-label="Align center"
                   >
-                    <AlignCenter size={18} />
+                    <FontAwesomeIcon icon="Bars3" size={18} />
                   </s-button>
                   <s-button
                     variant={settings.subtitle.alignment === 'right' ? 'primary' : 'secondary'}
                     onClick={() => updateSubtitle({ alignment: 'right' })}
                     aria-label="Align right"
                   >
-                    <AlignRight size={18} />
+                    <FontAwesomeIcon icon="Bars3BottomRight" size={18} />
                   </s-button>
                 </s-stack>
               </div>
@@ -324,7 +324,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                       }}
                       aria-label="Bold"
                     >
-                      <Bold size={18} />
+                      <span className="font-bold text-[18px]">B</span>
                     </s-button>
                     <s-button
                       variant={settings.subtitle.fontStyle === 'italic' ? 'primary' : 'secondary'}
@@ -334,7 +334,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
                       }}
                       aria-label="Italic"
                     >
-                      <Italic size={18} />
+                      <span className="italic text-[18px]">I</span>
                     </s-button>
                   </s-stack>
                 </div>

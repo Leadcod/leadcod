@@ -22,8 +22,8 @@
     const inputStyle = `
       font-family: ${fieldFontFamily} !important;
       font-size: ${globalFontSize};
-      font-weight: ${globalFontWeight};
-      font-style: ${globalFontStyle};
+      font-weight: normal !important;
+      font-style: normal !important;
       text-align: ${inputAlignment};
       color: ${field.inputTextColor || '#000000'};
       background-color: ${field.inputBackgroundColor || '#ffffff'};
@@ -175,7 +175,7 @@
         const phoneIconOnRight = !phoneCodeOnRight;
 
         fieldHTML += `
-          ${phoneCodeOnLeft ? `<div style="${getIconStyle(true)}">+213</div>` : ''}
+          ${phoneCodeOnLeft ? `<div >+213</div>` : ''}
           ${hasIcon && phoneIconOnLeft ? `<div style="${getIconStyle(true)}">${iconHTML}</div>` : ''}
           <input 
             type="tel" 

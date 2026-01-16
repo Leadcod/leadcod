@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl';
 import SortableField from './SortableField';
 import FieldSettingsPanel from './FieldSettingsPanel';
 import GlobalFormSettingsPanel from './GlobalFormSettingsPanel';
-import { Settings } from 'lucide-react';
+import { FontAwesomeIcon } from '@/app/components/ui/font-awesome-icon';
 
 interface FormBuilderProps {
   shopUrl: string;
@@ -298,7 +298,7 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
                 setShowGlobalSettings(true);
               }}
             >
-              <Settings size={18} style={{ marginRight: '8px' }} />
+              <FontAwesomeIcon icon="Cog6Tooth" size={18} className="mr-2" />
               {t('globalSettings')}
             </s-button>
           </s-stack>

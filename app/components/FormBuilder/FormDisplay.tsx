@@ -1,13 +1,20 @@
 'use client';
 
 import { useState, FormEvent, useEffect } from 'react';
-import * as Icons from 'lucide-react';
+import { FontAwesomeIcon } from '@/app/components/ui/font-awesome-icon';
 import { useTranslations } from 'next-intl';
 import { FormField, GlobalFormSettings } from '@/app/types/form';
 import { InputGroup, InputGroupInput, InputGroupAddon } from '@/components/ui/input-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { ArrowRightIcon, GlobeAmericasIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+
+const Icons = {
+  ArrowRightIcon,
+  GlobeAmericasIcon,
+  ExclamationCircleIcon,
+};
 
 // WhatsApp Icon Component
 const WhatsAppIcon = ({ size = 24, fill = 'currentColor', strokeWidth = 1.5, ...props }: any) => (
@@ -23,12 +30,13 @@ const WhatsAppIcon = ({ size = 24, fill = 'currentColor', strokeWidth = 1.5, ...
   </svg>
 );
 
-// Helper function to get icon component (handles WhatsApp and Lucide icons)
+// Helper function to get icon component (handles WhatsApp and Font Awesome)
 const getIconComponent = (iconName: string) => {
   if (iconName === 'WhatsApp') {
     return WhatsAppIcon;
   }
-  return (Icons as any)[iconName] || Icons.Circle;
+  // Return FontAwesomeIcon component for all other icons
+  return (props: any) => <FontAwesomeIcon icon={iconName} {...props} />;
 };
 
 interface State {
@@ -430,7 +438,7 @@ export default function FormDisplay({
             <InputGroup onClick={handleFieldClick} className={cursorClass}>
               {IconComponent && iconOnLeft && (
                 <InputGroupAddon style={getIconStyle(true)}>
-                  <IconComponent size={iconSize} />
+                  <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                 </InputGroupAddon>
               )}
               <InputGroupInput
@@ -445,7 +453,7 @@ export default function FormDisplay({
               />
               {IconComponent && iconOnRight && (
                 <InputGroupAddon style={getIconStyle(false)}>
-                  <IconComponent size={iconSize} />
+                  <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                 </InputGroupAddon>
               )}
             </InputGroup>
@@ -470,7 +478,7 @@ export default function FormDisplay({
             <InputGroup onClick={handleFieldClick} className={cursorClass}>
               {IconComponent && iconOnLeft && (
                 <InputGroupAddon style={getIconStyle(true)}>
-                  <IconComponent size={iconSize} />
+                  <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                 </InputGroupAddon>
               )}
               <Select 
@@ -529,7 +537,7 @@ export default function FormDisplay({
               </Select>
               {IconComponent && iconOnRight && (
                 <InputGroupAddon style={getIconStyle(false)}>
-                  <IconComponent size={iconSize} />
+                  <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                 </InputGroupAddon>
               )}
             </InputGroup>
@@ -562,7 +570,7 @@ export default function FormDisplay({
               )}
               {IconComponent && phoneIconOnLeft && (
                 <InputGroupAddon style={getIconStyle(true)}>
-                  <IconComponent size={iconSize} />
+                  <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                 </InputGroupAddon>
               )}
               <InputGroupInput
@@ -602,7 +610,7 @@ export default function FormDisplay({
               />
               {IconComponent && phoneIconOnRight && (
                 <InputGroupAddon style={getIconStyle(false)}>
-                  <IconComponent size={iconSize} />
+                  <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                 </InputGroupAddon>
               )}
               {phoneCodeOnRight && (
@@ -643,7 +651,7 @@ export default function FormDisplay({
             <InputGroup onClick={handleFieldClick} className={cursorClass}>
               {IconComponent && iconOnLeft && (
                 <InputGroupAddon style={getIconStyle(true)}>
-                  <IconComponent size={iconSize} />
+                  <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                 </InputGroupAddon>
               )}
               <Select 
@@ -698,7 +706,7 @@ export default function FormDisplay({
               </Select>
               {IconComponent && iconOnRight && (
                 <InputGroupAddon style={getIconStyle(false)}>
-                  <IconComponent size={iconSize} />
+                  <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                 </InputGroupAddon>
               )}
             </InputGroup>
@@ -723,7 +731,7 @@ export default function FormDisplay({
             <InputGroup onClick={handleFieldClick} className={cursorClass}>
               {IconComponent && iconOnLeft && (
                 <InputGroupAddon style={getIconStyle(true)}>
-                  <IconComponent size={iconSize} />
+                  <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                 </InputGroupAddon>
               )}
               <Select 
@@ -766,7 +774,7 @@ export default function FormDisplay({
               </Select>
               {IconComponent && iconOnRight && (
                 <InputGroupAddon style={getIconStyle(false)}>
-                  <IconComponent size={iconSize} />
+                  <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                 </InputGroupAddon>
               )}
             </InputGroup>
@@ -786,7 +794,7 @@ export default function FormDisplay({
               <InputGroup className={`flex-1 ${cursorClass}`} onClick={handleFieldClick}>
                 {IconComponent && iconOnLeft && (
                   <InputGroupAddon style={getIconStyle(true)}>
-                    <IconComponent size={iconSize} />
+                    <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                   </InputGroupAddon>
                 )}
                 <InputGroupInput
@@ -800,7 +808,7 @@ export default function FormDisplay({
                 />
                 {IconComponent && iconOnRight && (
                   <InputGroupAddon style={getIconStyle(false)}>
-                    <IconComponent size={iconSize} />
+                    <IconComponent style={{ width: `${iconSize}px`, height: `${iconSize}px` }} />
                   </InputGroupAddon>
                 )}
               </InputGroup>
@@ -862,7 +870,7 @@ export default function FormDisplay({
                     </div>
                     {!isPreview && (
                       <div style={{ color: '#6b7280', fontSize: '12px', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Icons.Globe size={14} />
+                        <Icons.GlobeAmericasIcon className="w-[14px] h-[14px]" />
                         <span className="leadcod-shipping-hint-text">{chooseProvinceHint}</span>
                       </div>
                     )}
@@ -1085,7 +1093,7 @@ export default function FormDisplay({
         // Get icon component - use field.icon or default to ArrowRight
         const IconComponent = field.icon && field.icon !== 'none' 
           ? getIconComponent(field.icon)
-          : Icons.ArrowRight;
+          : Icons.ArrowRightIcon;
         
         // Calculate button styles based on field properties (matching liquid implementation)
         const buttonGlobalFontSize = getGlobalFontSize();
@@ -1226,7 +1234,7 @@ export default function FormDisplay({
               onClick={isPreview ? handleFieldClick : undefined}
             >
               {field.label}
-              <IconComponent size={buttonIconSize} style={field.icon && field.icon !== 'none' ? { fill: 'currentColor', strokeWidth: 1.5 } : undefined} />
+              <IconComponent style={{ width: `${buttonIconSize}px`, height: `${buttonIconSize}px` }} />
             </button>
           </div>
         );
@@ -1373,7 +1381,7 @@ export default function FormDisplay({
               onClick={handleWhatsAppClick}
             >
               {field.label}
-              <IconComponent size={buttonIconSize} style={field.icon && field.icon !== 'none' ? { fill: 'currentColor', strokeWidth: 1.5 } : undefined} />
+              <IconComponent style={{ width: `${buttonIconSize}px`, height: `${buttonIconSize}px` }} />
             </button>
           </div>
         );
@@ -1619,7 +1627,7 @@ export default function FormDisplay({
       {visibleFields.length === 0 ? (
         <div className="text-center py-8">
           <div className="mb-4 flex justify-center">
-            <Icons.AlertCircle size={48} className="text-muted-foreground" />
+            <Icons.ExclamationCircleIcon className="w-12 h-12 text-muted-foreground" />
           </div>
           <p className="mb-2 font-medium">{t('noVisibleFields')}</p>
           <p className="text-sm text-muted-foreground">

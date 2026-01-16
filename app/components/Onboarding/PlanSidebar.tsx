@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { getPlanInfo, type PlanInfo } from "@/app/actions/plan";
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
+import { FontAwesomeIcon } from "@/app/components/ui/font-awesome-icon";
 
 interface PlanSidebarProps {
   shopUrl: string;
@@ -45,7 +45,7 @@ export default function PlanSidebar({ shopUrl }: PlanSidebarProps) {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <FontAwesomeIcon icon="ArrowPath" size={24} className="animate-spin text-muted-foreground" />
           </div>
         </CardContent>
       </Card>

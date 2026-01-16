@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Eye, EyeOff, GripVertical, Settings } from 'lucide-react';
-import * as Icons from 'lucide-react';
+import { FontAwesomeIcon } from '@/app/components/ui/font-awesome-icon';
 import { FormField } from '@/app/types/form';
 
 // WhatsApp Icon Component
@@ -21,12 +20,13 @@ const WhatsAppIcon = ({ size = 24, fill = 'currentColor', strokeWidth = 1.5, ...
   </svg>
 );
 
-// Helper function to get icon component (handles WhatsApp and Lucide icons)
+// Helper function to get icon component (handles WhatsApp and Font Awesome)
 const getIconComponent = (iconName: string) => {
   if (iconName === 'WhatsApp') {
     return WhatsAppIcon;
   }
-  return (Icons as any)[iconName] || Icons.Circle;
+  // Return FontAwesomeIcon component for all other icons
+  return (props: any) => <FontAwesomeIcon icon={iconName} {...props} />;
 };
 
 interface SortableFieldProps {
@@ -83,9 +83,9 @@ export default function SortableField({ field, onToggleVisibility, onOpenSetting
             {...(mounted ? attributes : {})}
             {...(mounted ? listeners : {})}
           >
-            <GripVertical size={20} />
+            <FontAwesomeIcon icon="Bars3" size={12} />
             {IconComponent && field.icon !== 'none' && (
-              <IconComponent size={18} style={{ opacity: 0.7, fontWeight: 'bold' }} strokeWidth={2.5} />
+              <IconComponent size={18} className="opacity-70" />
             )}
             <span style={{ fontWeight: 'bold' }}>{field.label}</span>
           </s-stack>
@@ -96,7 +96,7 @@ export default function SortableField({ field, onToggleVisibility, onOpenSetting
               onClick={() => onOpenSettings(field.id)}
               aria-label="Field settings"
             >
-              <Settings size={18} />
+              <FontAwesomeIcon icon="Cog6Tooth" size={18} />
             </s-button>
             <s-button
               variant="tertiary"
@@ -104,9 +104,9 @@ export default function SortableField({ field, onToggleVisibility, onOpenSetting
               aria-label={field.visible ? 'Hide field' : 'Show field'}
             >
               {field.visible ? (
-                <Eye size={20} />
+                <FontAwesomeIcon icon="Eye" size={20} />
               ) : (
-                <EyeOff size={20} />
+                <FontAwesomeIcon icon="EyeSlash" size={20} />
               )}
             </s-button>
           </s-stack>

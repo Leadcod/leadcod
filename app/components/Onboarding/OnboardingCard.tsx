@@ -2,7 +2,7 @@
 
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Circle, ArrowRight } from "lucide-react";
+import { FontAwesomeIcon } from "@/app/components/ui/font-awesome-icon";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -114,9 +114,9 @@ export default function OnboardingCard({ shopUrl, completedSteps, onProgressUpda
               >
                 <div className="mt-0.5">
                   {isCompleted ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <FontAwesomeIcon icon="CheckCircle" size={20} className="text-green-600" />
                   ) : (
-                    <Circle className="h-5 w-5 text-muted-foreground" />
+                    <FontAwesomeIcon icon="CircleStack" size={20} className="text-muted-foreground" />
                   )}
                 </div>
                 <div className="flex-1 space-y-1">
@@ -141,7 +141,7 @@ export default function OnboardingCard({ shopUrl, completedSteps, onProgressUpda
                   ) : (
                     <>
                       {step.id === 'activate-plugin' ? t('buttons.openThemeEditor') : t('buttons.getStarted')}
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                      <FontAwesomeIcon icon="ArrowRight" size={16} className="ml-2" />
                     </>
                   )}
                 </Button>

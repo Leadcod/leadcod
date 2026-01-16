@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { X, AlignLeft, AlignCenter, AlignRight, Bold, Italic, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import * as Icons from 'lucide-react';
+import { FontAwesomeIcon } from '@/app/components/ui/font-awesome-icon';
 import { FormField, GRADIENT_PRESETS } from '@/app/types/form';
 import { AVAILABLE_ICONS, BUY_NOW_ICONS, WHATSAPP_BUTTON_ICONS } from '@/lib/constants/formBuilder';
 import CompactColorSwatch from '@/app/components/ui/compact-color-swatch';
@@ -22,12 +21,13 @@ const WhatsAppIcon = ({ size = 24, fill = 'currentColor', strokeWidth = 1.5, ...
   </svg>
 );
 
-// Helper function to get icon component (handles WhatsApp and Lucide icons)
+// Helper function to get icon component (handles WhatsApp and Font Awesome)
 const getIconComponent = (iconName: string) => {
   if (iconName === 'WhatsApp') {
     return WhatsAppIcon;
   }
-  return (Icons as any)[iconName] || null;
+  // Return FontAwesomeIcon component for all other icons
+  return (props: any) => <FontAwesomeIcon icon={iconName} {...props} />;
 };
 
 interface FieldSettingsPanelProps {
@@ -61,7 +61,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
             variant="auto"
             onClick={onClose}
           >
-            <X size={20} />
+            <FontAwesomeIcon icon="XMark" size={20} />
           </s-button>
         </s-stack>
 
@@ -177,21 +177,21 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     onClick={() => onUpdate(field.id, { summaryAlignment: 'left' })}
                     aria-label="Align left"
                   >
-                    <AlignLeft size={18} />
+                    <FontAwesomeIcon icon="Bars3BottomLeft" size={18} />
                   </s-button>
                   <s-button
                     variant={(field.summaryAlignment || 'right') === 'center' ? 'primary' : 'secondary'}
                     onClick={() => onUpdate(field.id, { summaryAlignment: 'center' })}
                     aria-label="Align center"
                   >
-                    <AlignCenter size={18} />
+                    <FontAwesomeIcon icon="Bars3" size={18} />
                   </s-button>
                   <s-button
                     variant={(field.summaryAlignment || 'right') === 'right' ? 'primary' : 'secondary'}
                     onClick={() => onUpdate(field.id, { summaryAlignment: 'right' })}
                     aria-label="Align right"
                   >
-                    <AlignRight size={18} />
+                    <FontAwesomeIcon icon="Bars3BottomRight" size={18} />
                   </s-button>
                 </s-stack>
               </div>
@@ -209,21 +209,21 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     onClick={() => onUpdate(field.id, { shippingAlignment: 'left' })}
                     aria-label="Align left"
                   >
-                    <AlignLeft size={18} />
+                    <FontAwesomeIcon icon="Bars3BottomLeft" size={18} />
                   </s-button>
                   <s-button
                     variant={(field.shippingAlignment || 'right') === 'center' ? 'primary' : 'secondary'}
                     onClick={() => onUpdate(field.id, { shippingAlignment: 'center' })}
                     aria-label="Align center"
                   >
-                    <AlignCenter size={18} />
+                    <FontAwesomeIcon icon="Bars3" size={18} />
                   </s-button>
                   <s-button
                     variant={(field.shippingAlignment || 'right') === 'right' ? 'primary' : 'secondary'}
                     onClick={() => onUpdate(field.id, { shippingAlignment: 'right' })}
                     aria-label="Align right"
                   >
-                    <AlignRight size={18} />
+                    <FontAwesomeIcon icon="Bars3BottomRight" size={18} />
                   </s-button>
                 </s-stack>
               </div>
@@ -382,10 +382,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     }
                     const IconComp = getIconComponent(field.icon);
                     if (!IconComp) return null;
-                    // Apply solid styling for buy button and whatsapp button icons
-                    if (field.type === 'buyButton' || field.type === 'whatsappButton') {
-                      return <IconComp size={24} fill="currentColor" strokeWidth={1.5} />;
-                    }
+                    // Font Awesome icons, just need to set size
                     return <IconComp size={24} />;
                   })()}
                   <s-text variant="subdued" tone="subdued">{t('preview')}</s-text>
@@ -660,7 +657,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                 onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
               >
                 <span>{t('advancedSettings')}</span>
-                {showAdvancedSettings ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                {showAdvancedSettings ? <FontAwesomeIcon icon="ChevronUp" size={18} /> : <FontAwesomeIcon icon="ChevronDown" size={18} />}
               </s-button>
             </div>
 
@@ -677,21 +674,21 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                       onClick={() => onUpdate(field.id, { labelAlignment: 'left' })}
                       aria-label="Align left"
                     >
-                      <AlignLeft size={18} />
+                      <Bars3BottomLeftIcon className="w-[18px] h-[18px]" />
                     </s-button>
                     <s-button
                       variant={(field.labelAlignment || 'right') === 'center' ? 'primary' : 'secondary'}
                       onClick={() => onUpdate(field.id, { labelAlignment: 'center' })}
                       aria-label="Align center"
                     >
-                      <AlignCenter size={18} />
+                      <Bars3Icon className="w-[18px] h-[18px]" />
                     </s-button>
                     <s-button
                       variant={(field.labelAlignment || 'right') === 'right' ? 'primary' : 'secondary'}
                       onClick={() => onUpdate(field.id, { labelAlignment: 'right' })}
                       aria-label="Align right"
                     >
-                      <AlignRight size={18} />
+                      <Bars3BottomRightIcon className="w-[18px] h-[18px]" />
                     </s-button>
                   </s-stack>
                 </div>
@@ -706,21 +703,21 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                       onClick={() => onUpdate(field.id, { inputAlignment: 'left' })}
                       aria-label="Align left"
                     >
-                      <AlignLeft size={18} />
+                      <FontAwesomeIcon icon="Bars3BottomLeft" size={18} />
                     </s-button>
                     <s-button
                       variant={(field.inputAlignment || 'right') === 'center' ? 'primary' : 'secondary'}
                       onClick={() => onUpdate(field.id, { inputAlignment: 'center' })}
                       aria-label="Align center"
                     >
-                      <AlignCenter size={18} />
+                      <FontAwesomeIcon icon="Bars3" size={18} />
                     </s-button>
                     <s-button
                       variant={(field.inputAlignment || 'right') === 'right' ? 'primary' : 'secondary'}
                       onClick={() => onUpdate(field.id, { inputAlignment: 'right' })}
                       aria-label="Align right"
                     >
-                      <AlignRight size={18} />
+                      <FontAwesomeIcon icon="Bars3BottomRight" size={18} />
                     </s-button>
                   </s-stack>
                 </div>
