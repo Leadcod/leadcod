@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma';
 import { SHOPIFY_API_VERSION } from '@/lib/constants/shopify';
 import { PlanType, type PlanTypeValue } from '@/lib/constants/plan';
+import { ACTIVE_STATUSES, SubscriptionStatus } from '@/lib/constants/subscription';
 import { createSubscription } from '@/lib/shopify/billing';
 
 export interface PlanInfo {
@@ -107,7 +108,7 @@ export async function getPlanInfo(shopUrl: string): Promise<PlanInfo> {
   try {
     const shop = await prisma.shop.findFirst({
       where: { url: shopUrl },
-      select: { id: true, plan: true }
+      select: { id: true }
     });
 
     if (!shop) {
@@ -129,7 +130,7 @@ export async function getPlanInfo(shopUrl: string): Promise<PlanInfo> {
       where: { 
         shopId: shop.id,
         status: {
-          in: ['active', 'ACTIVE', 'ACCEPTED']
+          in: ACTIVE_STATUSES
         }
       },
       orderBy: { startedAt: 'desc' }
@@ -157,7 +158,7 @@ export async function getPlanInfo(shopUrl: string): Promise<PlanInfo> {
       }
 
       // If subscription is active and not expired, user has paid plan
-      if (!isExpired && (activeSubscription.status === 'active' || activeSubscription.status === 'ACTIVE' || activeSubscription.status === 'ACCEPTED')) {
+      if (!isExpired && ACTIVE_STATUSES.includes(activeSubscription.status as SubscriptionStatus)) {
         planType = PlanType.PAID;
       } else {
         // Subscription expired or cancelled, downgrade to free
@@ -166,25 +167,13 @@ export async function getPlanInfo(shopUrl: string): Promise<PlanInfo> {
           // Update subscription status to expired
           await prisma.subscription.update({
             where: { id: activeSubscription.id },
-            data: { status: 'expired' }
-          });
-          // Update shop plan
-          await prisma.shop.update({
-            where: { id: shop.id },
-            data: { plan: PlanType.FREE }
+            data: { status: SubscriptionStatus.EXPIRED }
           });
         }
       }
     } else {
-      // No subscription = free trial by default
+      // No subscription = free plan (subscription status is source of truth)
       planType = PlanType.FREE;
-      // Update shop plan if it's set to paid but no subscription exists
-      if (shop.plan === PlanType.PAID) {
-        await prisma.shop.update({
-          where: { id: shop.id },
-          data: { plan: PlanType.FREE }
-        });
-      }
     }
 
     return {
@@ -245,14 +234,19 @@ export async function setPlan(
       };
     }
 
-    // For free plan, just update the shop plan
-    // No need to create subscription records for free plans
-    await prisma.shop.update({
-      where: { id: shop.id },
-      data: { 
-        plan: planType,
-      }
-    });
+    // For free plan, cancel any active subscription in our DB
+    if (planType === PlanType.FREE) {
+      await prisma.subscription.updateMany({
+        where: {
+          shopId: shop.id,
+          status: { in: ACTIVE_STATUSES }
+        },
+        data: {
+          status: SubscriptionStatus.CANCELLED,
+          cancelledAt: new Date()
+        }
+      });
+    }
 
     return { success: true };
   } catch (error) {

@@ -81,9 +81,8 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const ShopScalarFieldEnum = {
   id: 'id',
   url: 'url',
-  shopifyShopId: 'shopifyShopId',
   accessToken: 'accessToken',
-  uninstalledAt: 'uninstalledAt',
+  plan: 'plan',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

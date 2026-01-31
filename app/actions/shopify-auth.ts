@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { SHOPIFY_API_VERSION } from '@/lib/constants/shopify';
 import { DEFAULT_FORM_FIELDS, DEFAULT_GLOBAL_SETTINGS } from '../types/form';
 import { redirect } from 'next/navigation';
 
@@ -78,20 +79,25 @@ export async function initializeShopWithToken(
       where: { url: shopUrl },
     });
 
+    const shopifyShopId = await fetchShopifyShopId(shopUrl, accessToken);
     if (!shop) {
+      console.log('lotfi was here but shop not created')
       shop = await prisma.shop.create({
         data: {
           url: shopUrl,
           accessToken: accessToken,
+          shopifyShopId: shopifyShopId?.toString() || ''
         },
       });
     } else {
-      // Update existing shop with new access token
+      console.log('lotfi was here but shop updated')
       shop = await prisma.shop.update({
         where: { id: shop.id },
         data: {
           accessToken: accessToken,
           updatedAt: new Date(),
+          shopifyShopId: shopifyShopId?.toString() || '',
+          uninstalledAt: null, // Clear on reinstall
         },
       });
     }
@@ -122,6 +128,32 @@ export async function initializeShopWithToken(
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
+  }
+}
+
+/**
+ * Fetch Shopify numeric shop ID from Admin API (for webhook lookups).
+ */
+async function fetchShopifyShopId(
+  shopUrl: string,
+  accessToken: string,
+): Promise<number | null> {
+  try {
+    const res = await fetch(
+      `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/shop.json`,
+      {
+        headers: { 'X-Shopify-Access-Token': accessToken },
+      },
+    );
+    if (!res.ok) {
+      console.error('Failed to fetch Shopify shop ID:', res.statusText);
+      return null;
+    }
+    const json = await res.json();
+    const id = json?.shop?.id;
+    return typeof id === 'number' ? id : null;
+  } catch {
+    return null;
   }
 }
 

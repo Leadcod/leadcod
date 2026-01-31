@@ -4,10 +4,11 @@
  */
 export enum PlanType {
   FREE = 'free',
-  PAID = 'paid'
+  PAID = 'paid',
+  UNINSTALLED = 'uninstalled'
 }
 
 /**
  * Type for plan type values
  */
-export type PlanTypeValue = PlanType.FREE | PlanType.PAID;
+export type PlanTypeValue = PlanType.FREE | PlanType.PAID | PlanType.UNINSTALLED;

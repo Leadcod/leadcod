@@ -1,8 +1,8 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "af620696e3a620f77e307087f6e3d5a2"
+client_id = "be4883f020bf88c2597ab6d55be7e8e8"
 name = "Leadcod"
-application_url = "https://feof-antibody-blond-antonio.trycloudflare.com"
+application_url = "https://care-seattle-ventures-dried.trycloudflare.com"
 embedded = true
 
 [build]
@@ -18,4 +18,13 @@ scopes = "read_products,write_orders,write_customers"
 embedded_app_direct_api_access=true
 
 [auth]
-redirect_urls = [ "https://feof-antibody-blond-antonio.trycloudflare.com/api/auth/api/auth" ]
+redirect_urls = [ "https://care-seattle-ventures-dried.trycloudflare.com/api/auth/api/auth" ]
+
+
+[[webhooks.subscriptions]]
+uri = "/api/webhooks/app/uninstalled"
+topics = ["app/uninstalled"]
+
+[[webhooks.subscriptions]]
+uri = "/api/webhooks/app_subscriptions/update"
+topics = ["app_subscriptions/update"]

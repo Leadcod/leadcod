@@ -13,16 +13,12 @@ datasource db {
   provider = "postgresql"
 }
 
-enum PlanType {
-  free
-  paid
-}
-
 model Shop {
   id String @id @default(uuid())
   url String
+  shopifyShopId String? // Shopify's numeric shop ID (for webhook lookups)
   accessToken String?
-  plan PlanType @default(free)
+  uninstalledAt DateTime? // When the app was uninstalled (null = installed)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Form Form[]

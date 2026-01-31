@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { SHOPIFY_API_VERSION, getApplicationUrl } from '@/lib/constants/shopify';
-import { PlanType } from '@/lib/constants/plan';
+import { ACTIVE_STATUSES, SubscriptionStatus } from '@/lib/constants/subscription';
 
 export type BillingCycle = 'monthly' | 'yearly';
 
@@ -284,8 +284,7 @@ export async function getActiveSubscription(
   // - ACTIVE: Subscription is active and billing
   // - ACCEPTED: Subscription has been confirmed by the merchant
   // We do NOT accept PENDING as it may not be fully confirmed yet
-  const validStatuses = ['ACTIVE', 'ACCEPTED'];
-  const found = subscriptions.find((sub) => validStatuses.includes(sub.status));
+  const found = subscriptions.find((sub) => ACTIVE_STATUSES.includes((sub.status || '').toUpperCase() as SubscriptionStatus));
   
   return found || null;
 }
@@ -364,7 +363,7 @@ export async function activatePlanFromCharge(
     }
     
     // If charge is cancelled, mark subscription as cancelled and downgrade to free plan
-    if (chargeDetails.status === 'cancelled' || chargeDetails.cancelled_on) {
+    if ((chargeDetails.status || '').toUpperCase() === SubscriptionStatus.CANCELLED || chargeDetails.cancelled_on) {
       // Update or create cancelled subscription record
       const existingSubscription = await prisma.subscription.findFirst({
         where: { 
@@ -377,7 +376,7 @@ export async function activatePlanFromCharge(
         await prisma.subscription.update({
           where: { id: existingSubscription.id },
           data: {
-            status: 'cancelled',
+            status: SubscriptionStatus.CANCELLED,
             cancelledAt: chargeDetails.cancelled_on ? new Date(chargeDetails.cancelled_on) : new Date(),
           }
         });
@@ -386,7 +385,7 @@ export async function activatePlanFromCharge(
           data: {
             shopId: shop.id,
             shopifyChargeId: chargeId,
-            status: 'cancelled',
+            status: SubscriptionStatus.CANCELLED,
             startedAt: chargeDetails.created_at ? new Date(chargeDetails.created_at) : new Date(),
             cancelledAt: chargeDetails.cancelled_on ? new Date(chargeDetails.cancelled_on) : new Date(),
             price: chargeDetails.price ? parseFloat(chargeDetails.price) : null,
@@ -394,18 +393,11 @@ export async function activatePlanFromCharge(
         });
       }
 
-      // Downgrade shop to free plan
-      await prisma.shop.update({
-        where: { id: shop.id },
-        data: {
-          plan: PlanType.FREE,
-        },
-      });
       return;
     }
     
     // Only activate if charge is active
-    if (chargeDetails.status !== 'active') {
+    if ((chargeDetails.status || '').toUpperCase() !== SubscriptionStatus.ACTIVE) {
       throw new Error(`Charge is not active (status: ${chargeDetails.status})`);
     }
 
@@ -416,8 +408,8 @@ export async function activatePlanFromCharge(
       ? new Date(chargeDetails.created_at)
       : new Date();
 
-    // Extract subscription status
-    const subscriptionStatus = chargeDetails.status || 'active';
+    // Extract subscription status (always uppercase in DB)
+    const subscriptionStatus = (chargeDetails.status || SubscriptionStatus.ACTIVE).toUpperCase();
 
     // For recurring charges, expiresAt should be null (recurring charges don't expire)
     const expiresAt = null;
@@ -456,14 +448,6 @@ export async function activatePlanFromCharge(
         }
       });
     }
-
-    // Update shop plan to paid
-    await prisma.shop.update({
-      where: { id: shop.id },
-      data: {
-        plan: PlanType.PAID,
-      },
-    });
   } catch (error) {
     throw error;
   }
@@ -494,10 +478,8 @@ export async function activatePlanFromSubscription(
     // - ACTIVE: Subscription is active and billing
     // - ACCEPTED: Subscription has been confirmed by the merchant
     // We do NOT accept PENDING as it may not be fully confirmed yet
-    const validStatuses = ['ACTIVE', 'ACCEPTED'];
-    
-    if (!validStatuses.includes(activeSubscription.status)) {
-      throw new Error(`Subscription is not in a valid state (status: ${activeSubscription.status}). Expected one of: ${validStatuses.join(', ')}`);
+    if (!ACTIVE_STATUSES.includes((activeSubscription.status || '').toUpperCase() as SubscriptionStatus)) {
+      throw new Error(`Subscription is not in a valid state (status: ${activeSubscription.status}). Expected one of: ${ACTIVE_STATUSES.join(', ')}`);
     }
 
     // For recurring subscriptions, expiresAt should be null (recurring subscriptions don't expire)
@@ -512,7 +494,7 @@ export async function activatePlanFromSubscription(
       where: { 
         shopId: shop.id,
         status: {
-          in: ['active', 'ACTIVE', 'ACCEPTED']
+          in: ACTIVE_STATUSES
         }
       },
       orderBy: { startedAt: 'desc' }
@@ -523,7 +505,7 @@ export async function activatePlanFromSubscription(
       await prisma.subscription.update({
         where: { id: existingSubscription.id },
         data: {
-          status: activeSubscription.status,
+          status: (activeSubscription.status || '').toUpperCase() as SubscriptionStatus,
           expiresAt,
           cancelledAt: null, // Clear cancellation if reactivating
         }
@@ -533,21 +515,13 @@ export async function activatePlanFromSubscription(
       await prisma.subscription.create({
         data: {
           shopId: shop.id,
-          status: activeSubscription.status,
+          status: (activeSubscription.status || '').toUpperCase() as SubscriptionStatus,
           startedAt,
           expiresAt,
           currencyCode: 'USD',
         }
       });
     }
-
-    // Update shop plan to paid
-    await prisma.shop.update({
-      where: { id: shop.id },
-      data: {
-        plan: PlanType.PAID,
-      },
-    });
   } catch (error) {
     throw error;
   }
@@ -586,7 +560,7 @@ async function getChargeStatus(
 
     return {
       status: charge.status,
-      active: charge.status === 'active',
+      active: (charge.status || '').toUpperCase() === SubscriptionStatus.ACTIVE,
     };
   } catch (error) {
     return null;
@@ -676,7 +650,7 @@ export async function activateCharge(
     const data = await response.json();
     const charge = data.recurring_application_charge;
 
-    if (charge && charge.status === 'active') {
+    if (charge && (charge.status || '').toUpperCase() === SubscriptionStatus.ACTIVE) {
       return true;
     }
 
@@ -704,9 +678,7 @@ export async function verifyAndActivateSubscription(
     // - ACTIVE: Subscription is active and billing
     // - ACCEPTED: Subscription has been confirmed by the merchant
     // We do NOT accept PENDING as it may not be fully confirmed yet
-    const validStatuses = ['ACTIVE', 'ACCEPTED'];
-    
-    if (validStatuses.includes(subscription.status)) {
+    if (ACTIVE_STATUSES.includes((subscription.status || '').toUpperCase() as SubscriptionStatus)) {
       await activatePlanFromSubscription(shopUrl, subscription);
       return true;
     }
