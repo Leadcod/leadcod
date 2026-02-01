@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Shop: 'Shop',
+  TrackingPixel: 'TrackingPixel',
   Form: 'Form',
   Country: 'Country',
   State: 'State',
@@ -89,6 +90,21 @@ export const ShopScalarFieldEnum = {
 } as const
 
 export type ShopScalarFieldEnum = (typeof ShopScalarFieldEnum)[keyof typeof ShopScalarFieldEnum]
+
+
+export const TrackingPixelScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  provider: 'provider',
+  name: 'name',
+  pixelId: 'pixelId',
+  conversionApiToken: 'conversionApiToken',
+  testToken: 'testToken',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TrackingPixelScalarFieldEnum = (typeof TrackingPixelScalarFieldEnum)[keyof typeof TrackingPixelScalarFieldEnum]
 
 
 export const FormScalarFieldEnum = {

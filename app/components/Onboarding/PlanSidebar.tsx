@@ -75,7 +75,7 @@ export default function PlanSidebar({ shopUrl }: PlanSidebarProps) {
               "px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 shrink-0",
               isFree
                 ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                : "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 dark:from-purple-900/30 dark:to-pink-900/30 dark:text-purple-300"
+                : "bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 dark:from-amber-900/40 dark:to-yellow-900/40 dark:text-amber-300"
             )}
           >
             <FontAwesomeIcon
@@ -104,7 +104,7 @@ export default function PlanSidebar({ shopUrl }: PlanSidebarProps) {
                 </span>
               )}
               {isUnlimited && (
-                <FontAwesomeIcon icon="Infinity" size={16} className="text-purple-600 dark:text-purple-400 ml-1" />
+                <FontAwesomeIcon icon="Infinity" size={16} className="text-amber-600 dark:text-amber-400 ml-1" />
               )}
             </div>
           </div>
@@ -145,9 +145,9 @@ export default function PlanSidebar({ shopUrl }: PlanSidebarProps) {
           )}
 
           {isUnlimited && (
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
-              <FontAwesomeIcon icon="Sparkles" size={16} className="text-purple-600 dark:text-purple-400" />
-              <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+              <FontAwesomeIcon icon="Sparkles" size={16} className="text-amber-600 dark:text-amber-400" />
+              <span className="text-sm font-medium text-amber-700 dark:text-amber-300">
                 {t('unlimitedOrders')}
               </span>
             </div>
@@ -171,11 +171,11 @@ export default function PlanSidebar({ shopUrl }: PlanSidebarProps) {
                     </p>
                   </div>
                 </div>
-                <div className="p-3 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800">
+                <div className="p-3 rounded-lg bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border border-amber-200 dark:border-amber-800">
                   <div className="flex items-start gap-2">
-                    <FontAwesomeIcon icon="ArrowUpCircle" size={14} className="text-purple-600 dark:text-purple-400 mt-0.5 shrink-0" />
+                    <FontAwesomeIcon icon="ArrowUpCircle" size={14} className="text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-semibold text-purple-700 dark:text-purple-300 mb-1">
+                      <p className="text-sm font-semibold text-amber-700 dark:text-amber-300 mb-1">
                         {t('upgradeToPaid', { price: paidTierPrice })}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -187,14 +187,14 @@ export default function PlanSidebar({ shopUrl }: PlanSidebarProps) {
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="p-3 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800">
+                <div className="p-3 rounded-lg bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border border-amber-200 dark:border-amber-800">
                   <div className="flex items-start gap-2 mb-2">
-                    <FontAwesomeIcon icon="Crown" size={14} className="text-purple-600 dark:text-purple-400 mt-0.5 shrink-0" />
+                    <FontAwesomeIcon icon="Crown" size={14} className="text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
                     <p className="text-sm text-foreground font-medium">
                       {t('paidPlanDescription', { price: paidTierPrice })}
                     </p>
                   </div>
-                  <div className="mt-2 pt-2 border-t border-purple-200 dark:border-purple-800 space-y-1.5">
+                  <div className="mt-2 pt-2 border-t border-amber-200 dark:border-amber-800 space-y-1.5">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <FontAwesomeIcon icon="Check" size={10} className="text-green-600 dark:text-green-400" />
                       <span>Unlimited orders</span>

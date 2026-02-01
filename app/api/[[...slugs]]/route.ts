@@ -5,6 +5,7 @@ import { LocationController } from '../controllers/LocationController'
 import { OrderController } from '../controllers/OrderController'
 import { OnboardingController } from '../controllers/OnboardingController'
 import { BillingController } from '../controllers/BillingController'
+import { PixelController } from '../controllers/PixelController'
 import {
   handleAppUninstalled,
   handleAppSubscriptionsUpdate,
@@ -57,7 +58,17 @@ const app = new Elysia({ prefix: '/api' })
       request: context.request
     });
   }, BillingController.confirmSchema)
+  .get('/pixels', PixelController.list, PixelController.listSchema)
+  .post('/pixels', async (context) => {
+    return PixelController.create({ body: context.body as any });
+  }, PixelController.createSchema)
+  .patch('/pixels', async (context) => {
+    return PixelController.update({ body: context.body as any });
+  }, PixelController.updateSchema)
+  .delete('/pixels', PixelController.delete, PixelController.deleteSchema)
 
 export const GET = app.fetch
 export const POST = app.fetch
-export const OPTIONS = app.fetch 
+export const OPTIONS = app.fetch
+export const PATCH = app.fetch
+export const DELETE = app.fetch 

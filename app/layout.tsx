@@ -68,6 +68,7 @@ export default async function RootLayout({
           <s-link href="/form-builder">{t('formBuilder')}</s-link>
           <s-link href="/shipping-fees">{t('shippingFees')}</s-link>
           <s-link href="/special-offers">{t('specialOffers')}</s-link>
+          <s-link href="/pixels">{t('pixels')}</s-link>
           <s-link href="/plans">{t('plans')}</s-link>
         </s-app-nav>
         {children}

@@ -26,6 +26,24 @@ model Shop {
   shippingFees ShippingFee[]
   onboardingProgress OnboardingProgress?
   subscriptions Subscription[]
+  trackingPixels TrackingPixel[]
+}
+
+model TrackingPixel {
+  id String @id @default(uuid())
+  shopId String
+  provider String // 'facebook' | 'tiktok' | 'snapchat' | 'google'
+  name String? // Optional label (e.g. "Main pixel")
+  // Facebook (and similar) fields
+  pixelId String
+  conversionApiToken String?
+  testToken String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@index([shopId, provider])
 }
 
 model Form {

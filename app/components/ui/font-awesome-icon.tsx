@@ -68,6 +68,9 @@ const iconMap: Record<string, string> = {
   Sparkles: 'fa-sparkles',
   InfoCircle: 'fa-circle-info',
   ArrowUpCircle: 'fa-circle-arrow-up',
+  TrashCan: 'fa-trash-can',
+  CircleExclamation: 'fa-circle-exclamation',
+  CircleCheck: 'fa-circle-check',
 };
 
 export const FontAwesomeIcon: React.FC<FontAwesomeIconProps> = ({ 

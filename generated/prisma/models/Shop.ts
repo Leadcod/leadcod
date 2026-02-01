@@ -203,6 +203,7 @@ export type ShopWhereInput = {
   shippingFees?: Prisma.ShippingFeeListRelationFilter
   onboardingProgress?: Prisma.XOR<Prisma.OnboardingProgressNullableScalarRelationFilter, Prisma.OnboardingProgressWhereInput> | null
   subscriptions?: Prisma.SubscriptionListRelationFilter
+  trackingPixels?: Prisma.TrackingPixelListRelationFilter
 }
 
 export type ShopOrderByWithRelationInput = {
@@ -218,6 +219,7 @@ export type ShopOrderByWithRelationInput = {
   shippingFees?: Prisma.ShippingFeeOrderByRelationAggregateInput
   onboardingProgress?: Prisma.OnboardingProgressOrderByWithRelationInput
   subscriptions?: Prisma.SubscriptionOrderByRelationAggregateInput
+  trackingPixels?: Prisma.TrackingPixelOrderByRelationAggregateInput
 }
 
 export type ShopWhereUniqueInput = Prisma.AtLeast<{
@@ -236,6 +238,7 @@ export type ShopWhereUniqueInput = Prisma.AtLeast<{
   shippingFees?: Prisma.ShippingFeeListRelationFilter
   onboardingProgress?: Prisma.XOR<Prisma.OnboardingProgressNullableScalarRelationFilter, Prisma.OnboardingProgressWhereInput> | null
   subscriptions?: Prisma.SubscriptionListRelationFilter
+  trackingPixels?: Prisma.TrackingPixelListRelationFilter
 }, "id">
 
 export type ShopOrderByWithAggregationInput = {
@@ -277,6 +280,7 @@ export type ShopCreateInput = {
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelCreateNestedManyWithoutShopInput
 }
 
 export type ShopUncheckedCreateInput = {
@@ -292,6 +296,7 @@ export type ShopUncheckedCreateInput = {
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedCreateNestedManyWithoutShopInput
 }
 
 export type ShopUpdateInput = {
@@ -307,6 +312,7 @@ export type ShopUpdateInput = {
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUpdateManyWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateInput = {
@@ -322,6 +328,7 @@ export type ShopUncheckedUpdateInput = {
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedUpdateManyWithoutShopNestedInput
 }
 
 export type ShopCreateManyInput = {
@@ -405,6 +412,20 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type ShopCreateNestedOneWithoutTrackingPixelsInput = {
+  create?: Prisma.XOR<Prisma.ShopCreateWithoutTrackingPixelsInput, Prisma.ShopUncheckedCreateWithoutTrackingPixelsInput>
+  connectOrCreate?: Prisma.ShopCreateOrConnectWithoutTrackingPixelsInput
+  connect?: Prisma.ShopWhereUniqueInput
+}
+
+export type ShopUpdateOneRequiredWithoutTrackingPixelsNestedInput = {
+  create?: Prisma.XOR<Prisma.ShopCreateWithoutTrackingPixelsInput, Prisma.ShopUncheckedCreateWithoutTrackingPixelsInput>
+  connectOrCreate?: Prisma.ShopCreateOrConnectWithoutTrackingPixelsInput
+  upsert?: Prisma.ShopUpsertWithoutTrackingPixelsInput
+  connect?: Prisma.ShopWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShopUpdateToOneWithWhereWithoutTrackingPixelsInput, Prisma.ShopUpdateWithoutTrackingPixelsInput>, Prisma.ShopUncheckedUpdateWithoutTrackingPixelsInput>
+}
+
 export type ShopCreateNestedOneWithoutFormInput = {
   create?: Prisma.XOR<Prisma.ShopCreateWithoutFormInput, Prisma.ShopUncheckedCreateWithoutFormInput>
   connectOrCreate?: Prisma.ShopCreateOrConnectWithoutFormInput
@@ -475,6 +496,82 @@ export type ShopUpdateOneRequiredWithoutSubscriptionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ShopUpdateToOneWithWhereWithoutSubscriptionsInput, Prisma.ShopUpdateWithoutSubscriptionsInput>, Prisma.ShopUncheckedUpdateWithoutSubscriptionsInput>
 }
 
+export type ShopCreateWithoutTrackingPixelsInput = {
+  id?: string
+  url: string
+  shopifyShopId?: string | null
+  accessToken?: string | null
+  uninstalledAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  Form?: Prisma.FormCreateNestedManyWithoutShopInput
+  shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
+  shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
+  subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutShopInput
+}
+
+export type ShopUncheckedCreateWithoutTrackingPixelsInput = {
+  id?: string
+  url: string
+  shopifyShopId?: string | null
+  accessToken?: string | null
+  uninstalledAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  Form?: Prisma.FormUncheckedCreateNestedManyWithoutShopInput
+  shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
+  shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
+  subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutShopInput
+}
+
+export type ShopCreateOrConnectWithoutTrackingPixelsInput = {
+  where: Prisma.ShopWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShopCreateWithoutTrackingPixelsInput, Prisma.ShopUncheckedCreateWithoutTrackingPixelsInput>
+}
+
+export type ShopUpsertWithoutTrackingPixelsInput = {
+  update: Prisma.XOR<Prisma.ShopUpdateWithoutTrackingPixelsInput, Prisma.ShopUncheckedUpdateWithoutTrackingPixelsInput>
+  create: Prisma.XOR<Prisma.ShopCreateWithoutTrackingPixelsInput, Prisma.ShopUncheckedCreateWithoutTrackingPixelsInput>
+  where?: Prisma.ShopWhereInput
+}
+
+export type ShopUpdateToOneWithWhereWithoutTrackingPixelsInput = {
+  where?: Prisma.ShopWhereInput
+  data: Prisma.XOR<Prisma.ShopUpdateWithoutTrackingPixelsInput, Prisma.ShopUncheckedUpdateWithoutTrackingPixelsInput>
+}
+
+export type ShopUpdateWithoutTrackingPixelsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  shopifyShopId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uninstalledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Form?: Prisma.FormUpdateManyWithoutShopNestedInput
+  shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
+  shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUpdateManyWithoutShopNestedInput
+}
+
+export type ShopUncheckedUpdateWithoutTrackingPixelsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  shopifyShopId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accessToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uninstalledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  Form?: Prisma.FormUncheckedUpdateManyWithoutShopNestedInput
+  shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
+  shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
+  onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
+  subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutShopNestedInput
+}
+
 export type ShopCreateWithoutFormInput = {
   id?: string
   url: string
@@ -487,6 +584,7 @@ export type ShopCreateWithoutFormInput = {
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelCreateNestedManyWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutFormInput = {
@@ -501,6 +599,7 @@ export type ShopUncheckedCreateWithoutFormInput = {
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedCreateNestedManyWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutFormInput = {
@@ -531,6 +630,7 @@ export type ShopUpdateWithoutFormInput = {
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUpdateManyWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutFormInput = {
@@ -545,6 +645,7 @@ export type ShopUncheckedUpdateWithoutFormInput = {
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedUpdateManyWithoutShopNestedInput
 }
 
 export type ShopCreateWithoutShippingSettingsInput = {
@@ -559,6 +660,7 @@ export type ShopCreateWithoutShippingSettingsInput = {
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelCreateNestedManyWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutShippingSettingsInput = {
@@ -573,6 +675,7 @@ export type ShopUncheckedCreateWithoutShippingSettingsInput = {
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedCreateNestedManyWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutShippingSettingsInput = {
@@ -603,6 +706,7 @@ export type ShopUpdateWithoutShippingSettingsInput = {
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUpdateManyWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutShippingSettingsInput = {
@@ -617,6 +721,7 @@ export type ShopUncheckedUpdateWithoutShippingSettingsInput = {
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedUpdateManyWithoutShopNestedInput
 }
 
 export type ShopCreateWithoutShippingFeesInput = {
@@ -631,6 +736,7 @@ export type ShopCreateWithoutShippingFeesInput = {
   shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelCreateNestedManyWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutShippingFeesInput = {
@@ -645,6 +751,7 @@ export type ShopUncheckedCreateWithoutShippingFeesInput = {
   shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedCreateNestedManyWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutShippingFeesInput = {
@@ -675,6 +782,7 @@ export type ShopUpdateWithoutShippingFeesInput = {
   shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUpdateManyWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutShippingFeesInput = {
@@ -689,6 +797,7 @@ export type ShopUncheckedUpdateWithoutShippingFeesInput = {
   shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedUpdateManyWithoutShopNestedInput
 }
 
 export type ShopCreateWithoutOnboardingProgressInput = {
@@ -703,6 +812,7 @@ export type ShopCreateWithoutOnboardingProgressInput = {
   shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelCreateNestedManyWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutOnboardingProgressInput = {
@@ -717,6 +827,7 @@ export type ShopUncheckedCreateWithoutOnboardingProgressInput = {
   shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedCreateNestedManyWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutOnboardingProgressInput = {
@@ -747,6 +858,7 @@ export type ShopUpdateWithoutOnboardingProgressInput = {
   shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUpdateManyWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutOnboardingProgressInput = {
@@ -761,6 +873,7 @@ export type ShopUncheckedUpdateWithoutOnboardingProgressInput = {
   shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedUpdateManyWithoutShopNestedInput
 }
 
 export type ShopCreateWithoutSubscriptionsInput = {
@@ -775,6 +888,7 @@ export type ShopCreateWithoutSubscriptionsInput = {
   shippingSettings?: Prisma.ShippingSettingsCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressCreateNestedOneWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelCreateNestedManyWithoutShopInput
 }
 
 export type ShopUncheckedCreateWithoutSubscriptionsInput = {
@@ -789,6 +903,7 @@ export type ShopUncheckedCreateWithoutSubscriptionsInput = {
   shippingSettings?: Prisma.ShippingSettingsUncheckedCreateNestedOneWithoutShopInput
   shippingFees?: Prisma.ShippingFeeUncheckedCreateNestedManyWithoutShopInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedCreateNestedOneWithoutShopInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedCreateNestedManyWithoutShopInput
 }
 
 export type ShopCreateOrConnectWithoutSubscriptionsInput = {
@@ -819,6 +934,7 @@ export type ShopUpdateWithoutSubscriptionsInput = {
   shippingSettings?: Prisma.ShippingSettingsUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUpdateOneWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUpdateManyWithoutShopNestedInput
 }
 
 export type ShopUncheckedUpdateWithoutSubscriptionsInput = {
@@ -833,6 +949,7 @@ export type ShopUncheckedUpdateWithoutSubscriptionsInput = {
   shippingSettings?: Prisma.ShippingSettingsUncheckedUpdateOneWithoutShopNestedInput
   shippingFees?: Prisma.ShippingFeeUncheckedUpdateManyWithoutShopNestedInput
   onboardingProgress?: Prisma.OnboardingProgressUncheckedUpdateOneWithoutShopNestedInput
+  trackingPixels?: Prisma.TrackingPixelUncheckedUpdateManyWithoutShopNestedInput
 }
 
 
@@ -844,12 +961,14 @@ export type ShopCountOutputType = {
   Form: number
   shippingFees: number
   subscriptions: number
+  trackingPixels: number
 }
 
 export type ShopCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   Form?: boolean | ShopCountOutputTypeCountFormArgs
   shippingFees?: boolean | ShopCountOutputTypeCountShippingFeesArgs
   subscriptions?: boolean | ShopCountOutputTypeCountSubscriptionsArgs
+  trackingPixels?: boolean | ShopCountOutputTypeCountTrackingPixelsArgs
 }
 
 /**
@@ -883,6 +1002,13 @@ export type ShopCountOutputTypeCountSubscriptionsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.SubscriptionWhereInput
 }
 
+/**
+ * ShopCountOutputType without action
+ */
+export type ShopCountOutputTypeCountTrackingPixelsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TrackingPixelWhereInput
+}
+
 
 export type ShopSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -897,6 +1023,7 @@ export type ShopSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   shippingFees?: boolean | Prisma.Shop$shippingFeesArgs<ExtArgs>
   onboardingProgress?: boolean | Prisma.Shop$onboardingProgressArgs<ExtArgs>
   subscriptions?: boolean | Prisma.Shop$subscriptionsArgs<ExtArgs>
+  trackingPixels?: boolean | Prisma.Shop$trackingPixelsArgs<ExtArgs>
   _count?: boolean | Prisma.ShopCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["shop"]>
 
@@ -937,6 +1064,7 @@ export type ShopInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   shippingFees?: boolean | Prisma.Shop$shippingFeesArgs<ExtArgs>
   onboardingProgress?: boolean | Prisma.Shop$onboardingProgressArgs<ExtArgs>
   subscriptions?: boolean | Prisma.Shop$subscriptionsArgs<ExtArgs>
+  trackingPixels?: boolean | Prisma.Shop$trackingPixelsArgs<ExtArgs>
   _count?: boolean | Prisma.ShopCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ShopIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -950,6 +1078,7 @@ export type $ShopPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     shippingFees: Prisma.$ShippingFeePayload<ExtArgs>[]
     onboardingProgress: Prisma.$OnboardingProgressPayload<ExtArgs> | null
     subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
+    trackingPixels: Prisma.$TrackingPixelPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1358,6 +1487,7 @@ export interface Prisma__ShopClient<T, Null = never, ExtArgs extends runtime.Typ
   shippingFees<T extends Prisma.Shop$shippingFeesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$shippingFeesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ShippingFeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   onboardingProgress<T extends Prisma.Shop$onboardingProgressArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$onboardingProgressArgs<ExtArgs>>): Prisma.Prisma__OnboardingProgressClient<runtime.Types.Result.GetResult<Prisma.$OnboardingProgressPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   subscriptions<T extends Prisma.Shop$subscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  trackingPixels<T extends Prisma.Shop$trackingPixelsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shop$trackingPixelsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrackingPixelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1889,6 +2019,30 @@ export type Shop$subscriptionsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.SubscriptionScalarFieldEnum | Prisma.SubscriptionScalarFieldEnum[]
+}
+
+/**
+ * Shop.trackingPixels
+ */
+export type Shop$trackingPixelsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TrackingPixel
+   */
+  select?: Prisma.TrackingPixelSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TrackingPixel
+   */
+  omit?: Prisma.TrackingPixelOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TrackingPixelInclude<ExtArgs> | null
+  where?: Prisma.TrackingPixelWhereInput
+  orderBy?: Prisma.TrackingPixelOrderByWithRelationInput | Prisma.TrackingPixelOrderByWithRelationInput[]
+  cursor?: Prisma.TrackingPixelWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TrackingPixelScalarFieldEnum | Prisma.TrackingPixelScalarFieldEnum[]
 }
 
 /**

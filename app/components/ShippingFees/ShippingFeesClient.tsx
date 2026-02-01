@@ -41,8 +41,8 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
   // Track last saved state
   const lastSavedStopDeskEnabledRef = useRef(false);
   const lastSavedFeesRef = useRef<Record<string, ProvinceFees>>({});
-  const lastSavedCodLabelRef = useRef<string>('الدفع عند الاستلام');
-  const lastSavedStopDeskLabelRef = useRef<string>('Stop Desk');
+  const lastSavedCodLabelRef = useRef<string>('التوصيل للمنزل');
+  const lastSavedStopDeskLabelRef = useRef<string>('التوصيل للمكتب');
   const lastSavedFreeShippingLabelRef = useRef<string>('مجاني');
 
   useEffect(() => {
@@ -290,18 +290,20 @@ export default function ShippingFeesClient({ shopUrl }: ShippingFeesClientProps)
                         placeholder={t('cashOnDelivery')}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="stopdesk-label">
-                        {t('stopDeskLabel')}
-                      </Label>
-                      <Input
-                        id="stopdesk-label"
-                        type="text"
-                        value={stopDeskLabel}
-                        onChange={(e) => handleStopDeskLabelChange(e.target.value)}
-                        placeholder={t('stopDesk')}
-                      />
-                    </div>
+                    {stopDeskEnabled && (
+                      <div className="space-y-2">
+                        <Label htmlFor="stopdesk-label">
+                          {t('stopDeskLabel')}
+                        </Label>
+                        <Input
+                          id="stopdesk-label"
+                          type="text"
+                          value={stopDeskLabel}
+                          onChange={(e) => handleStopDeskLabelChange(e.target.value)}
+                          placeholder={t('stopDesk')}
+                        />
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <Label htmlFor="freeshipping-label">
                         {t('freeShippingText')}

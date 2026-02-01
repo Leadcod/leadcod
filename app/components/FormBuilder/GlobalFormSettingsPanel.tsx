@@ -1,9 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { FontAwesomeIcon } from '@/app/components/ui/font-awesome-icon';
 import { useTranslations } from 'next-intl';
 import { GlobalFormSettings } from '@/app/types/form';
 import CompactColorSwatch from '@/app/components/ui/compact-color-swatch';
+
+const GLOBAL_SETTINGS_TABS = ['thankYou', 'font', 'headline', 'subtitle', 'inputPadding', 'currency', 'shadow'] as const;
+type GlobalSettingsTabId = (typeof GLOBAL_SETTINGS_TABS)[number];
 
 interface GlobalFormSettingsPanelProps {
   settings: GlobalFormSettings;
@@ -13,6 +17,7 @@ interface GlobalFormSettingsPanelProps {
 
 export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }: GlobalFormSettingsPanelProps) {
   const t = useTranslations('formBuilder');
+  const [activeTab, setActiveTab] = useState<GlobalSettingsTabId>('thankYou');
   const updateHeadline = (updates: Partial<GlobalFormSettings['headline']>) => {
     onUpdate({
       headline: { ...settings.headline, ...updates }
@@ -28,6 +33,17 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
   const updateBorder = (updates: Partial<GlobalFormSettings['border']>) => {
     onUpdate({
       border: { ...settings.border, ...updates }
+    });
+  };
+
+  const thankYouPopup = settings.thankYouPopup ?? {
+    title: 'شكراً لك!',
+    message: 'تم تقديم طلبك بنجاح. سنتواصل معك قريباً.',
+    buttonText: 'موافق'
+  };
+  const updateThankYouPopup = (updates: Partial<NonNullable<GlobalFormSettings['thankYouPopup']>>) => {
+    onUpdate({
+      thankYouPopup: { ...thankYouPopup, ...updates }
     });
   };
 
@@ -49,10 +65,84 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
           </s-button>
         </s-stack>
 
-        <s-divider />
+        <div
+          role="tablist"
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '4px',
+            borderBottom: '1px solid #e5e7eb',
+            marginBottom: 12,
+            minHeight: 36
+          }}
+        >
+          {GLOBAL_SETTINGS_TABS.map((tabId) => (
+            <button
+              key={tabId}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tabId}
+              onClick={() => setActiveTab(tabId)}
+              style={{
+                padding: '8px 12px',
+                fontSize: 13,
+                fontWeight: activeTab === tabId ? 600 : 500,
+                border: 'none',
+                borderBottom: activeTab === tabId ? '2px solid #000' : '2px solid transparent',
+                background: 'none',
+                color: activeTab === tabId ? '#111' : '#6b7280',
+                cursor: 'pointer',
+                marginBottom: -1
+              }}
+            >
+              {t(`tab_${tabId}`)}
+            </button>
+          ))}
+        </div>
 
-        {/* Font Settings & Color Section */}
+        {activeTab === 'thankYou' && (
         <div>
+          <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }} title={t('thankYouPopupDescription')}>{t('thankYouPopupSection')}</h4>
+          <s-stack gap="small" style={{ marginTop: 12 }}>
+            <div>
+              <s-text>{t('thankYouPopupTitle')}</s-text>
+              <s-text-field
+                value={thankYouPopup.title}
+                onChange={(e: any) => updateThankYouPopup({ title: e.target?.value ?? e.detail?.value ?? thankYouPopup.title })}
+                placeholder={t('thankYouPopupTitlePlaceholder')}
+              />
+            </div>
+            <div>
+              <s-text>{t('thankYouPopupMessage')}</s-text>
+              <textarea
+                value={thankYouPopup.message}
+                onChange={(e: any) => updateThankYouPopup({ message: e.target?.value ?? thankYouPopup.message })}
+                placeholder={t('thankYouPopupMessagePlaceholder')}
+                rows={3}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #e5e5e5',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  resize: 'vertical'
+                }}
+              />
+            </div>
+            <div>
+              <s-text>{t('thankYouPopupButtonText')}</s-text>
+              <s-text-field
+                value={thankYouPopup.buttonText}
+                onChange={(e: any) => updateThankYouPopup({ buttonText: e.target?.value ?? e.detail?.value ?? thankYouPopup.buttonText })}
+                placeholder={t('thankYouPopupButtonTextPlaceholder')}
+              />
+            </div>
+          </s-stack>
+        </div>
+        )}
+
+        {activeTab === 'font' && (
+        <div title={t('fontSettingsDescription')}>
           <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }}>{t('fontSettingsColor')}</h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
             <div style={{ flex: '1 1 150px', minWidth: '120px' }}>
@@ -123,14 +213,10 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
               </s-stack>
             </div>
           </div>
-          <s-text>
-            {t('fontSettingsDescription')}
-          </s-text>
         </div>
+        )}
 
-        <s-divider />
-
-        {/* Headline Section */}
+        {activeTab === 'headline' && (
         <div>
           <s-stack direction="inline" justifyContent="space-between" alignItems="center">
             <h4 style={{ fontWeight: 600, margin: 0 }}>{t('headline')}</h4>
@@ -236,10 +322,9 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
             </s-stack>
           )}
         </div>
+        )}
 
-        <s-divider />
-
-        {/* Subtitle Section */}
+        {activeTab === 'subtitle' && (
         <div>
             <s-stack direction="inline" justifyContent="space-between" alignItems="center">
             <h4 style={{ fontWeight: 600, margin: 0 }}>{t('subtitle')}</h4>
@@ -342,11 +427,10 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
             </s-stack>
           )}
         </div>
+        )}
 
-        <s-divider />
-
-        {/* Input Padding Section */}
-        <div>
+        {activeTab === 'inputPadding' && (
+        <div title={t('inputPaddingDescription')}>
           <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }}>{t('inputPadding')}</h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'flex-end' }}>
             <div style={{ flex: '1 1 100px', minWidth: '80px' }}>
@@ -396,32 +480,24 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
               />
             </div>
           </div>
-          <s-text>
-            {t('inputPaddingDescription')}
-          </s-text>
         </div>
+        )}
 
-        <s-divider />
-
-        {/* Currency Section */}
+        {activeTab === 'currency' && (
         <div>
           <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }}>{t('currency')}</h4>
-          <div>
+          <div title={t('currencyDescription')}>
             <s-text>{t('currencySymbol')}</s-text>
             <s-text-field
-              value={settings.currency || 'DZD'}
-              onChange={(e: any) => onUpdate({ currency: e.target.value || 'DZD' })}
-              placeholder="DZD"
+              value={settings.currency || 'دج'}
+              onChange={(e: any) => onUpdate({ currency: e.target.value ?? e.detail?.value ?? 'دج' })}
+              placeholder="دج, $, €…"
             />
-            <s-text>
-              {t('currencyDescription')}
-            </s-text>
           </div>
         </div>
+        )}
 
-        <s-divider />
-
-        {/* Shadow Section */}
+        {activeTab === 'shadow' && (
         <div>
           <s-stack direction="inline" justifyContent="space-between" alignItems="center">
             <h4 style={{ fontWeight: 600, margin: 0 }}>{t('formShadow')}</h4>
@@ -499,6 +575,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
             </s-stack>
           )}
         </div>
+        )}
       </s-stack>
     </s-box>
   );

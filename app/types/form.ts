@@ -112,6 +112,11 @@ export interface GlobalFormSettings {
     color: string;
   };
   currency?: string; // Currency symbol/text (e.g., "DZD", "$", "€")
+  thankYouPopup?: {
+    title: string;
+    message: string;
+    buttonText: string;
+  };
 }
 
 export interface FormSettings {
@@ -457,11 +462,13 @@ export const GRADIENT_PRESETS = [
   }
 ];
 
+export const BRAND_COLOR = '#15803d';
+
 export const DEFAULT_GLOBAL_SETTINGS: GlobalFormSettings = {
-  primaryColor: '#000000',
+  primaryColor: BRAND_COLOR,
   fontFamily: 'cairo',
   fontSize: '16px',
-  fontWeight: 'normal',
+  fontWeight: 'bold',
   fontStyle: 'normal',
   inputPadding: {
     vertical: 12,
@@ -493,6 +500,11 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalFormSettings = {
     padding: 16,
     color: '#9ca3af'
   },
-  currency: 'DZD'
+  currency: 'دج',
+  thankYouPopup: {
+    title: 'شكراً لك!',
+    message: 'تم تقديم طلبك بنجاح. سنتواصل معك قريباً.',
+    buttonText: 'موافق'
+  }
 };
 

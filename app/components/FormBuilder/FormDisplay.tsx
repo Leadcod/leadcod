@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { ArrowRightIcon, GlobeAmericasIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { getProvinces, getCities, getShippingFeesForState } from '@/app/actions/shipping';
 
 const Icons = {
   ArrowRightIcon,
@@ -61,6 +62,8 @@ interface FormDisplayProps {
   shippingMethod?: 'free' | 'per-province';
   stopDeskEnabled?: boolean;
   freeShippingLabel?: string;
+  codLabel?: string;
+  stopDeskLabel?: string;
   shopUrl?: string;
 }
 
@@ -72,7 +75,9 @@ export default function FormDisplay({
   onSubmit,
   shippingMethod = 'per-province',
   stopDeskEnabled = false,
-  freeShippingLabel = 'Free',
+  freeShippingLabel = 'مجاني',
+  codLabel = 'التوصيل للمنزل',
+  stopDeskLabel = 'التوصيل للمكتب',
   shopUrl
 }: FormDisplayProps) {
   const t = useTranslations('formDisplay');
@@ -90,14 +95,13 @@ export default function FormDisplay({
 
   // Fetch states on mount (skip in preview mode)
   useEffect(() => {
-    if (isPreview) return; // Skip API call in builder preview
+    if (isPreview) return; // Skip in builder preview
     
     const fetchStates = async () => {
       setLoadingStates(true);
       try {
-        const response = await fetch('/api/states');
-        const result = await response.json();
-        if (result.success) {
+        const result = await getProvinces();
+        if (result.success && result.data) {
           setStates(result.data);
         }
       } catch (error) {
@@ -111,7 +115,7 @@ export default function FormDisplay({
 
   // Fetch cities when state is selected (skip in preview mode)
   useEffect(() => {
-    if (isPreview) return; // Skip API call in builder preview
+    if (isPreview) return; // Skip in builder preview
     
     const fetchCities = async () => {
       if (!selectedStateId) {
@@ -120,9 +124,8 @@ export default function FormDisplay({
       }
       setLoadingCities(true);
       try {
-        const response = await fetch(`/api/cities?stateId=${selectedStateId}`);
-        const result = await response.json();
-        if (result.success) {
+        const result = await getCities(selectedStateId);
+        if (result.success && result.data) {
           setCities(result.data);
         }
       } catch (error) {
@@ -136,7 +139,7 @@ export default function FormDisplay({
 
   // Fetch shipping fees when state is selected and shipping method is per-province (skip in preview mode)
   useEffect(() => {
-    if (isPreview) return; // Skip API call in builder preview
+    if (isPreview) return; // Skip in builder preview
     
     const fetchShippingFees = async () => {
       if (!selectedStateId || !shopUrl) {
@@ -145,8 +148,7 @@ export default function FormDisplay({
       }
       setLoadingShippingFees(true);
       try {
-        const response = await fetch(`/api/shipping-fees?shopUrl=${encodeURIComponent(shopUrl)}&stateId=${selectedStateId}`);
-        const result = await response.json();
+        const result = await getShippingFeesForState(shopUrl, selectedStateId);
         if (result.success && result.data) {
           setShippingFees(result.data);
         } else {
@@ -224,7 +226,7 @@ export default function FormDisplay({
   };
 
   const getPrimaryColor = () => {
-    return globalSettings?.primaryColor || '#000000';
+    return globalSettings?.primaryColor || '#15803d';
   };
 
   const getTextAlign = (alignment: 'left' | 'center' | 'right') => {
@@ -821,7 +823,7 @@ export default function FormDisplay({
         );
 
       case 'summary': {
-        const currency = globalSettings?.currency || 'DZD';
+        const currency = globalSettings?.currency || 'دج';
         const summaryPlaceholder = field.summaryPlaceholder || '-';
         const totalLabel = field.totalLabel || t('total');
         const shippingLabel = field.shippingLabel || t('shippingPrice');
@@ -903,7 +905,7 @@ export default function FormDisplay({
         const fontSizeNum = parseInt(globalFontSize.replace('px', '')) || 16;
         const smallerFontSize = Math.max(12, Math.round(fontSizeNum * 0.85)) + 'px';
         
-        const currency = globalSettings?.currency || 'DZD';
+        const currency = globalSettings?.currency || 'دج';
         const shippingAlignment = field.shippingAlignment || 'right';
         
         // Format price with currency
@@ -942,8 +944,8 @@ export default function FormDisplay({
           textAlign: shippingAlignment,
         };
 
-        const codLabel = t('cashOnDelivery');
-        const stopDeskLabel = t('stopDesk');
+        const codLabelDisplay = codLabel;
+        const stopDeskLabelDisplay = stopDeskLabel;
 
         return (
           <div key={field.id} className="leadcod-field" style={{ marginBottom: '4px' }}>
@@ -974,7 +976,7 @@ export default function FormDisplay({
                         required={field.required}
                         style={{ width: '16px', height: '16px', cursor: 'pointer' }}
                       />
-                      <span style={{ textAlign: shippingAlignment }}>{codLabel}</span>
+                      <span style={{ textAlign: shippingAlignment }}>{codLabelDisplay}</span>
                     </div>
                     <span 
                       className="leadcod-shipping-price-cod" 
@@ -1006,7 +1008,7 @@ export default function FormDisplay({
                           required={field.required}
                           style={{ width: '16px', height: '16px', cursor: 'pointer' }}
                         />
-                        <span style={{ textAlign: shippingAlignment }}>{stopDeskLabel}</span>
+                        <span style={{ textAlign: shippingAlignment }}>{stopDeskLabelDisplay}</span>
                       </div>
                       <span 
                         className="leadcod-shipping-price-stopdesk" 

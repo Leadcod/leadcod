@@ -71,6 +71,7 @@
     "currencyDescription": "Symbole ou texte de devise à afficher avec les prix (ex. : DZD, $, €)",
     "totalLabelDescription": "Texte de l'étiquette affiché pour le montant total dans la section résumé (ex. : Total, المجموع)",
     "quantityFieldDescription": "Les paramètres du champ quantité sont gérés via l'option de sélecteur de quantité du bouton d'achat.",
+    "quantityFieldShort": "Contrôlé par le bouton d'achat",
     "globalFormSettings": "Paramètres globaux du formulaire",
     "fontSettingsColor": "Paramètres de police et couleur",
     "primaryColor": "Couleur principale",
@@ -90,7 +91,22 @@
     "blurRadius": "Rayon de flou",
     "borderRadius": "Rayon de bordure",
     "padding": "Remplissage",
-    "shadowColor": "Couleur de l'ombre"
+    "shadowColor": "Couleur de l'ombre",
+    "thankYouPopupSection": "Fenêtre de remerciement",
+    "thankYouPopupDescription": "Texte affiché dans la fenêtre après une commande réussie.",
+    "thankYouPopupTitle": "Titre de la fenêtre",
+    "thankYouPopupTitlePlaceholder": "Merci !",
+    "thankYouPopupMessage": "Message de la fenêtre",
+    "thankYouPopupMessagePlaceholder": "Votre commande a été passée avec succès. Nous vous contacterons bientôt.",
+    "thankYouPopupButtonText": "Texte du bouton",
+    "thankYouPopupButtonTextPlaceholder": "OK",
+    "tab_thankYou": "Remerciement",
+    "tab_font": "Police",
+    "tab_headline": "Titre",
+    "tab_subtitle": "Sous-titre",
+    "tab_inputPadding": "Remplissage",
+    "tab_currency": "Devise",
+    "tab_shadow": "Ombre"
   },
   "formDisplay": {
     "cityName": "Nom de la ville",
@@ -159,7 +175,40 @@
     "formBuilder": "Constructeur de formulaire",
     "shippingFees": "Frais de livraison",
     "specialOffers": "Offres spéciales",
+    "pixels": "Pixels de suivi",
     "plans": "Plans"
+  },
+  "pixels": {
+    "title": "Pixels de suivi",
+    "description": "Connectez vos pixels Facebook, TikTok, Snapchat et Google pour mesurer les conversions et optimiser vos publicités.",
+    "facebook": {
+      "title": "Facebook Pixel",
+      "description": "Ajoutez un ou plusieurs pixels Facebook avec l'ID du pixel, le jeton Conversion API et éventuellement le jeton de test."
+    },
+    "connectedPixels": "Pixels connectés",
+    "addFacebook": "Ajouter un pixel Facebook",
+    "addAnother": "Ajouter un autre pixel",
+    "addPixel": "Ajouter le pixel",
+    "nameOptional": "Nom (optionnel)",
+    "namePlaceholder": "ex. Pixel principal",
+    "pixelId": "ID du pixel",
+    "conversionApiToken": "Jeton Conversion API",
+    "conversionApiTokenHint": "Utilisé pour les événements côté serveur (Conversions API).",
+    "testToken": "Jeton de test",
+    "testTokenHint": "Jeton d'événement de test optionnel pour le Gestionnaire d'événements Facebook.",
+    "conversionApiSet": "Conversion API défini",
+    "testTokenSet": "Jeton de test défini",
+    "remove": "Supprimer",
+    "saving": "Enregistrement...",
+    "pixelAdded": "Pixel ajouté avec succès.",
+    "pixelRemoved": "Pixel supprimé.",
+    "moreComingSoon": "D'autres plateformes bientôt",
+    "moreComingSoonDescription": "Les pixels TikTok, Snapchat et Google seront bientôt disponibles.",
+    "errors": {
+      "pixelIdRequired": "L'ID du pixel est requis.",
+      "saveFailed": "Échec de l'enregistrement du pixel.",
+      "deleteFailed": "Échec de la suppression du pixel."
+    }
   },
   "liquid": {
     "loadingForm": "Chargement du formulaire...",
@@ -197,13 +246,19 @@
       "activatePlugin": {
         "title": "Activer le plugin dans le constructeur de thème",
         "description": "Ajoutez l'extension à votre thème dans l'éditeur de thème Shopify"
+      },
+      "linkPixels": {
+        "title": "Lier les pixels pour suivre les commandes",
+        "description": "Connectez Facebook Pixel ou d'autres pixels de suivi pour mesurer les conversions"
       }
     },
+    "optional": "Non requis",
     "buttons": {
       "loading": "Chargement...",
       "done": "Terminé",
       "openThemeEditor": "Ouvrir l'éditeur de thème",
-      "getStarted": "Commencer"
+      "getStarted": "Commencer",
+      "linkPixels": "Lier les pixels"
     },
     "allCompleted": "🎉 Félicitations ! Vous avez terminé toutes les étapes de configuration."
   },

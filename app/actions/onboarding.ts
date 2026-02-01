@@ -1,43 +1,73 @@
-'use client';
+'use server';
 
-export type OnboardingStep = 'configure-form' | 'configure-shipping' | 'activate-plugin';
+import { prisma } from '@/lib/prisma';
 
-export async function getOnboardingProgress(shopUrl: string): Promise<{ completedSteps: OnboardingStep[] }> {
+export type OnboardingStep = 'configure-form' | 'configure-shipping' | 'activate-plugin' | 'link-pixels';
+
+export async function getOnboardingProgress(
+  shopUrl: string
+): Promise<{ completedSteps: OnboardingStep[] }> {
   try {
-    const response = await fetch(`/api/onboarding?shop=${encodeURIComponent(shopUrl)}`);
-    const result = await response.json();
-    
-    if (result.success) {
-      return { completedSteps: result.data.completedSteps || [] };
+    const shop = await prisma.shop.findFirst({
+      where: { url: shopUrl },
+      include: { onboardingProgress: true },
+    });
+    if (!shop) {
+      return { completedSteps: [] };
     }
-    
-    return { completedSteps: [] };
-  } catch (error) {
+    if (!shop.onboardingProgress) {
+      return { completedSteps: [] };
+    }
+    return {
+      completedSteps: (shop.onboardingProgress.completedSteps ||
+        []) as OnboardingStep[],
+    };
+  } catch {
     return { completedSteps: [] };
   }
 }
 
-export async function markOnboardingStepComplete(shopUrl: string, step: OnboardingStep): Promise<{ success: boolean; error?: string }> {
+export async function markOnboardingStepComplete(
+  shopUrl: string,
+  step: OnboardingStep
+): Promise<{ success: boolean; error?: string }> {
   try {
-    const response = await fetch('/api/onboarding', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        shop: shopUrl,
-        step: step
-      })
+    const shop = await prisma.shop.findFirst({
+      where: { url: shopUrl },
     });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      return { success: true };
+    if (!shop) {
+      return { success: false, error: 'Shop not found. Please initialize the shop first.' };
     }
-    
-    return { success: false, error: result.error || 'Failed to save progress' };
+    const existingProgress = await prisma.onboardingProgress.findUnique({
+      where: { shopId: shop.id },
+    });
+    const completedSteps = existingProgress
+      ? (existingProgress.completedSteps as OnboardingStep[])
+      : [];
+    if (!completedSteps.includes(step)) {
+      completedSteps.push(step);
+    }
+    if (existingProgress) {
+      await prisma.onboardingProgress.update({
+        where: { shopId: shop.id },
+        data: {
+          completedSteps: completedSteps as string[],
+          updatedAt: new Date(),
+        },
+      });
+    } else {
+      await prisma.onboardingProgress.create({
+        data: {
+          shopId: shop.id,
+          completedSteps: completedSteps as string[],
+        },
+      });
+    }
+    return { success: true };
   } catch (error) {
-    return { success: false, error: 'Failed to save progress' };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to save progress',
+    };
   }
 }

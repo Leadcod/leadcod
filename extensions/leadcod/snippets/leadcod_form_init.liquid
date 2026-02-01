@@ -1,4 +1,4 @@
-{% assign LEADCOD_API_URL = 'https://care-seattle-ventures-dried.trycloudflare.com/api/form' %}
+{% assign LEADCOD_API_URL = 'https://retrieval-choosing-lat-salt.trycloudflare.com/api/form' %}
 <script>
 (function() {
   'use strict';
@@ -12,7 +12,7 @@
     .then(response => response.json())
     .then(result => {
       if (!result.success || !result.data) {
-        container.innerHTML = `<div class="leadcod-form-error">Form not found. Please configure your form in the app.${result.error ? ' (' + result.error + ')' : ''}</div>`;
+        container.innerHTML = `<div class="leadcod-form-error">النموذج غير موجود. يرجى تكوين النموذج في التطبيق.${result.error ? ' (' + result.error + ')' : ''}</div>`;
         return;
       }
 
@@ -20,8 +20,64 @@
       renderForm(container, fields, settings, shippingSettings);
     })
     .catch(error => {
-      container.innerHTML = `<div class="leadcod-form-error">Error loading form: ${error.message}. Please check your API URL configuration.</div>`;
+      container.innerHTML = `<div class="leadcod-form-error">خطأ في تحميل النموذج: ${error.message}. يرجى التحقق من إعدادات رابط الواجهة.</div>`;
     });
+
+  function escapeHtml(s) {
+    if (s == null || s === '') return '';
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function showThankYouPopup(primaryColor, thankYouPopup) {
+    const popup = thankYouPopup || {};
+    const title = escapeHtml(popup.title || 'شكراً لك!');
+    const message = escapeHtml(popup.message || 'تم تقديم طلبك بنجاح. سنتواصل معك قريباً.');
+    const buttonText = escapeHtml(popup.buttonText || 'موافق');
+    const overlay = document.createElement('div');
+    overlay.className = 'leadcod-modal-overlay';
+    const hex = primaryColor || '#15803d';
+    overlay.innerHTML = `
+      <div class="leadcod-modal-box">
+        <div class="leadcod-modal-icon-wrap success" style="background: ${hex}22; color: ${hex};">
+          <span aria-hidden="true">✓</span>
+        </div>
+        <h3 class="leadcod-modal-title">${title}</h3>
+        <p class="leadcod-modal-message">${message}</p>
+        <button type="button" class="leadcod-modal-btn" style="background: ${hex}; color: #fff;">${buttonText}</button>
+      </div>
+    `;
+    const btn = overlay.querySelector('.leadcod-modal-btn');
+    const close = () => {
+      overlay.style.animation = 'leadcod-fadeIn 0.15s ease reverse';
+      setTimeout(() => overlay.remove(), 150);
+    };
+    btn.addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+    document.body.appendChild(overlay);
+  }
+
+  function showErrorPopup(message) {
+    const overlay = document.createElement('div');
+    overlay.className = 'leadcod-modal-overlay';
+    overlay.innerHTML = `
+      <div class="leadcod-modal-box">
+        <div class="leadcod-modal-icon-wrap error"><span aria-hidden="true">!</span></div>
+        <h3 class="leadcod-modal-title">حدث خطأ</h3>
+        <p class="leadcod-modal-message">${(message || 'خطأ غير معروف').replace(/</g, '&lt;').replace(/"/g, '&quot;')}</p>
+        <button type="button" class="leadcod-modal-btn" style="background: #dc2626; color: #fff;">موافق</button>
+      </div>
+    `;
+    const btn = overlay.querySelector('.leadcod-modal-btn');
+    const close = () => {
+      overlay.style.animation = 'leadcod-fadeIn 0.15s ease reverse';
+      setTimeout(() => overlay.remove(), 150);
+    };
+    btn.addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+    document.body.appendChild(overlay);
+  }
 
   function renderForm(container, fields, settings, shippingSettings) {
     const Utils = window.LeadcodFormUtils;
@@ -96,7 +152,7 @@
       }
 
       if (settings.subtitle && settings.subtitle.enabled) {
-        const subtitleText = settings.subtitle.text || 'Please fill out the form below';
+        const subtitleText = settings.subtitle.text || 'يرجى ملء النموذج أدناه';
         const subtitleAlign = Utils.getTextAlign(settings.subtitle.alignment || 'center');
         formHTML += `
           <p style="
@@ -242,7 +298,7 @@
         const originalButtonText = submitButton?.innerHTML || '';
         if (submitButton) {
           submitButton.disabled = true;
-          submitButton.innerHTML = 'Processing...';
+          submitButton.innerHTML = 'جاري المعالجة...';
         }
 
         const baseApiUrl = apiUrl.replace('/form', '');
@@ -264,13 +320,30 @@
           });
 
           const result = await response.json();
-          alert(result.success 
-            ? 'Order created successfully!' 
-            : 'Error creating order: ' + (result.error || 'Unknown error'));
-          
-          if (result.success) form.reset();
+          if (result.success) {
+            if (typeof window.LeadcodTrackPurchase === 'function') {
+              const quantityInput = form.querySelector('input[name="quantity"], input#field-quantity, .leadcod-quantity-selector input[type="number"]');
+              const quantity = quantityInput ? (parseInt(quantityInput.value, 10) || 1) : 1;
+              let shippingPrice = 0;
+              if (shippingSection && selectedShippingOption) {
+                const priceEl = shippingSection.querySelector(selectedShippingOption.value === 'cod' ? '.leadcod-shipping-price-cod' : '.leadcod-shipping-price-stopdesk');
+                if (priceEl) shippingPrice = parseInt(priceEl.getAttribute('data-price'), 10) || 0;
+              }
+              const productPriceCents = (productData && productData.price) ? productData.price * quantity : 0;
+              const totalValue = (productPriceCents / 100) + shippingPrice;
+              const currency = (Utils && Utils.getCurrency && settings) ? Utils.getCurrency(settings) : 'DZD';
+              window.LeadcodTrackPurchase(totalValue, currency, productData ? [String(productData.id)] : []);
+            }
+            form.reset();
+            const primaryColor = (container._settings && window.LeadcodFormUtils && window.LeadcodFormUtils.getPrimaryColor)
+              ? window.LeadcodFormUtils.getPrimaryColor(container._settings) : null;
+            const thankYouPopup = (container._settings && container._settings.thankYouPopup) ? container._settings.thankYouPopup : null;
+            showThankYouPopup(primaryColor, thankYouPopup);
+          } else {
+            showErrorPopup('خطأ في إنشاء الطلب: ' + (result.error || 'خطأ غير معروف'));
+          }
         } catch (error) {
-          alert('Error submitting order: ' + error.message);
+          showErrorPopup('خطأ في إرسال الطلب: ' + error.message);
         } finally {
           if (submitButton) {
             submitButton.disabled = false;
@@ -524,7 +597,7 @@
           const shippingSettings = container._shippingSettings;
           const settings = container._settings;
           const Utils = window.LeadcodFormUtils;
-          const freeShippingLabel = shippingSettings && shippingSettings.freeShippingLabel ? shippingSettings.freeShippingLabel : 'Free';
+          const freeShippingLabel = shippingSettings && shippingSettings.freeShippingLabel ? shippingSettings.freeShippingLabel : 'مجاني';
           const currency = Utils.getCurrency(settings) || 'DZD';
           shippingPriceEl.textContent = shippingPrice > 0 ? shippingPrice + ' ' + currency : freeShippingLabel;
         }
@@ -705,7 +778,7 @@
       const settings = container._settings;
       const Utils = window.LeadcodFormUtils;
       if (shippingSettings && shippingSettings.method === 'free') {
-        const freeShippingLabel = shippingSettings.freeShippingLabel || 'Free';
+        const freeShippingLabel = shippingSettings.freeShippingLabel || 'مجاني';
         const currency = Utils.getCurrency(settings) || 'DZD';
         function updatePriceElement(element, price) {
           if (!element) return;
@@ -739,7 +812,7 @@
         const shippingSettings = container._shippingSettings;
         const settings = container._settings;
         const Utils = window.LeadcodFormUtils;
-        const freeShippingLabel = shippingSettings && shippingSettings.freeShippingLabel ? shippingSettings.freeShippingLabel : 'Free';
+        const freeShippingLabel = shippingSettings && shippingSettings.freeShippingLabel ? shippingSettings.freeShippingLabel : 'مجاني';
         const currency = Utils.getCurrency(settings) || 'DZD';
         if (price !== null && price !== undefined) {
           element.textContent = price + ' ' + currency;

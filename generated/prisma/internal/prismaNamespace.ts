@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   Shop: 'Shop',
+  TrackingPixel: 'TrackingPixel',
   Form: 'Form',
   Country: 'Country',
   State: 'State',
@@ -408,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "shop" | "form" | "country" | "state" | "city" | "shippingSettings" | "shippingFee" | "onboardingProgress" | "subscription"
+    modelProps: "shop" | "trackingPixel" | "form" | "country" | "state" | "city" | "shippingSettings" | "shippingFee" | "onboardingProgress" | "subscription"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -483,6 +484,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ShopCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ShopCountAggregateOutputType> | number
+        }
+      }
+    }
+    TrackingPixel: {
+      payload: Prisma.$TrackingPixelPayload<ExtArgs>
+      fields: Prisma.TrackingPixelFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TrackingPixelFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrackingPixelPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TrackingPixelFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrackingPixelPayload>
+        }
+        findFirst: {
+          args: Prisma.TrackingPixelFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrackingPixelPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TrackingPixelFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrackingPixelPayload>
+        }
+        findMany: {
+          args: Prisma.TrackingPixelFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrackingPixelPayload>[]
+        }
+        create: {
+          args: Prisma.TrackingPixelCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrackingPixelPayload>
+        }
+        createMany: {
+          args: Prisma.TrackingPixelCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TrackingPixelCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrackingPixelPayload>[]
+        }
+        delete: {
+          args: Prisma.TrackingPixelDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrackingPixelPayload>
+        }
+        update: {
+          args: Prisma.TrackingPixelUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrackingPixelPayload>
+        }
+        deleteMany: {
+          args: Prisma.TrackingPixelDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TrackingPixelUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TrackingPixelUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrackingPixelPayload>[]
+        }
+        upsert: {
+          args: Prisma.TrackingPixelUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrackingPixelPayload>
+        }
+        aggregate: {
+          args: Prisma.TrackingPixelAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTrackingPixel>
+        }
+        groupBy: {
+          args: Prisma.TrackingPixelGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TrackingPixelGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TrackingPixelCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TrackingPixelCountAggregateOutputType> | number
         }
       }
     }
@@ -1130,6 +1205,21 @@ export const ShopScalarFieldEnum = {
 export type ShopScalarFieldEnum = (typeof ShopScalarFieldEnum)[keyof typeof ShopScalarFieldEnum]
 
 
+export const TrackingPixelScalarFieldEnum = {
+  id: 'id',
+  shopId: 'shopId',
+  provider: 'provider',
+  name: 'name',
+  pixelId: 'pixelId',
+  conversionApiToken: 'conversionApiToken',
+  testToken: 'testToken',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TrackingPixelScalarFieldEnum = (typeof TrackingPixelScalarFieldEnum)[keyof typeof TrackingPixelScalarFieldEnum]
+
+
 export const FormScalarFieldEnum = {
   id: 'id',
   shopId: 'shopId',
@@ -1462,6 +1552,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   shop?: Prisma.ShopOmit
+  trackingPixel?: Prisma.TrackingPixelOmit
   form?: Prisma.FormOmit
   country?: Prisma.CountryOmit
   state?: Prisma.StateOmit

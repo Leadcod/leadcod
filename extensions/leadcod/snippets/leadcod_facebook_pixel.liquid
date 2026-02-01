@@ -1,0 +1,85 @@
+{% comment %}
+  Facebook Pixel (viewContent + Purchase only).
+  Requires product context when used on product page (ViewContent).
+  Purchase is fired from the form on order success via window.LeadcodTrackPurchase().
+{% endcomment %}
+{% assign LEADCOD_API_URL = 'https://retrieval-choosing-lat-salt.trycloudflare.com/api/form' %}
+{% assign LEADCOD_API_BASE = LEADCOD_API_URL | replace: '/form', '' %}
+
+<script>
+(function() {
+  'use strict';
+
+  var shopUrl = '{{ shop.domain }}';
+  var baseApiUrl = '{{ LEADCOD_API_BASE }}';
+  var productData = null;
+  {% if product %}
+  productData = {
+    id: {{ product.id | json }},
+    title: {{ product.title | json }},
+    variant_id: {{ product.selected_or_first_available_variant.id | json }},
+    variants: {{ product.variants | json }},
+    price: {{ product.selected_or_first_available_variant.price | json }},
+    currency: {{ cart.currency.iso_code | default: 'DZD' | json }}
+  };
+  {% endif %}
+
+  function initFbq() {
+    var f = window;
+    var b = document;
+    var e = 'script';
+    var v = 'https://connect.facebook.net/en_US/fbevents.js';
+    if (f.fbq) return;
+    var n = f.fbq = function() {
+      n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+    };
+    if (!f._fbq) f._fbq = n;
+    n.push = n;
+    n.loaded = !0;
+    n.version = '2.0';
+    n.queue = [];
+    var t = b.createElement(e);
+    t.async = !0;
+    t.src = v;
+    var r = b.getElementsByTagName(e)[0];
+    r.parentNode.insertBefore(t, r);
+  }
+
+  initFbq();
+
+  fetch(baseApiUrl + '/pixels?shop=' + encodeURIComponent(shopUrl))
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
+      if (!result.success || !result.data) return;
+      var facebookPixels = result.data.filter(function(p) { return p.provider === 'facebook' && p.pixelId; });
+      if (facebookPixels.length === 0) return;
+
+      facebookPixels.forEach(function(p) {
+        window.fbq('init', p.pixelId);
+      });
+
+      {% if product %}
+      if (productData && productData.variant_id) {
+        window.fbq('track', 'ViewContent', {
+          content_ids: [String(productData.variant_id)],
+          content_type: 'product',
+          content_name: productData.title,
+          value: productData.price ? (productData.price / 100) : undefined,
+          currency: productData.currency
+        });
+      }
+      {% endif %}
+
+      window.LeadcodTrackPurchase = function(value, currency, contentIds) {
+        if (typeof window.fbq !== 'function') return;
+        window.fbq('track', 'Purchase', {
+          value: value,
+          currency: currency || 'DZD',
+          content_ids: contentIds || [],
+          content_type: 'product'
+        });
+      };
+    })
+    .catch(function() {});
+})();
+</script>

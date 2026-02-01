@@ -51,6 +51,11 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
       border: {
         ...DEFAULT_GLOBAL_SETTINGS.border,
         ...(settings.border || {})
+      },
+      thankYouPopup: {
+        title: settings.thankYouPopup?.title ?? DEFAULT_GLOBAL_SETTINGS.thankYouPopup!.title,
+        message: settings.thankYouPopup?.message ?? DEFAULT_GLOBAL_SETTINGS.thankYouPopup!.message,
+        buttonText: settings.thankYouPopup?.buttonText ?? DEFAULT_GLOBAL_SETTINGS.thankYouPopup!.buttonText
       }
     };
   };
@@ -286,10 +291,7 @@ export default function FormBuilder({ shopUrl , initialFields, initialGlobalSett
         <s-box>
           <s-stack direction="inline" justifyContent="space-between" alignItems="center">
             <div>
-              <h2 style={{ marginBottom: '8px', fontWeight: 600 }}>{t('formFields')}</h2>
-              <p style={{ fontSize: '14px', opacity: 0.7 }}>
-                {t('dragToReorder')}
-              </p>
+              <h2 style={{ marginBottom: '8px', fontWeight: 600 }} title={t('dragToReorder')}>{t('formFields')}</h2>
             </div>
             <s-button
               variant="secondary"

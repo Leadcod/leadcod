@@ -134,7 +134,7 @@
 .leadcod-field input:focus,
 .leadcod-field select:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #15803d;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -272,12 +272,12 @@
 }
 
 .leadcod-shipping-section input[type="radio"] {
-  accent-color: var(--leadcod-primary-color, #3b82f6);
+  accent-color: var(--leadcod-primary-color, #15803d);
   cursor: pointer;
 }
 
 .leadcod-shipping-section input[type="radio"]:checked {
-  accent-color: var(--leadcod-primary-color, #3b82f6);
+  accent-color: var(--leadcod-primary-color, #15803d);
 }
 
 .leadcod-button-group {
@@ -454,5 +454,88 @@
   border: none;
   border-top: 1px dotted #d1d5db;
   margin: 6px 0;
+}
+
+/* Thank you / error popup */
+.leadcod-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  animation: leadcod-fadeIn 0.2s ease;
+}
+
+.leadcod-modal-box {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  max-width: 380px;
+  width: calc(100% - 32px);
+  text-align: center;
+  padding: 32px 24px;
+  animation: leadcod-scaleIn 0.25s ease;
+}
+
+.leadcod-modal-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.leadcod-modal-icon-wrap.success {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.leadcod-modal-icon-wrap.error {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.leadcod-modal-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: #111;
+}
+
+.leadcod-modal-message {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.leadcod-modal-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.leadcod-modal-btn:active {
+  transform: scale(0.98);
+}
+
+@keyframes leadcod-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes leadcod-scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
 }
 </style>

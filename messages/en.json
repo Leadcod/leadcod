@@ -71,7 +71,7 @@
     "currencyDescription": "Currency symbol or text to display with prices (e.g., DZD, $, €)",
     "totalLabelDescription": "Label text displayed for the total amount in the summary section (e.g., Total, المجموع)",
     "quantityFieldDescription": "Quantity field settings are managed through the Buy Button's quantity selector option.",
-    "quantityFieldDescription": "Quantity field settings are managed through the Buy Button. Use the Buy Button's 'Show Quantity Selector' option to control quantity display.",
+    "quantityFieldShort": "Controlled by Buy Button",
     "globalFormSettings": "Global Form Settings",
     "fontSettingsColor": "Font Settings & Color",
     "primaryColor": "Primary Color",
@@ -91,7 +91,22 @@
     "blurRadius": "Blur Radius",
     "borderRadius": "Border Radius",
     "padding": "Padding",
-    "shadowColor": "Shadow Color"
+    "shadowColor": "Shadow Color",
+    "thankYouPopupSection": "Thank you popup",
+    "thankYouPopupDescription": "Text shown in the popup after a successful order.",
+    "thankYouPopupTitle": "Popup title",
+    "thankYouPopupTitlePlaceholder": "Thank you!",
+    "thankYouPopupMessage": "Popup message",
+    "thankYouPopupMessagePlaceholder": "Your order has been placed successfully. We'll be in touch soon.",
+    "thankYouPopupButtonText": "Button text",
+    "thankYouPopupButtonTextPlaceholder": "OK",
+    "tab_thankYou": "Thank you",
+    "tab_font": "Font",
+    "tab_headline": "Headline",
+    "tab_subtitle": "Subtitle",
+    "tab_inputPadding": "Padding",
+    "tab_currency": "Currency",
+    "tab_shadow": "Shadow"
   },
   "formDisplay": {
     "cityName": "City Name",
@@ -160,7 +175,40 @@
     "formBuilder": "Form Builder",
     "shippingFees": "Shipping fees",
     "specialOffers": "Special offers",
+    "pixels": "Tracking Pixels",
     "plans": "Plans"
+  },
+  "pixels": {
+    "title": "Tracking Pixels",
+    "description": "Connect your Facebook Pixel, TikTok, Snapchat, and Google tracking pixels to measure conversions and optimize ads.",
+    "facebook": {
+      "title": "Facebook Pixel",
+      "description": "Add one or more Facebook Pixels with Pixel ID, Conversion API token, and optional test token."
+    },
+    "connectedPixels": "Connected pixels",
+    "addFacebook": "Add Facebook Pixel",
+    "addAnother": "Add another pixel",
+    "addPixel": "Add pixel",
+    "nameOptional": "Name (optional)",
+    "namePlaceholder": "e.g. Main pixel",
+    "pixelId": "Pixel ID",
+    "conversionApiToken": "Conversion API token",
+    "conversionApiTokenHint": "Used for server-side events (Conversions API).",
+    "testToken": "Test token",
+    "testTokenHint": "Optional test event token for Facebook Events Manager.",
+    "conversionApiSet": "Conversion API set",
+    "testTokenSet": "Test token set",
+    "remove": "Remove",
+    "saving": "Saving...",
+    "pixelAdded": "Pixel added successfully.",
+    "pixelRemoved": "Pixel removed.",
+    "moreComingSoon": "More platforms coming soon",
+    "moreComingSoonDescription": "TikTok Pixel, Snapchat, and Google tracking will be available soon.",
+    "errors": {
+      "pixelIdRequired": "Pixel ID is required.",
+      "saveFailed": "Failed to save pixel.",
+      "deleteFailed": "Failed to delete pixel."
+    }
   },
   "liquid": {
     "loadingForm": "Loading form...",
@@ -198,13 +246,19 @@
       "activatePlugin": {
         "title": "Activate the plugin in theme builder",
         "description": "Add the extension to your theme in the Shopify theme editor"
+      },
+      "linkPixels": {
+        "title": "Link pixels to track orders",
+        "description": "Connect Facebook Pixel or other tracking pixels to measure conversions"
       }
     },
+    "optional": "Not required",
     "buttons": {
       "loading": "Loading...",
       "done": "Done",
       "openThemeEditor": "Open Theme Editor",
-      "getStarted": "Get Started"
+      "getStarted": "Get Started",
+      "linkPixels": "Link Pixels"
     },
     "allCompleted": "🎉 Congratulations! You've completed all setup steps."
   },

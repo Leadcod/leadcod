@@ -93,6 +93,10 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
       border: {
         ...DEFAULT_GLOBAL_SETTINGS.border,
         ...(existing.border || {})
+      },
+      thankYouPopup: {
+        ...DEFAULT_GLOBAL_SETTINGS.thankYouPopup,
+        ...(existing.thankYouPopup || {})
       }
     };
   };
@@ -104,7 +108,9 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
   const [shippingMethod, setShippingMethod] = useState<'free' | 'per-province'>('per-province');
   const [stopDeskEnabled, setStopDeskEnabled] = useState(false);
-  const [freeShippingLabel, setFreeShippingLabel] = useState<string>('Free');
+  const [freeShippingLabel, setFreeShippingLabel] = useState<string>('مجاني');
+  const [codLabel, setCodLabel] = useState<string>('التوصيل للمنزل');
+  const [stopDeskLabel, setStopDeskLabel] = useState<string>('التوصيل للمكتب');
   const [isLoading, setIsLoading] = useState(true);
 
   // Ensure shippingOption field is always present
@@ -130,7 +136,9 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
           const method = result.data.method as 'free' | 'per-province';
           setShippingMethod(method);
           setStopDeskEnabled(result.data.stopDeskEnabled);
-          setFreeShippingLabel(result.data.freeShippingLabel || 'Free');
+          setFreeShippingLabel(result.data.freeShippingLabel || 'مجاني');
+          setCodLabel(result.data.codLabel || 'التوصيل للمنزل');
+          setStopDeskLabel(result.data.stopDeskLabel || 'التوصيل للمكتب');
         }
       }
       setIsLoading(false);
@@ -165,6 +173,8 @@ export default function FormBuilderClient({ shopUrl, existingForm }: FormBuilder
             shippingMethod={shippingMethod}
             stopDeskEnabled={stopDeskEnabled}
             freeShippingLabel={freeShippingLabel}
+            codLabel={codLabel}
+            stopDeskLabel={stopDeskLabel}
             shopUrl={shopUrl}
           />
       </s-box>

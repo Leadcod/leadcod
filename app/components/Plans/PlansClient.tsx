@@ -88,12 +88,7 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
 
       {/* Current Plan Badge */}
       <div className="mb-8 text-center space-y-3">
-        <div className={cn(
-          "inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-medium shadow-sm",
-          planType === PlanType.FREE
-            ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-            : "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 dark:from-purple-900/30 dark:to-pink-900/30 dark:text-purple-300"
-        )}>
+        <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-medium shadow-sm bg-primary/10 text-primary">
           <FontAwesomeIcon 
             icon={planType === PlanType.FREE ? "Tag" : "Crown"} 
             size={16} 
@@ -151,7 +146,7 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
           >
             <FontAwesomeIcon icon="Star" size={14} />
             {t("yearly")} 
-            <span className="text-xs font-bold text-green-600 dark:text-green-400">
+            <span className="text-xs font-bold text-primary">
               ({t("save")})
             </span>
           </button>
@@ -164,22 +159,21 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
         <Card className={cn(
           "relative overflow-visible transition-all duration-300 flex flex-col h-full",
           planType === PlanType.FREE 
-            ? "ring-2 ring-blue-500 shadow-lg" 
+            ? "ring-2 ring-primary shadow-lg" 
             : "hover:shadow-md"
         )}>
           {planType === PlanType.FREE && (
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-              <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md flex items-center gap-1.5 whitespace-nowrap">
+              <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold shadow-md flex items-center gap-1.5 whitespace-nowrap">
                 <FontAwesomeIcon icon="CheckCircle" size={11} />
                 {t("current")}
               </span>
             </div>
           )}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 dark:bg-blue-900/20 rounded-full -mr-16 -mt-16 opacity-50" />
           <CardHeader className={cn("relative", planType === PlanType.FREE && "pt-8")}>
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/30">
-                <FontAwesomeIcon icon="Tag" size={24} className="text-blue-600 dark:text-blue-400" />
+              <div className="p-3 rounded-xl bg-primary/10">
+                <FontAwesomeIcon icon="Tag" size={24} className="text-primary" />
               </div>
               <div>
                 <CardTitle className="text-2xl">{t("freePlan")}</CardTitle>
@@ -200,12 +194,8 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
 
             <ul className="space-y-4 flex-1">
               <li className="flex items-start gap-3">
-                <div className="p-1.5 rounded-lg bg-green-100 dark:bg-green-900/30 mt-0.5 shrink-0">
-                  <FontAwesomeIcon
-                    icon="Check"
-                    size={16}
-                    className="text-green-600 dark:text-green-400"
-                  />
+                <div className="p-1.5 rounded-lg bg-primary/10 mt-0.5 shrink-0">
+                  <FontAwesomeIcon icon="Check" size={16} className="text-primary" />
                 </div>
                 <div>
                   <span className="font-medium text-foreground">{t("features.free.orders", { count: 50 })}</span>
@@ -213,12 +203,8 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <div className="p-1.5 rounded-lg bg-green-100 dark:bg-green-900/30 mt-0.5 shrink-0">
-                  <FontAwesomeIcon
-                    icon="Check"
-                    size={16}
-                    className="text-green-600 dark:text-green-400"
-                  />
+                <div className="p-1.5 rounded-lg bg-primary/10 mt-0.5 shrink-0">
+                  <FontAwesomeIcon icon="Check" size={16} className="text-primary" />
                 </div>
                 <div>
                   <span className="font-medium text-foreground">{t("features.free.support")}</span>
@@ -226,12 +212,8 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <div className="p-1.5 rounded-lg bg-green-100 dark:bg-green-900/30 mt-0.5 shrink-0">
-                  <FontAwesomeIcon
-                    icon="Check"
-                    size={16}
-                    className="text-green-600 dark:text-green-400"
-                  />
+                <div className="p-1.5 rounded-lg bg-primary/10 mt-0.5 shrink-0">
+                  <FontAwesomeIcon icon="Check" size={16} className="text-primary" />
                 </div>
                 <div>
                   <span className="font-medium text-foreground">All core features</span>
@@ -241,12 +223,8 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
             </ul>
 
             <Button
-              className={cn(
-                "w-full font-semibold mt-auto",
-                planType === PlanType.FREE 
-                  ? "border-2 border-blue-600 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-700 dark:hover:border-blue-500" 
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-              )}
+              variant={planType === PlanType.FREE ? "secondary" : "default"}
+              className="w-full font-semibold mt-auto"
               disabled={planType === PlanType.FREE || savingPlan}
               onClick={() => handleSubscribe(PlanType.FREE)}
             >
@@ -274,12 +252,12 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
         <Card className={cn(
           "relative overflow-visible transition-all duration-300 border-2 flex flex-col h-full",
           planType === PlanType.PAID 
-            ? "ring-2 ring-purple-500 border-purple-500 shadow-lg" 
-            : "border-purple-300 dark:border-purple-800 hover:shadow-lg"
+            ? "ring-2 ring-primary border-primary shadow-lg" 
+            : "border-primary/30 hover:border-primary/50 hover:shadow-lg"
         )}>
           {planType === PlanType.PAID && (
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md flex items-center gap-1.5 whitespace-nowrap">
+              <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold shadow-md flex items-center gap-1.5 whitespace-nowrap">
                 <FontAwesomeIcon icon="Crown" size={11} />
                 {t("current")}
               </span>
@@ -287,17 +265,16 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
           )}
           {planType === PlanType.FREE && (
             <div className="absolute -top-3 right-4 z-10">
-              <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md flex items-center gap-1.5 whitespace-nowrap">
+              <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold shadow-md flex items-center gap-1.5 whitespace-nowrap">
                 <FontAwesomeIcon icon="Star" size={11} />
                 {t("popular")}
               </span>
             </div>
           )}
-          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full -mr-20 -mt-20 opacity-50" />
           <CardHeader className={cn("relative", (planType === PlanType.PAID || planType === PlanType.FREE) && "pt-8")}>
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30">
-                <FontAwesomeIcon icon="Crown" size={24} className="text-purple-600 dark:text-purple-400" />
+              <div className="p-3 rounded-xl bg-primary/10">
+                <FontAwesomeIcon icon="Crown" size={24} className="text-primary" />
               </div>
               <div>
                 <CardTitle className="text-2xl">{t("paidPlan")}</CardTitle>
@@ -318,7 +295,7 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
                   <span className="text-sm text-muted-foreground line-through">
                     ${paidTierPriceMonthly * 12}
                   </span>
-                  <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                  <span className="text-sm font-semibold text-primary">
                     Save ${(paidTierPriceMonthly * 12 - paidTierPriceYearly).toFixed(0)}/year
                   </span>
                 </div>
@@ -335,12 +312,8 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
 
             <ul className="space-y-4 flex-1">
               <li className="flex items-start gap-3">
-                <div className="p-1.5 rounded-lg bg-green-100 dark:bg-green-900/30 mt-0.5 shrink-0">
-                  <FontAwesomeIcon
-                    icon="Check"
-                    size={16}
-                    className="text-green-600 dark:text-green-400"
-                  />
+                <div className="p-1.5 rounded-lg bg-primary/10 mt-0.5 shrink-0">
+                  <FontAwesomeIcon icon="Check" size={16} className="text-primary" />
                 </div>
                 <div>
                   <span className="font-medium text-foreground">{t("features.paid.orders")}</span>
@@ -348,12 +321,8 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <div className="p-1.5 rounded-lg bg-green-100 dark:bg-green-900/30 mt-0.5 shrink-0">
-                  <FontAwesomeIcon
-                    icon="Check"
-                    size={16}
-                    className="text-green-600 dark:text-green-400"
-                  />
+                <div className="p-1.5 rounded-lg bg-primary/10 mt-0.5 shrink-0">
+                  <FontAwesomeIcon icon="Check" size={16} className="text-primary" />
                 </div>
                 <div>
                   <span className="font-medium text-foreground">{t("features.paid.support")}</span>
@@ -361,12 +330,8 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <div className="p-1.5 rounded-lg bg-green-100 dark:bg-green-900/30 mt-0.5 shrink-0">
-                  <FontAwesomeIcon
-                    icon="Check"
-                    size={16}
-                    className="text-green-600 dark:text-green-400"
-                  />
+                <div className="p-1.5 rounded-lg bg-primary/10 mt-0.5 shrink-0">
+                  <FontAwesomeIcon icon="Check" size={16} className="text-primary" />
                 </div>
                 <div>
                   <span className="font-medium text-foreground">Advanced features</span>
@@ -374,12 +339,8 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <div className="p-1.5 rounded-lg bg-green-100 dark:bg-green-900/30 mt-0.5 shrink-0">
-                  <FontAwesomeIcon
-                    icon="Check"
-                    size={16}
-                    className="text-green-600 dark:text-green-400"
-                  />
+                <div className="p-1.5 rounded-lg bg-primary/10 mt-0.5 shrink-0">
+                  <FontAwesomeIcon icon="Check" size={16} className="text-primary" />
                 </div>
                 <div>
                   <span className="font-medium text-foreground">Analytics dashboard</span>
@@ -389,12 +350,8 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
             </ul>
 
             <Button
-              className={cn(
-                "w-full font-semibold mt-auto",
-                planType === PlanType.PAID 
-                  ? "border-2 border-purple-600 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-700 dark:hover:border-purple-500"
-                  : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
-              )}
+              variant={planType === PlanType.PAID ? "secondary" : "default"}
+              className="w-full font-semibold mt-auto"
               disabled={planType === PlanType.PAID || savingPlan}
               onClick={() => handleSubscribe(PlanType.PAID)}
             >

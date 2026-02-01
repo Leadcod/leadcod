@@ -23,6 +23,11 @@ export * from './enums';
  */
 export type Shop = Prisma.ShopModel
 /**
+ * Model TrackingPixel
+ * 
+ */
+export type TrackingPixel = Prisma.TrackingPixelModel
+/**
  * Model Form
  * 
  */

@@ -55,9 +55,9 @@ export async function getShippingSettings(shopUrl: string) {
         data: {
           method: 'per-province' as const,
           stopDeskEnabled: false,
-          codLabel: 'Cash on Delivery',
-          stopDeskLabel: 'Stop Desk',
-          freeShippingLabel: 'Free',
+          codLabel: 'التوصيل للمنزل',
+          stopDeskLabel: 'التوصيل للمكتب',
+          freeShippingLabel: 'مجاني',
           fees: {}
         }
       };
@@ -92,9 +92,9 @@ export async function getShippingSettings(shopUrl: string) {
       data: {
         method: settings?.method || 'per-province',
         stopDeskEnabled: settings?.stopDeskEnabled || false,
-        codLabel: settings?.codLabel || 'Cash on Delivery',
-        stopDeskLabel: settings?.stopDeskLabel || 'Stop Desk',
-        freeShippingLabel: settings?.freeShippingLabel || 'Free',
+        codLabel: settings?.codLabel || 'التوصيل للمنزل',
+        stopDeskLabel: settings?.stopDeskLabel || 'التوصيل للمكتب',
+        freeShippingLabel: settings?.freeShippingLabel || 'مجاني',
         fees: feesRecord
       }
     };
@@ -103,6 +103,33 @@ export async function getShippingSettings(shopUrl: string) {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
       data: null
+    };
+  }
+}
+
+export async function getCities(stateId: string) {
+  try {
+    if (!stateId) {
+      return { success: false, error: 'stateId is required', data: [] };
+    }
+    const cities = await prisma.city.findMany({
+      where: { stateId },
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        nameAr: true,
+      },
+    });
+    return {
+      success: true,
+      data: cities,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      data: [],
     };
   }
 }

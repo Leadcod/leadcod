@@ -9,11 +9,15 @@ import { Progress } from "@/components/ui/progress";
 import { markOnboardingStepComplete, type OnboardingStep as OnboardingStepType } from "@/app/actions/onboarding";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
+
+const REQUIRED_STEP_IDS: OnboardingStepType[] = ['configure-form', 'configure-shipping', 'activate-plugin'];
 
 interface OnboardingStepItem {
   id: OnboardingStepType;
   title: string;
   description: string;
+  optional?: boolean;
   action: () => void;
 }
 
@@ -72,14 +76,29 @@ export default function OnboardingCard({ shopUrl, completedSteps, onProgressUpda
         window.open(themeEditorUrl, '_blank');
         setIsProcessing(null);
       }
+    },
+    {
+      id: 'link-pixels',
+      title: t('steps.linkPixels.title'),
+      description: t('steps.linkPixels.description'),
+      optional: true,
+      action: async () => {
+        setIsProcessing('link-pixels');
+        const result = await markOnboardingStepComplete(shopUrl, 'link-pixels');
+        if (result.success && onProgressUpdate) {
+          await onProgressUpdate();
+        }
+        router.push(`/pixels?shop=${encodeURIComponent(shopUrl)}`);
+        setIsProcessing(null);
+      }
     }
   ];
 
-  const completedCount = completedSteps.length;
-  const totalSteps = steps.length;
-  const progressPercentage = (completedCount / totalSteps) * 100;
+  const requiredStepsCount = REQUIRED_STEP_IDS.length;
+  const completedRequiredCount = completedSteps.filter((s) => REQUIRED_STEP_IDS.includes(s)).length;
+  const progressPercentage = (completedRequiredCount / requiredStepsCount) * 100;
 
-  const allStepsCompleted = completedCount === totalSteps;
+  const allStepsCompleted = completedRequiredCount === requiredStepsCount;
 
   return (
     <Card className="w-full max-w-full mx-auto">
@@ -93,7 +112,7 @@ export default function OnboardingCard({ shopUrl, completedSteps, onProgressUpda
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">{t('progress')}</span>
-            <span className="font-medium">{t('completed', { completedCount, totalSteps })}</span>
+            <span className="font-medium">{t('completed', { completedCount: completedRequiredCount, totalSteps: requiredStepsCount })}</span>
           </div>
           <Progress value={progressPercentage} />
         </div>
@@ -112,19 +131,27 @@ export default function OnboardingCard({ shopUrl, completedSteps, onProgressUpda
                     : 'bg-background border-border hover:bg-accent/50'
                 }`}
               >
-                <div className="mt-0.5">
+                <div
+                  className={cn(
+                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold",
+                    isCompleted
+                      ? "border-green-600 bg-green-600 text-white"
+                      : "border-muted-foreground bg-muted/50 text-muted-foreground"
+                  )}
+                >
                   {isCompleted ? (
-                    <FontAwesomeIcon icon="CheckCircle" size={20} className="text-green-600" />
+                    <FontAwesomeIcon icon="Check" size={14} className="text-white" />
                   ) : (
-                    <FontAwesomeIcon icon="CircleStack" size={20} className="text-muted-foreground" />
+                    index + 1
                   )}
                 </div>
                 <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className={`font-medium ${isCompleted ? 'text-muted-foreground line-through' : ''}`}>
-                      {index + 1}. {step.title}
-                    </h3>
-                  </div>
+                  <h3 className={`font-medium ${isCompleted ? 'text-muted-foreground line-through' : ''}`}>
+                    {step.title}
+                    {step.optional && (
+                      <span className="ml-1.5 text-xs font-normal text-muted-foreground">({t('optional')})</span>
+                    )}
+                  </h3>
                   <p className="text-sm text-muted-foreground">{step.description}</p>
                 </div>
                 <Button
@@ -139,7 +166,7 @@ export default function OnboardingCard({ shopUrl, completedSteps, onProgressUpda
                     t('buttons.done')
                   ) : (
                     <>
-                      {step.id === 'activate-plugin' ? t('buttons.openThemeEditor') : t('buttons.getStarted')}
+                      {step.id === 'activate-plugin' ? t('buttons.openThemeEditor') : step.id === 'link-pixels' ? t('buttons.linkPixels') : t('buttons.getStarted')}
                       <FontAwesomeIcon icon="ArrowRight" size={16} className="ml-2" />
                     </>
                   )}

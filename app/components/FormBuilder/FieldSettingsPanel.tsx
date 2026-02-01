@@ -99,7 +99,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                     onChange={(e: any) => onUpdate(field.id, { label: e.target.value })}
                   />
                 </div>
-                <div style={{ flex: '1 1 40%', minWidth: 0 }}>
+                <div style={{ flex: '1 1 40%', minWidth: 0 }} title={t('whatsappNumberHint')}>
                   <s-text>{t('whatsappNumber')}</s-text>
                   <s-text-field
                     value={field.whatsappNumber || ''}
@@ -108,23 +108,17 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                   />
                 </div>
               </div>
-              <s-text>
-                {t('whatsappNumberHint')}
-              </s-text>
             </s-stack>
           ) : field.type === 'summary' ? (
             /* Summary Field Settings */
             <s-stack gap="small">
-              <div>
+              <div title={t('summaryPlaceholderHint')}>
                 <s-text>{t('placeholder')}</s-text>
                 <s-text-field
                   value={field.summaryPlaceholder || '-'}
                   onChange={(e: any) => onUpdate(field.id, { summaryPlaceholder: e.target.value })}
                   placeholder="-"
                 />
-                <s-text>
-                  {t('summaryPlaceholderHint')}
-                </s-text>
               </div>
               <div>
                 <s-text>{t('totalLabel')}</s-text>
@@ -134,38 +128,29 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                   placeholder={t('total')}
                 />
               </div>
-              <div>
+              <div title={t('shippingLabelHint')}>
                 <s-text>{t('shippingLabel')}</s-text>
                 <s-text-field
                   value={field.shippingLabel || t('shippingPrice')}
                   onChange={(e: any) => onUpdate(field.id, { shippingLabel: e.target.value })}
                   placeholder={t('shippingPrice')}
                 />
-                <s-text>
-                  {t('shippingLabelHint')}
-                </s-text>
               </div>
-              <div>
+              <div title={t('chooseProvinceHintDescription')}>
                 <s-text>{t('chooseProvinceHint')}</s-text>
                 <s-text-field
                   value={field.chooseProvinceHint || t('chooseProvince')}
                   onChange={(e: any) => onUpdate(field.id, { chooseProvinceHint: e.target.value })}
                   placeholder={t('chooseProvince')}
                 />
-                <s-text>
-                  {t('chooseProvinceHintDescription')}
-                </s-text>
               </div>
-              <div>
+              <div title={t('selectShippingOptionHintDescription')}>
                 <s-text>{t('selectShippingOptionHint')}</s-text>
                 <s-text-field
                   value={field.selectShippingOptionHint || t('selectShippingOption')}
                   onChange={(e: any) => onUpdate(field.id, { selectShippingOptionHint: e.target.value })}
                   placeholder={t('selectShippingOption')}
                 />
-                <s-text>
-                  {t('selectShippingOptionHintDescription')}
-                </s-text>
               </div>
               <div>
                 <div style={{ marginBottom: '6px' }}>
@@ -231,9 +216,10 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
           ) : field.type === 'quantity' ? (
             /* Quantity Field - Minimal Settings Only */
             <s-stack gap="small">
-              <s-text>
-                {t('quantityFieldDescription')}
-              </s-text>
+              <div title={t('quantityFieldDescription')} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <FontAwesomeIcon icon="InfoCircle" size={16} style={{ color: '#6b7280', flexShrink: 0 }} />
+                <s-text style={{ fontSize: '13px', color: '#6b7280' }}>{t('quantityFieldShort')}</s-text>
+              </div>
             </s-stack>
           ) : (
             /* Input Label Settings */
@@ -289,63 +275,48 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                 />
               </div>
               {field.type === 'city' && (
-                <div>
+                <div title={t('selectProvinceFirstHintDescription')}>
                   <s-text>{t('selectProvinceFirstHint')}</s-text>
                   <s-text-field
                     value={field.selectProvinceFirstHint || t('selectProvinceFirst')}
                     onInput={(e: any) => onUpdate(field.id, { selectProvinceFirstHint: e.target.value })}
                     placeholder={t('selectProvinceFirst')}
                   />
-                  <s-text>
-                    {t('selectProvinceFirstHintDescription')}
-                  </s-text>
                 </div>
               )}
               {field.type === 'phone' && (
                 <s-stack gap="small">
-                  <div>
+                  <div title="Shown when user enters non-numeric characters">
                     <s-text>خطأ: أرقام فقط</s-text>
                     <s-text-field
                       value={field.phoneErrorNumbersOnly || 'يجب أن يحتوي رقم الهاتف على أرقام فقط'}
                       onInput={(e: any) => onUpdate(field.id, { phoneErrorNumbersOnly: e.target.value })}
                       placeholder="يجب أن يحتوي رقم الهاتف على أرقام فقط"
                     />
-                    <span style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
-                      يظهر عند إدخال أحرف أو رموز خاصة
-                    </span>
                   </div>
-                  <div>
+                  <div title="Shown when number doesn't start with valid prefix">
                     <s-text>خطأ: بادئة غير صحيحة</s-text>
                     <s-text-field
                       value={field.phoneErrorInvalidPrefix || 'يجب أن يبدأ رقم الهاتف بـ 05، 06، 07، 5، 6، أو 7'}
                       onInput={(e: any) => onUpdate(field.id, { phoneErrorInvalidPrefix: e.target.value })}
                       placeholder="يجب أن يبدأ رقم الهاتف بـ 05، 06، 07، 5، 6، أو 7"
                     />
-                    <span style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
-                      يظهر عندما لا يبدأ رقم الهاتف ببادئة صحيحة
-                    </span>
                   </div>
-                  <div>
+                  <div title="Shown when number starts with 0 but not 10 digits">
                     <s-text>خطأ: طول خاطئ (10 أرقام)</s-text>
                     <s-text-field
                       value={field.phoneErrorWrongLength10 || 'يجب أن يكون رقم الهاتف 10 أرقام بالضبط عند البدء بـ 0'}
                       onInput={(e: any) => onUpdate(field.id, { phoneErrorWrongLength10: e.target.value })}
                       placeholder="يجب أن يكون رقم الهاتف 10 أرقام بالضبط عند البدء بـ 0"
                     />
-                    <span style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
-                      يظهر عندما يبدأ رقم الهاتف بـ 0 ولكن ليس 10 أرقام
-                    </span>
                   </div>
-                  <div>
+                  <div title="Shown when number starts with 5, 6, or 7 but not 9 digits">
                     <s-text>خطأ: طول خاطئ (9 أرقام)</s-text>
                     <s-text-field
                       value={field.phoneErrorWrongLength9 || 'يجب أن يكون رقم الهاتف 9 أرقام بالضبط عند البدء بـ 5، 6، أو 7'}
                       onInput={(e: any) => onUpdate(field.id, { phoneErrorWrongLength9: e.target.value })}
                       placeholder="يجب أن يكون رقم الهاتف 9 أرقام بالضبط عند البدء بـ 5، 6، أو 7"
                     />
-                    <span style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
-                      يظهر عندما يبدأ رقم الهاتف بـ 5، 6، أو 7 ولكن ليس 9 أرقام
-                    </span>
                   </div>
                 </s-stack>
               )}
@@ -530,9 +501,6 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
                                   />
                                 ))}
                               </div>
-                              <s-text>
-                                {t('selected')} {GRADIENT_PRESETS.find(p => p.value === field.gradientBackground)?.name || t('custom')}
-                              </s-text>
                             </s-stack>
                           ) : (
                             <s-stack gap="small">
