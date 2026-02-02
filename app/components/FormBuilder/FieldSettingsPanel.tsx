@@ -218,7 +218,7 @@ export default function FieldSettingsPanel({ field, onUpdate, onClose, onApplyTo
             <s-stack gap="small">
               <div title={t('quantityFieldDescription')} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <FontAwesomeIcon icon="InfoCircle" size={16} style={{ color: '#6b7280', flexShrink: 0 }} />
-                <s-text style={{ fontSize: '13px', color: '#6b7280' }}>{t('quantityFieldShort')}</s-text>
+                <s-text>{t('quantityFieldShort')}</s-text>
               </div>
             </s-stack>
           ) : (

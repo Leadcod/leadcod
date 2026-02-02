@@ -163,7 +163,6 @@ export default function PixelsClient({ shopUrl }: PixelsClientProps) {
                     </div>
                     <Button
                       type="button"
-                      variant="outline"
                       size="sm"
                       className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                       onClick={() => handleDelete(p.id)}

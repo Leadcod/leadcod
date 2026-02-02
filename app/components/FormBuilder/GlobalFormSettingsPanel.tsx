@@ -103,7 +103,7 @@ export default function GlobalFormSettingsPanel({ settings, onUpdate, onClose }:
         {activeTab === 'thankYou' && (
         <div>
           <h4 style={{ fontWeight: 600, margin: '0 0 12px 0' }} title={t('thankYouPopupDescription')}>{t('thankYouPopupSection')}</h4>
-          <s-stack gap="small" style={{ marginTop: 12 }}>
+          <s-stack gap="small" >
             <div>
               <s-text>{t('thankYouPopupTitle')}</s-text>
               <s-text-field

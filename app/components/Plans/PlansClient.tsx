@@ -223,7 +223,6 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
             </ul>
 
             <Button
-              variant={planType === PlanType.FREE ? "secondary" : "default"}
               className="w-full font-semibold mt-auto"
               disabled={planType === PlanType.FREE || savingPlan}
               onClick={() => handleSubscribe(PlanType.FREE)}
@@ -350,7 +349,6 @@ export default function PlansClient({ shopUrl, initialPlanInfo }: PlansClientPro
             </ul>
 
             <Button
-              variant={planType === PlanType.PAID ? "secondary" : "default"}
               className="w-full font-semibold mt-auto"
               disabled={planType === PlanType.PAID || savingPlan}
               onClick={() => handleSubscribe(PlanType.PAID)}
