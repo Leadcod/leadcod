@@ -17,8 +17,33 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_SSH_PASSWORD }}
           script: |
+            set -e
             cd /root/leadcod
+            
+            echo "Pulling latest changes..."
             git pull origin main
-            npm install
+            
+            echo "Installing dependencies..."
+            npm ci --production=false
+            
+            echo "Generating Prisma client..."
             npx prisma generate
+            
+            echo "Running database migrations..."
             npx prisma migrate deploy
+            
+            echo "Building Next.js application..."
+            npm run build
+            
+            echo "Reloading application (zero-downtime)..."
+            if pm2 list | grep -q "leadcod"; then
+              pm2 reload leadcod --update-env
+            else
+              pm2 start npm --name "leadcod" -- start
+            fi
+            
+            echo "Waiting for application to be ready..."
+            sleep 5
+            pm2 status
+            
+            echo "Deployment completed successfully!"
