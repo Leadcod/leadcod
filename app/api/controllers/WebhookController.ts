@@ -152,7 +152,6 @@ export async function handleAppSubscriptionsUpdate(
   }
 
   const sub = data.app_subscription
-  console.log('lotfi was here but sub', sub)
   if (!sub || !sub.admin_graphql_api_shop_id) {
     return new Response(JSON.stringify({ error: 'Missing app_subscription or shop id' }), {
       status: 400,

@@ -165,7 +165,8 @@
     "helloWorld": "Bonjour le monde",
     "loading": "Chargement...",
     "shopInitialized": "Boutique initialisée avec succès",
-    "shopInitFailed": "Échec de l'initialisation de la boutique"
+    "shopInitFailed": "Échec de l'initialisation de la boutique",
+    "loadError": "Impossible de charger. Veuillez ouvrir cette application depuis votre administration Shopify."
   },
   "specialOffers": {
     "title": "Offres spéciales",
@@ -176,7 +177,8 @@
     "shippingFees": "Frais de livraison",
     "specialOffers": "Offres spéciales",
     "pixels": "Pixels de suivi",
-    "plans": "Plans"
+    "plans": "Plans",
+    "privacyPolicy": "Politique de confidentialité"
   },
   "pixels": {
     "title": "Pixels de suivi",
@@ -312,5 +314,48 @@
         "support": "Support WhatsApp"
       }
     }
+  },
+  "privacyPolicy": {
+    "title": "Politique de confidentialité",
+    "lastUpdated": "Dernière mise à jour",
+    "introTitle": "Introduction",
+    "intro": "Leadcod (« nous », « notre » ou « nos ») est une application Shopify qui aide les marchands à créer des formulaires de commande, gérer les frais de livraison et suivre les conversions. Cette politique de confidentialité explique comment nous collectons, utilisons et protégeons vos informations lorsque vous utilisez notre application.",
+    "dataWeCollectTitle": "Informations que nous collectons",
+    "dataWeCollectIntro": "Lorsque vous installez et utilisez Leadcod, nous collectons :",
+    "dataShop": "Les informations du magasin (URL du magasin, identifiant Shopify, jeton d'accès) pour l'authentification et la fourniture des fonctionnalités de l'application",
+    "dataForms": "Les données de configuration des formulaires (paramètres des champs, style, paramètres de la page de remerciement) que vous configurez dans le constructeur de formulaires",
+    "dataShipping": "Les paramètres et frais de livraison (méthode, frais par province, libellés) que vous configurez",
+    "dataOrders": "Les données de commande (produits, quantités, détails des clients, adresse de livraison) lorsque les clients soumettent des commandes via vos formulaires",
+    "dataPixels": "Les identifiants des pixels de suivi (ID Facebook Pixel, jetons Conversion API, etc.) que vous connectez pour le suivi des conversions",
+    "dataSubscription": "Les informations d'abonnement et de facturation pour la gestion des plans",
+    "howWeUseTitle": "Comment nous utilisons vos informations",
+    "howWeUseIntro": "Nous utilisons les informations collectées pour :",
+    "useProvide": "Fournir et maintenir l'application Leadcod et ses fonctionnalités",
+    "useProcess": "Traiter les commandes soumises via vos formulaires et les créer dans votre boutique Shopify",
+    "useShipping": "Calculer et afficher les frais de livraison selon votre configuration",
+    "useTracking": "Envoyer les événements de conversion à vos pixels de suivi connectés (Facebook, TikTok, Snapchat, Google)",
+    "useBilling": "Gérer les abonnements et la facturation des plans payants",
+    "useImprove": "Améliorer nos services et corriger les problèmes techniques",
+    "dataSharingTitle": "Partage des données",
+    "dataSharingIntro": "Nous pouvons partager vos informations avec :",
+    "shareShopify": "Shopify — pour fonctionner sur la plateforme Shopify et créer des commandes dans votre boutique",
+    "sharePixels": "Les plateformes publicitaires (Facebook, TikTok, Snapchat, Google) — lorsque vous connectez des pixels de suivi, nous envoyons les événements de conversion à ces plateformes selon votre configuration",
+    "shareLegal": "Les autorités légales — lorsque la loi l'exige ou pour protéger nos droits",
+    "dataRetentionTitle": "Conservation des données",
+    "dataRetention": "Nous conservons vos données tant que votre boutique utilise Leadcod. Lorsque vous désinstallez l'application, nous pouvons conserver certaines données pendant une période limitée pour des raisons légales, comptables ou de support. Vous pouvez nous contacter pour demander la suppression de vos données.",
+    "securityTitle": "Sécurité",
+    "security": "Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données contre l'accès, la modification ou la destruction non autorisés. Nous utilisons des connexions sécurisées (HTTPS) et stockons les données sensibles telles que les jetons d'accès de manière sécurisée.",
+    "yourRightsTitle": "Vos droits",
+    "yourRightsIntro": "Selon votre localisation, vous pouvez avoir le droit de :",
+    "rightAccess": "Accéder aux données personnelles que nous détenons sur vous",
+    "rightCorrection": "Demander la correction des données inexactes",
+    "rightDeletion": "Demander la suppression de vos données",
+    "rightUninstall": "Désinstaller l'application à tout moment — la désinstallation arrêtera la collecte de nouvelles données, et vous pouvez nous contacter pour demander la suppression des données",
+    "cookiesTitle": "Cookies et technologies similaires",
+    "cookies": "Leadcod fonctionne comme une application intégrée dans l'administration Shopify. Nous nous appuyons sur les mécanismes de session et d'authentification de Shopify. Nous ne définissons pas nos propres cookies à des fins de suivi. Les pixels de suivi tiers que vous connectez peuvent utiliser leurs propres cookies sur votre vitrine, conformément à leurs politiques de confidentialité respectives.",
+    "changesTitle": "Modifications de cette politique",
+    "changes": "Nous pouvons mettre à jour cette politique de confidentialité de temps à autre. Nous vous informerons de toute modification importante en publiant la politique mise à jour dans l'application ou par e-mail. Votre utilisation continue de Leadcod après ces modifications constitue une acceptation de la politique mise à jour.",
+    "contactTitle": "Nous contacter",
+    "contact": "Si vous avez des questions concernant cette politique de confidentialité ou vos données, veuillez nous contacter via la fiche de l'application sur le Shopify App Store ou aux coordonnées fournies dans l'application."
   }
 }

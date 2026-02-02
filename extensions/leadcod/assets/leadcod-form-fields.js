@@ -1,4 +1,3 @@
-<script>
 (function() {
   'use strict';
 
@@ -113,10 +112,6 @@
         const inputType = field.type === 'email' ? 'email' : 'text';
         const placeholder = field.showPlaceholder ? field.placeholder : '';
         const iconHTML = hasIcon ? Utils.renderIcon(field.icon, iconSize) : '';
-        const basePadding = Utils.calculatePadding(globalFontSize, settings);
-        const paddingParts = basePadding.split(' ');
-        const horizontalPadding = paddingParts[1] || paddingParts[0] || '12px';
-
         fieldHTML += `
           ${hasIcon && iconOnLeft ? `<div style="${getIconStyle(true)}">${iconHTML}</div>` : ''}
           <input 
@@ -193,7 +188,7 @@
           ${hasIcon && phoneIconOnRight ? `<div style="${getIconStyle(false)}">${iconHTML}</div>` : ''}
           ${phoneCodeOnRight ? `<div style="${getIconStyle(false)}">+213</div>` : ''}
         `;
-        fieldHTML += '</div>'; // Close input wrapper
+        fieldHTML += '</div>';
         fieldHTML += `<div class="leadcod-phone-error" id="error-${field.id}" style="display: none; color: #ef4444; font-size: 0.875rem; margin-top: 4px; text-align: ${inputAlignment};"></div>`;
         break;
       }
@@ -316,24 +311,6 @@
         const selectShippingOptionHint = field.selectShippingOptionHint || 'اختر خيار الشحن';
         const summaryAlignment = field.summaryAlignment || 'right';
         
-        const summaryStyle = `
-          font-family: ${Utils.getFontFamily(settings)} !important;
-          font-size: ${globalFontSize};
-          font-weight: ${globalFontWeight};
-          font-style: ${globalFontStyle};
-          color: ${primaryColor};
-          background-color: #f9fafb;
-          border: 2px solid #e5e7eb;
-          border-radius: 0.375rem;
-          padding: 12px;
-        `;
-        const summaryItemStyle = `
-          font-family: ${Utils.getFontFamily(settings)} !important;
-          font-size: ${globalFontSize};
-          font-weight: ${globalFontWeight};
-          font-style: ${globalFontStyle};
-        `;
-
         const globalFontFamily = Utils.getFontFamily(settings);
         fieldHTML = `
           <div class="leadcod-field" style="margin-bottom: 0;">
@@ -708,5 +685,3 @@
     `;
   };
 })();
-</script>
-

@@ -70,6 +70,7 @@ export default async function RootLayout({
           <s-link href="/special-offers">{t('specialOffers')}</s-link>
           <s-link href="/pixels">{t('pixels')}</s-link>
           <s-link href="/plans">{t('plans')}</s-link>
+          <s-link href="/privacy-policy">{t('privacyPolicy')}</s-link>
         </s-app-nav>
         {children}
       </body>

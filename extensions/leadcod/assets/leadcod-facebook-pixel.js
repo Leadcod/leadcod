@@ -1,28 +1,12 @@
-{% comment %}
-  Facebook Pixel (viewContent + Purchase only).
-  Requires product context when used on product page (ViewContent).
-  Purchase is fired from the form on order success via window.LeadcodTrackPurchase().
-{% endcomment %}
-{% assign LEADCOD_API_URL = 'https://editor-wiring-alerts-just.trycloudflare.com/api/form' %}
-{% assign LEADCOD_API_BASE = LEADCOD_API_URL | replace: '/form', '' %}
-
-<script>
 (function() {
   'use strict';
 
-  var shopUrl = '{{ shop.domain }}';
-  var baseApiUrl = '{{ LEADCOD_API_BASE }}';
-  var productData = null;
-  {% if product %}
-  productData = {
-    id: {{ product.id | json }},
-    title: {{ product.title | json }},
-    variant_id: {{ product.selected_or_first_available_variant.id | json }},
-    variants: {{ product.variants | json }},
-    price: {{ product.selected_or_first_available_variant.price | json }},
-    currency: {{ cart.currency.iso_code | default: 'DZD' | json }}
-  };
-  {% endif %}
+  var config = window.LEADCOD_CONFIG;
+  var pixelData = window.LEADCOD_PIXEL_DATA;
+  if (!config || !config.API_BASE_URL) return;
+
+  var shopUrl = pixelData && pixelData.shopUrl ? pixelData.shopUrl : '';
+  var productData = pixelData && pixelData.productData ? pixelData.productData : null;
 
   function initFbq() {
     var f = window;
@@ -47,7 +31,7 @@
 
   initFbq();
 
-  fetch(baseApiUrl + '/pixels?shop=' + encodeURIComponent(shopUrl))
+  fetch(config.API_BASE_URL + '/pixels?shop=' + encodeURIComponent(shopUrl))
     .then(function(r) { return r.json(); })
     .then(function(result) {
       if (!result.success || !result.data) return;
@@ -58,7 +42,6 @@
         window.fbq('init', p.pixelId);
       });
 
-      {% if product %}
       if (productData && productData.variant_id) {
         window.fbq('track', 'ViewContent', {
           content_ids: [String(productData.variant_id)],
@@ -68,7 +51,6 @@
           currency: productData.currency
         });
       }
-      {% endif %}
 
       window.LeadcodTrackPurchase = function(value, currency, contentIds) {
         if (typeof window.fbq !== 'function') return;
@@ -82,4 +64,3 @@
     })
     .catch(function() {});
 })();
-</script>

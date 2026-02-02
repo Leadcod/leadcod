@@ -142,7 +142,6 @@ export class OrderController {
       
       // Convert productId to number if it's a string
       const variantId = typeof productId === 'string' ? parseInt(productId, 10) : productId;
-      
       // Step 1: Check if customer exists by phone number
       let customerId: number | null = null;
       const searchUrl = `${baseUrl}/customers/search.json?query=phone:${encodeURIComponent(phone)}`;

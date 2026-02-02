@@ -1,6 +1,7 @@
 "use client";
 import { useAppBridge } from "@shopify/app-bridge-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createApp } from "@shopify/app-bridge/client";
 import { getSessionToken } from "@shopify/app-bridge/utilities";
@@ -16,6 +17,7 @@ import { FullPageLoader } from "@/components/ui/loader";
 export default function Home() {
   const t = useTranslations("home");
   const shopify = useAppBridge();
+  const searchParams = useSearchParams();
   const [status, setStatus] = useState<{
     loading: boolean;
     success: boolean | null;
@@ -31,27 +33,34 @@ export default function Home() {
     loading: true,
   });
   const [shopUrl, setShopUrl] = useState<string>("");
+  const initStartedRef = useRef(false);
 
   useEffect(() => {
+    if (initStartedRef.current) return;
+    initStartedRef.current = true;
+
     const initializeShop = async () => {
       try {
-        const app = createApp({
-          apiKey: shopify.config.apiKey || "",
-          host: shopify.config.host || "",
-        });
+        // Use App Bridge config first, fallback to URL search params (Shopify passes shop & host in URL)
+        const currentShopUrl =
+          shopify.config.shop || searchParams.get("shop") || "";
+        const host = shopify.config.host || searchParams.get("host") || "";
 
-        const currentShopUrl = shopify.config.shop || "";
         setShopUrl(currentShopUrl);
 
         if (!currentShopUrl) {
-          setStatus({
-            loading: false,
-            success: false,
-          });
+          setStatus({ loading: false, success: false });
           setOnboardingProgress({ completedSteps: [], loading: false });
           return;
         }
+
         setStatus({ loading: true, success: null });
+
+        const app = createApp({
+          apiKey: shopify.config.apiKey || "",
+          host: host,
+        });
+
         const sessionToken = await getSessionToken(app);
 
         const result = await initializeShopWithToken(
@@ -60,50 +69,57 @@ export default function Home() {
         );
 
         if (result.success) {
-          setStatus({
-            loading: false,
-            success: true,
-          });
+          setStatus({ loading: false, success: true });
 
-          // Load onboarding progress only after shop is successfully initialized
           try {
             const progress = await getOnboardingProgress(currentShopUrl);
             setOnboardingProgress({
               completedSteps: progress.completedSteps,
               loading: false,
             });
-          } catch (error) {
+          } catch {
             setOnboardingProgress({ completedSteps: [], loading: false });
           }
         } else {
-          setStatus({
-            loading: false,
-            success: false,
-          });
-        setOnboardingProgress({ completedSteps: [], loading: false });
-      }
-    } catch (error) {
-      setStatus({
-          loading: false,
-          success: false,
-        });
+          setStatus({ loading: false, success: false });
+          setOnboardingProgress({ completedSteps: [], loading: false });
+        }
+      } catch {
+        setStatus({ loading: false, success: false });
         setOnboardingProgress({ completedSteps: [], loading: false });
       }
     };
 
-    if (shopify.config.host) {
+    // Run when we have shop (from App Bridge or URL) or host
+    const hasShop = shopify.config.shop || searchParams.get("shop");
+    const hasHost = shopify.config.host || searchParams.get("host");
+    if (hasShop || hasHost) {
       initializeShop();
+    } else {
+      setStatus({ loading: false, success: false });
+      setOnboardingProgress({ completedSteps: [], loading: false });
     }
-  }, [shopify]);
+  }, []);
 
-  // Show full-page loader while loading or initializing
-  if (
-    status.loading ||
-    onboardingProgress.loading ||
-    !status.success ||
-    !shopUrl
-  ) {
+  // Still initializing (waiting for config)
+  if (status.success === null && !status.loading) {
     return <FullPageLoader message="Loading..." />;
+  }
+
+  // Actually loading
+  if (status.loading || onboardingProgress.loading) {
+    return <FullPageLoader message="Loading..." />;
+  }
+
+  // Failed or missing shop
+  if (!status.success || !shopUrl) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center p-6">
+        <p className="text-muted-foreground text-center">
+          {t("loadError")}
+        </p>
+      </div>
+    );
   }
 
   return (

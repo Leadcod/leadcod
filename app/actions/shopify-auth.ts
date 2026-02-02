@@ -81,7 +81,6 @@ export async function initializeShopWithToken(
 
     const shopifyShopId = await fetchShopifyShopId(shopUrl, accessToken);
     if (!shop) {
-      console.log('lotfi was here but shop not created')
       shop = await prisma.shop.create({
         data: {
           url: shopUrl,
@@ -90,7 +89,6 @@ export async function initializeShopWithToken(
         },
       });
     } else {
-      console.log('lotfi was here but shop updated')
       shop = await prisma.shop.update({
         where: { id: shop.id },
         data: {

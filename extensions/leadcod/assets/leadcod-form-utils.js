@@ -1,4 +1,3 @@
-<script>
 (function() {
   'use strict';
 
@@ -68,7 +67,6 @@
 
     getFontAwesomeIcon: function(iconName) {
       if (!iconName || iconName === 'none') return '';
-      // Font Awesome icon class mapping
       const iconMap = {
         User: 'fa-user',
         Phone: 'fa-phone',
@@ -198,4 +196,3 @@
     }
   };
 })();
-</script>

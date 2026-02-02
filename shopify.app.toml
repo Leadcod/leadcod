@@ -2,7 +2,7 @@
 
 client_id = "be4883f020bf88c2597ab6d55be7e8e8"
 name = "Leadcod"
-application_url = "https://editor-wiring-alerts-just.trycloudflare.com"
+application_url = "https://brook-dependent-specialties-another.trycloudflare.com"
 embedded = true
 
 [build]
@@ -18,7 +18,7 @@ scopes = "read_products,write_orders,write_customers"
 embedded_app_direct_api_access=true
 
 [auth]
-redirect_urls = [ "https://editor-wiring-alerts-just.trycloudflare.com/api/auth/api/auth" ]
+redirect_urls = [ "https://brook-dependent-specialties-another.trycloudflare.com/api/auth/api/auth" ]
 
 
 [[webhooks.subscriptions]]

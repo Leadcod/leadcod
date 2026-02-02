@@ -165,7 +165,8 @@
     "helloWorld": "Hello World",
     "loading": "Loading...",
     "shopInitialized": "Shop initialized successfully",
-    "shopInitFailed": "Failed to initialize shop"
+    "shopInitFailed": "Failed to initialize shop",
+    "loadError": "Unable to load. Please open this app from your Shopify admin."
   },
   "specialOffers": {
     "title": "Special offers",
@@ -176,7 +177,8 @@
     "shippingFees": "Shipping fees",
     "specialOffers": "Special offers",
     "pixels": "Tracking Pixels",
-    "plans": "Plans"
+    "plans": "Plans",
+    "privacyPolicy": "Privacy Policy"
   },
   "pixels": {
     "title": "Tracking Pixels",
@@ -312,5 +314,48 @@
         "support": "WhatsApp support"
       }
     }
+  },
+  "privacyPolicy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated",
+    "introTitle": "Introduction",
+    "intro": "Leadcod (\"we\", \"our\", or \"us\") is a Shopify app that helps merchants create order forms, manage shipping fees, and track conversions. This Privacy Policy explains how we collect, use, and protect your information when you use our app.",
+    "dataWeCollectTitle": "Information We Collect",
+    "dataWeCollectIntro": "When you install and use Leadcod, we collect:",
+    "dataShop": "Shop information (store URL, Shopify shop ID, access token) to authenticate and provide app functionality",
+    "dataForms": "Form configuration data (field settings, styling, thank-you page settings) that you configure in the Form Builder",
+    "dataShipping": "Shipping settings and fees (method, province-based fees, labels) that you configure",
+    "dataOrders": "Order data (products, quantities, customer details, shipping address) when customers submit orders through your forms",
+    "dataPixels": "Tracking pixel credentials (Facebook Pixel ID, Conversion API tokens, etc.) that you connect for conversion tracking",
+    "dataSubscription": "Subscription and billing information for plan management",
+    "howWeUseTitle": "How We Use Your Information",
+    "howWeUseIntro": "We use the information we collect to:",
+    "useProvide": "Provide and maintain the Leadcod app and its features",
+    "useProcess": "Process orders submitted through your forms and create them in your Shopify store",
+    "useShipping": "Calculate and display shipping fees based on your configuration",
+    "useTracking": "Send conversion events to your connected tracking pixels (Facebook, TikTok, Snapchat, Google)",
+    "useBilling": "Manage subscriptions and billing for paid plans",
+    "useImprove": "Improve our services and fix technical issues",
+    "dataSharingTitle": "Data Sharing",
+    "dataSharingIntro": "We may share your information with:",
+    "shareShopify": "Shopify — to operate within the Shopify platform and create orders in your store",
+    "sharePixels": "Advertising platforms (Facebook, TikTok, Snapchat, Google) — when you connect tracking pixels, we send conversion events to these platforms as configured by you",
+    "shareLegal": "Legal authorities — when required by law or to protect our rights",
+    "dataRetentionTitle": "Data Retention",
+    "dataRetention": "We retain your data for as long as your shop uses Leadcod. When you uninstall the app, we may retain certain data for a limited period for legal, accounting, or support purposes. You may contact us to request deletion of your data.",
+    "securityTitle": "Security",
+    "security": "We implement appropriate technical and organizational measures to protect your data against unauthorized access, alteration, or destruction. We use secure connections (HTTPS) and store sensitive data such as access tokens securely.",
+    "yourRightsTitle": "Your Rights",
+    "yourRightsIntro": "Depending on your location, you may have the right to:",
+    "rightAccess": "Access the personal data we hold about you",
+    "rightCorrection": "Request correction of inaccurate data",
+    "rightDeletion": "Request deletion of your data",
+    "rightUninstall": "Uninstall the app at any time — uninstalling will stop new data collection, and you may contact us to request data deletion",
+    "cookiesTitle": "Cookies and Similar Technologies",
+    "cookies": "Leadcod operates as an embedded app within the Shopify admin. We rely on Shopify's session and authentication mechanisms. We do not set our own cookies for tracking purposes. Third-party tracking pixels you connect may use their own cookies on your storefront, subject to their respective privacy policies.",
+    "changesTitle": "Changes to This Policy",
+    "changes": "We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the updated policy in the app or via email. Your continued use of Leadcod after such changes constitutes acceptance of the updated policy.",
+    "contactTitle": "Contact Us",
+    "contact": "If you have questions about this Privacy Policy or your data, please contact us through the Shopify App Store listing or at the contact information provided in the app."
   }
 }
