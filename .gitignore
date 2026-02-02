@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# leadcod config
+extensions/leadcod/snippets/leadcod_config.liquid
