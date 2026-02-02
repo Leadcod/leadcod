@@ -2,8 +2,8 @@ import { t } from 'elysia'
 import { prisma } from '@/lib/prisma'
 
 export class FormController {
-  static async getForm({ query }: { query: { shop: string } }) {
-    const shopUrl = query.shop as string;
+  static async getForm(ctx: { query?: Record<string, string> }) {
+    const shopUrl = (ctx.query?.shop ?? '') as string
     
     if (!shopUrl) {
       return {

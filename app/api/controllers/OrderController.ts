@@ -5,31 +5,26 @@ import { getPlanInfo } from '@/app/actions/plan'
 import { PlanType } from '@/lib/constants/plan'
 
 export class OrderController {
-  static async createOrder({ body, request }: { 
-    body: { 
-      shopUrl: string
-      name: string
-      phone: string
-      cityId: string
-      provinceId: string
-      productId: string | number
+  static async createOrder(ctx: { body?: unknown; request?: Request }) {
+    const body = (ctx.body ?? {}) as {
+      shopUrl?: string
+      name?: string
+      phone?: string
+      cityId?: string
+      provinceId?: string
+      productId?: string | number
       shippingType?: string
-    },
-    request?: Request
-  }) {
-    const { shopUrl, name, phone, cityId, provinceId, productId, shippingType } = body;
+    }
+    const { shopUrl, name, phone, cityId, provinceId, productId, shippingType } = body
     
     // Get IP address from request headers
-    let ipAddress = 'Unknown';
+    let ipAddress = 'Unknown'
+    const request = ctx.request
     if (request) {
-      const forwardedFor = request.headers.get('x-forwarded-for');
-      const realIp = request.headers.get('x-real-ip');
-      const cfConnectingIp = request.headers.get('cf-connecting-ip');
-      
-      ipAddress = cfConnectingIp || 
-                  (forwardedFor ? forwardedFor.split(',')[0].trim() : null) || 
-                  realIp || 
-                  'Unknown';
+      const forwardedFor = request.headers.get('x-forwarded-for')
+      const realIp = request.headers.get('x-real-ip')
+      const cfConnectingIp = request.headers.get('cf-connecting-ip')
+      ipAddress = cfConnectingIp || (forwardedFor ? forwardedFor.split(',')[0].trim() : null) || realIp || 'Unknown'
     }
 
     if (!shopUrl || !name || !phone || !cityId || !provinceId || productId === undefined || productId === null) {

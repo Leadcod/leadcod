@@ -3,13 +3,8 @@ import { getBaseUrl } from '@/lib/shopify/billing'
 import { getShopifyAdminUrl } from '@/lib/constants/shopify'
 
 export class BillingController {
-  static async confirm({ query }: { 
-    query: { 
-      shop?: string
-    },
-    request?: Request
-  }) {
-    const shop = query.shop;
+  static async confirm(ctx: { query?: Record<string, string>; request?: Request }) {
+    const shop = ctx.query?.shop
 
     // Subscription activation is handled by app_subscriptions/update webhook.
     // After merchant approves, Shopify sends the webhook with status ACTIVE.

@@ -18,8 +18,8 @@ export interface UpdatePixelPayload extends Partial<Omit<TrackingPixelPayload, '
 }
 
 export class PixelController {
-  static async list({ query }: { query: { shop: string } }) {
-    const shopUrl = query.shop as string
+  static async list(ctx: { query?: Record<string, string> }) {
+    const shopUrl = (ctx.query?.shop ?? '') as string
     if (!shopUrl) {
       return { success: false, error: 'shop parameter is required' }
     }
@@ -55,7 +55,8 @@ export class PixelController {
     }
   }
 
-  static async create({ body }: { body: TrackingPixelPayload }) {
+  static async create(ctx: { body?: unknown }) {
+    const body = (ctx.body ?? {}) as TrackingPixelPayload
     const { shop: shopUrl, provider, name, pixelId, conversionApiToken, testToken } = body
     if (!shopUrl || !provider || !pixelId) {
       return {
@@ -99,7 +100,8 @@ export class PixelController {
     }
   }
 
-  static async update({ body }: { body: UpdatePixelPayload }) {
+  static async update(ctx: { body?: unknown }) {
+    const body = (ctx.body ?? {}) as UpdatePixelPayload
     const { id, shop: shopUrl, name, pixelId, conversionApiToken, testToken } = body
     if (!id || !shopUrl) {
       return { success: false, error: 'id and shop are required' }
@@ -150,8 +152,8 @@ export class PixelController {
     }
   }
 
-  static async delete({ query }: { query: { id: string; shop: string } }) {
-    const { id, shop: shopUrl } = query
+  static async delete(ctx: { query?: Record<string, string> }) {
+    const { id, shop: shopUrl } = (ctx.query ?? {}) as { id?: string; shop?: string }
     if (!id || !shopUrl) {
       return { success: false, error: 'id and shop are required' }
     }

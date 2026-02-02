@@ -44,11 +44,18 @@ interface AppSubscriptionPayload {
   }
 }
 
+export interface WebhookContext {
+  request?: Request
+  body?: unknown
+}
+
 /**
  * Handle app/uninstalled webhook.
  * Revokes access by clearing accessToken so the app cannot access the shop anymore.
  */
-export async function handleAppUninstalled(rawBody: string, hmacHeader: string | null): Promise<Response> {
+export async function handleAppUninstalled(ctx: WebhookContext): Promise<Response> {
+  const rawBody = typeof ctx.body === 'string' ? ctx.body : ''
+  const hmacHeader = ctx.request?.headers.get('x-shopify-hmac-sha256') ?? null
   if (!verifyShopifyHmac(rawBody, hmacHeader)) {
     return new Response(JSON.stringify({ error: 'HMAC verification failed' }), {
       status: 401,
@@ -130,10 +137,9 @@ export async function handleAppUninstalled(rawBody: string, hmacHeader: string |
  * Handle app_subscriptions/update webhook.
  * Syncs subscription status and data in the subscriptions table only.
  */
-export async function handleAppSubscriptionsUpdate(
-  rawBody: string,
-  hmacHeader: string | null,
-): Promise<Response> {
+export async function handleAppSubscriptionsUpdate(ctx: WebhookContext): Promise<Response> {
+  const rawBody = typeof ctx.body === 'string' ? ctx.body : ''
+  const hmacHeader = ctx.request?.headers.get('x-shopify-hmac-sha256') ?? null
   if (!verifyShopifyHmac(rawBody, hmacHeader)) {
     return new Response(JSON.stringify({ error: 'HMAC verification failed' }), {
       status: 401,
@@ -226,5 +232,169 @@ export async function handleAppSubscriptionsUpdate(
       JSON.stringify({ error: err instanceof Error ? err.message : 'Subscription update webhook failed' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } },
     )
+  }
+}
+
+// --- GDPR/CPRA compliance webhooks ---
+
+/** customers/data_request payload */
+interface CustomersDataRequestPayload {
+  shop_id: number
+  shop_domain: string
+  orders_requested?: number[]
+  customer: { id: number; email?: string; phone?: string }
+  data_request: { id: number }
+}
+
+/** customers/redact payload */
+interface CustomersRedactPayload {
+  shop_id: number
+  shop_domain: string
+  customer: { id: number; email?: string; phone?: string }
+  orders_to_redact?: number[]
+}
+
+/** shop/redact payload */
+interface ShopRedactPayload {
+  shop_id: number
+  shop_domain: string
+}
+
+/**
+ * Handle customers/data_request – provide stored customer data to store owner.
+ * This app does not store customer data locally; orders are created directly in Shopify.
+ */
+export async function handleCustomersDataRequest(ctx: WebhookContext): Promise<Response> {
+  const rawBody = typeof ctx.body === 'string' ? ctx.body : ''
+  const hmacHeader = ctx.request?.headers.get('x-shopify-hmac-sha256') ?? null
+  if (!verifyShopifyHmac(rawBody, hmacHeader)) {
+    return new Response(JSON.stringify({ error: 'HMAC verification failed' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  try {
+    const _data = JSON.parse(rawBody) as CustomersDataRequestPayload
+    // This app does not store customer/order data locally.
+    // Orders are created via Shopify API; data lives in Shopify.
+    return new Response(JSON.stringify({ received: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
+
+/**
+ * Handle customers/redact – delete/redact customer data.
+ * This app does not store customer data locally.
+ */
+export async function handleCustomersRedact(ctx: WebhookContext): Promise<Response> {
+  const rawBody = typeof ctx.body === 'string' ? ctx.body : ''
+  const hmacHeader = ctx.request?.headers.get('x-shopify-hmac-sha256') ?? null
+  if (!verifyShopifyHmac(rawBody, hmacHeader)) {
+    return new Response(JSON.stringify({ error: 'HMAC verification failed' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  try {
+    const _data = JSON.parse(rawBody) as CustomersRedactPayload
+    // This app does not store customer/order data locally.
+    return new Response(JSON.stringify({ received: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+}
+
+/**
+ * Handle shop/redact – delete all shop data (sent 48h after uninstall).
+ */
+export async function handleShopRedact(ctx: WebhookContext): Promise<Response> {
+  const rawBody = typeof ctx.body === 'string' ? ctx.body : ''
+  const hmacHeader = ctx.request?.headers.get('x-shopify-hmac-sha256') ?? null
+  if (!verifyShopifyHmac(rawBody, hmacHeader)) {
+    return new Response(JSON.stringify({ error: 'HMAC verification failed' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  let data: ShopRedactPayload
+  try {
+    data = JSON.parse(rawBody) as ShopRedactPayload
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  const shopifyShopId = String(data.shop_id)
+  const shopDomain = (data.shop_domain || '').replace(/^https?:\/\//, '').replace(/\/$/, '')
+
+  try {
+    const shop = await prisma.shop.findFirst({
+      where: {
+        OR: [
+          { shopifyShopId },
+          { url: shopDomain },
+        ],
+      },
+    })
+
+    if (shop) {
+      await prisma.$transaction([
+        prisma.form.deleteMany({ where: { shopId: shop.id } }),
+        prisma.shippingFee.deleteMany({ where: { shopId: shop.id } }),
+        prisma.shippingSettings.deleteMany({ where: { shopId: shop.id } }),
+        prisma.onboardingProgress.deleteMany({ where: { shopId: shop.id } }),
+        prisma.subscription.deleteMany({ where: { shopId: shop.id } }),
+        prisma.trackingPixel.deleteMany({ where: { shopId: shop.id } }),
+        prisma.shop.delete({ where: { id: shop.id } }),
+      ])
+    }
+
+    return new Response(JSON.stringify({ received: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  } catch (err) {
+    return new Response(
+      JSON.stringify({ error: err instanceof Error ? err.message : 'Shop redact webhook failed' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } },
+    )
+  }
+}
+
+/**
+ * Route compliance webhooks by X-Shopify-Topic header.
+ */
+export async function handleComplianceWebhook(ctx: WebhookContext): Promise<Response> {
+  const topic = ctx.request?.headers.get('x-shopify-topic') ?? null
+  switch (topic) {
+    case 'customers/data_request':
+      return handleCustomersDataRequest(ctx)
+    case 'customers/redact':
+      return handleCustomersRedact(ctx)
+    case 'shop/redact':
+      return handleShopRedact(ctx)
+    default:
+      return new Response(JSON.stringify({ error: 'Unknown compliance topic' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
   }
 }

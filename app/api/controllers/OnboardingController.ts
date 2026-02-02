@@ -4,8 +4,8 @@ import { prisma } from '@/lib/prisma'
 export type OnboardingStep = 'configure-form' | 'configure-shipping' | 'activate-plugin';
 
 export class OnboardingController {
-  static async getProgress({ query }: { query: { shop: string } }) {
-    const shopUrl = query.shop as string;
+  static async getProgress(ctx: { query?: Record<string, string> }) {
+    const shopUrl = (ctx.query?.shop ?? '') as string
     
     if (!shopUrl) {
       return {
@@ -48,8 +48,9 @@ export class OnboardingController {
     }
   }
 
-  static async markStepComplete({ body }: { body: { shop: string; step: OnboardingStep } }) {
-    const { shop: shopUrl, step } = body;
+  static async markStepComplete(ctx: { body?: unknown }) {
+    const body = (ctx.body ?? {}) as { shop?: string; step?: OnboardingStep }
+    const { shop: shopUrl, step } = body
     
     if (!shopUrl || !step) {
       return {

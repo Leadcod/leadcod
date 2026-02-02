@@ -2,13 +2,12 @@ import { t } from 'elysia'
 import { prisma } from '@/lib/prisma'
 
 export class LocationController {
-  static async getStates({ query }: { query: { countryId?: string } }) {
+  static async getStates(ctx: { query?: Record<string, string> }) {
     try {
-      const where: any = {};
-      
-      // If countryId is provided, filter by country
+      const where: Record<string, string> = {}
+      const query = ctx.query ?? {}
       if (query.countryId) {
-        where.countryId = query.countryId;
+        where.countryId = query.countryId
       } else {
         // Default to Algeria if no country specified
         const algeria = await prisma.country.findFirst({
@@ -42,8 +41,8 @@ export class LocationController {
     }
   }
 
-  static async getCities({ query }: { query: { stateId: string } }) {
-    const stateId = query.stateId as string;
+  static async getCities(ctx: { query?: Record<string, string> }) {
+    const stateId = (ctx.query?.stateId ?? '') as string
     
     if (!stateId) {
       return {
@@ -81,8 +80,8 @@ export class LocationController {
     })
   }
 
-  static async getShippingFees({ query }: { query: { shopUrl: string; stateId: string } }) {
-    const { shopUrl, stateId } = query;
+  static async getShippingFees(ctx: { query?: Record<string, string> }) {
+    const { shopUrl, stateId } = (ctx.query ?? {}) as { shopUrl?: string; stateId?: string }
     
     if (!shopUrl || !stateId) {
       return {

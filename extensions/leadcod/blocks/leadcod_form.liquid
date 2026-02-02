@@ -1,16 +1,18 @@
-{% assign APP_URL = 'https://brook-dependent-specialties-another.trycloudflare.com' %}
+{% assign app_url = 'https://leadcod.com' %}
 
+{% # theme-check-disable RemoteAsset %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% # theme-check-enable RemoteAsset %}
+{{ 'font-awesome.css' | asset_url | stylesheet_tag }}
 
 <script>
 (function() {
   'use strict';
   window.LEADCOD_CONFIG = window.LEADCOD_CONFIG || {};
-  window.LEADCOD_CONFIG.APP_URL = '{{ APP_URL }}';
-  window.LEADCOD_CONFIG.API_BASE_URL = '{{ APP_URL }}/api';
+  window.LEADCOD_CONFIG.APP_URL = '{{ app_url }}';
+  window.LEADCOD_CONFIG.API_BASE_URL = '{{ app_url }}/api';
   window.LEADCOD_CONFIG.getApiUrl = function(endpoint) {
     const baseUrl = this.API_BASE_URL.replace(/\/$/, '');
     const path = endpoint.replace(/^\//, '');
@@ -37,14 +39,14 @@
   {% endif %}
 })();
 </script>
-{{ 'leadcod-facebook-pixel.js' | asset_url | script_tag }}
+<script src="{{ 'leadcod-facebook-pixel.js' | asset_url }}" defer></script>
 
 <div id="leadcod-form-{{ block.id }}" class="leadcod-form-container">
   <div class="leadcod-form-loading">جاري تحميل النموذج...</div>
 </div>
 
-{{ 'leadcod-form-utils.js' | asset_url | script_tag }}
-{{ 'leadcod-form-fields.js' | asset_url | script_tag }}
+<script src="{{ 'leadcod-form-utils.js' | asset_url }}" defer></script>
+<script src="{{ 'leadcod-form-fields.js' | asset_url }}" defer></script>
 
 <script>
 (function() {
@@ -62,7 +64,7 @@
   {% endif %}
 })();
 </script>
-{{ 'leadcod-form-init.js' | asset_url | script_tag }}
+<script src="{{ 'leadcod-form-init.js' | asset_url }}" defer></script>
 
 {{ 'leadcod-form.css' | asset_url | stylesheet_tag }}
 

@@ -2,7 +2,7 @@
 
 client_id = "be4883f020bf88c2597ab6d55be7e8e8"
 name = "Leadcod"
-application_url = "https://brook-dependent-specialties-another.trycloudflare.com"
+application_url = "https://leadcod.com"
 embedded = true
 
 [build]
@@ -18,7 +18,7 @@ scopes = "read_products,write_orders,write_customers"
 embedded_app_direct_api_access=true
 
 [auth]
-redirect_urls = [ "https://brook-dependent-specialties-another.trycloudflare.com/api/auth/api/auth" ]
+redirect_urls = [ "https://leadcod.com/api/auth/api/auth" ]
 
 
 [[webhooks.subscriptions]]
@@ -28,3 +28,8 @@ topics = ["app/uninstalled"]
 [[webhooks.subscriptions]]
 uri = "/api/webhooks/app_subscriptions/update"
 topics = ["app_subscriptions/update"]
+
+# Mandatory GDPR/CPRA compliance webhooks (required for App Store)
+[[webhooks.subscriptions]]
+compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
+uri = "/api/webhooks/compliance"
